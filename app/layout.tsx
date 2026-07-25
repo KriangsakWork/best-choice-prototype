@@ -5,7 +5,14 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Best Choice — Smart Price Comparison",
-  description: "Interactive price-comparison prototype recreated from Figma."
+  description: "Interactive price-comparison prototype recreated from Figma.",
+  applicationName: "Best Choice",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Best Choice"
+  }
 };
 
 export const viewport: Viewport = {
