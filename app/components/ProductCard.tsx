@@ -17,7 +17,10 @@ export type ProductCardData = {
 };
 
 function formatPrice(value: number) {
-  return value.toLocaleString("en-US");
+  return value.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
 }
 
 export function ProductCard({ product }: { product: ProductCardData }) {
@@ -30,21 +33,25 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           className="real-product-card__photo"
           src={product.imageUrl}
           alt={product.productName}
+          width={362}
+          height={246}
           referrerPolicy="no-referrer"
         />
-        <div className="real-product-card__badges" aria-label={`จำหน่ายโดย ${product.platform}${product.freeShip ? " ส่งฟรี" : ""}`}>
-          <span className="real-product-card__platform">
-            {product.platform === "Shopee" && (
-              <img src="/assets/product-card/shopee-mark.svg" alt="" aria-hidden="true" />
-            )}
-            {product.platform}
-          </span>
-          {product.freeShip && <span className="real-product-card__shipping">ส่งฟรี</span>}
-        </div>
-        <span className="real-product-card__heart" aria-label="อยู่ในรายการโปรด">
-          <img src="/assets/product-card/heart-filled.svg" alt="" />
-        </span>
       </div>
+
+      <div className="real-product-card__badges" aria-label={`จำหน่ายโดย ${product.platform}${product.freeShip ? " ส่งฟรี" : ""}`}>
+        <span className="real-product-card__platform">
+          {product.platform === "Shopee" && (
+            <img src="/assets/product-card/shopee-mark.svg" alt="" width={10} height={10} aria-hidden="true" />
+          )}
+          {product.platform}
+        </span>
+        {product.freeShip && <span className="real-product-card__shipping">ส่งฟรี</span>}
+      </div>
+
+      <span className="real-product-card__heart" aria-label="อยู่ในรายการโปรด">
+        <img src="/assets/product-card/heart-filled.svg" alt="" width={18} height={16} />
+      </span>
 
       <div className="real-product-card__info">
         <h3>{product.productName}</h3>
@@ -54,21 +61,25 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           <del>฿{formatPrice(product.price)}</del>
         </div>
 
-        <div className={`real-product-card__trend ${trendIsLower ? "is-lower" : ""}`}>
-          <img src="/assets/product-card/trend-up.svg" alt="" aria-hidden="true" />
-          <span>{product.trendLabel}</span>
-          <b>{product.trendPercent}%</b>
-        </div>
+        <div className="real-product-card__rating-sales">
+          <div className={`real-product-card__trend ${trendIsLower ? "is-lower" : ""}`}>
+            <img src="/assets/product-card/trend-up.svg" alt="" width={12} height={12} aria-hidden="true" />
+            <span>{product.trendLabel}</span>
+            <b>{product.trendPercent}%</b>
+          </div>
 
-        <div className="real-product-card__meta">
-          <span className="real-product-card__rating">
-            <img src="/assets/product-card/star.svg" alt="" aria-hidden="true" />
-            {product.rating}
-          </span>
-          <span className="real-product-card__separator" aria-hidden="true">|</span>
-          <span>ขายแล้ว</span>
-          <span>{product.sold}</span>
-          <span>ชิ้น</span>
+          <div className="real-product-card__meta">
+            <span className="real-product-card__rating">
+              <img src="/assets/product-card/star.svg" alt="" width={12} height={12} aria-hidden="true" />
+              {product.rating}
+            </span>
+            <span className="real-product-card__separator" aria-hidden="true">|</span>
+            <span className="real-product-card__sales">
+              <span>ขายแล้ว</span>
+              <span>{product.sold}</span>
+              <span>ชิ้น</span>
+            </span>
+          </div>
         </div>
       </div>
     </article>

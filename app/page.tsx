@@ -115,7 +115,7 @@ const nikeAirForceOne: ProductCardData = {
   sold: 56,
   freeShip: true,
   mall: true,
-  imageUrl: "https://drive.google.com/uc?export=view&id=1_KjhSWjJJiIIVQTt9jfFOzXhslK0Z8-_",
+  imageUrl: "/assets/products/1-nike-shopee.jpg",
   productUrl: "https://shopee.co.th/product/1676687866/56408537514",
   averagePrice: 3437.33,
   trendLabel: "เพิ่มจากค่าเฉลี่ย",
