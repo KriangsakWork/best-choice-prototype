@@ -1,6 +1,6 @@
 "use client";
 
-import { CSSProperties, FormEvent, PointerEvent, useMemo, useRef, useState } from "react";
+import { FormEvent, PointerEvent, useEffect, useMemo, useRef, useState } from "react";
 
 type Screen =
   | "home"
@@ -33,6 +33,21 @@ function searchGradientColor(position: number) {
   const goldOrange: [number, number, number] = [255, 202, 104];
   const blend = (1 - Math.cos(position * Math.PI * 2)) / 2;
   return mixColor(primary, goldOrange, blend);
+}
+
+function usePrefersReducedMotion() {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const updatePreference = () => setPrefersReducedMotion(media.matches);
+
+    updatePreference();
+    media.addEventListener("change", updatePreference);
+    return () => media.removeEventListener("change", updatePreference);
+  }, []);
+
+  return prefersReducedMotion;
 }
 
 const spriteIcons: Record<string, { screen: string; x: number; y: number; width: number; height: number }> = {
@@ -124,6 +139,7 @@ function BottomNav({ active, go }: { active?: string; go: (screen: Screen) => vo
 
 function SearchGradientBorder() {
   const segmentLength = 100 / SEARCH_GRADIENT_SEGMENTS + 0.08;
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   return (
     <svg
@@ -150,8 +166,18 @@ function SearchGradientBorder() {
             stroke={searchGradientColor(index / SEARCH_GRADIENT_SEGMENTS)}
             strokeWidth="2"
             strokeDasharray={`${segmentLength} ${100 - segmentLength}`}
-            style={{ "--segment-offset": offset } as CSSProperties}
-          />
+            strokeDashoffset={offset}
+          >
+            {!prefersReducedMotion && (
+              <animate
+                attributeName="stroke-dashoffset"
+                values={`${offset};${offset - 100}`}
+                dur="5.6s"
+                calcMode="linear"
+                repeatCount="indefinite"
+              />
+            )}
+          </rect>
         );
       })}
     </svg>
