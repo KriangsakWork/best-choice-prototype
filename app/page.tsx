@@ -171,8 +171,7 @@ function HomeScreen({ go, query, setQuery }: { go: (screen: Screen) => void; que
         <SearchField
           value={query}
           onChange={setQuery}
-          onFocus={() => go("search")}
-          onSubmit={() => go("results")}
+          onSubmit={() => go("search")}
         />
       </div>
       <button className="savings-hero" onClick={() => go("total-save")} type="button">
