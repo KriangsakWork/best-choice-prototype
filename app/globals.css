@@ -266,13 +266,17 @@ img {
   background: conic-gradient(
     from 0deg,
     #eb3b0c 0deg,
-    #fd7d32 64deg,
-    #ffb29c 108deg,
-    #ffd978 144deg,
-    #ff6d43 190deg,
+    #fd7d32 48deg,
+    #ffb29c 88deg,
+    #ffd978 118deg,
+    #ffe59a 150deg,
+    #ffd978 182deg,
+    #ff6d43 212deg,
     #eb3b0c 238deg,
-    #ffccb9 286deg,
-    #ffe59a 318deg,
+    #ffccb9 268deg,
+    #ffd978 296deg,
+    #ffe59a 322deg,
+    #ffd978 348deg,
     #eb3b0c 360deg
   );
   transform: translate(-50%, -50%) rotate(0deg);
