@@ -268,16 +268,16 @@ img {
     #eb3b0c 0deg,
     #fd7d32 64deg,
     #ffb29c 108deg,
-    #fff 144deg,
+    #ffd978 144deg,
     #ff6d43 190deg,
     #eb3b0c 238deg,
     #ffccb9 286deg,
-    #fff 318deg,
+    #ffe59a 318deg,
     #eb3b0c 360deg
   );
   transform: translate(-50%, -50%) rotate(0deg);
   transform-origin: center;
-  animation: search-gradient-spin 2.8s linear infinite;
+  animation: search-gradient-spin 5.6s linear infinite;
 }
 
 .search-field > *:not(.search-gradient-border) {
