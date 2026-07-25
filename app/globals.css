@@ -223,6 +223,8 @@ img {
 }
 
 .search-field {
+  position: relative;
+  isolation: isolate;
   width: 100%;
   height: 50px;
   display: flex;
@@ -230,6 +232,83 @@ img {
   border: 1px solid var(--primary-bright);
   border-radius: 999px;
   background: #fff;
+}
+
+.search-page-field .search-field.active {
+  border-color: rgba(255, 58, 19, .38);
+  box-shadow:
+    0 0 0 1px rgba(255, 58, 19, .06),
+    0 4px 18px rgba(235, 59, 12, .08);
+}
+
+.search-page-field .search-field.active::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: -2px;
+  padding: 2px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--search-light-angle),
+    transparent 0deg 230deg,
+    rgba(255, 207, 191, .2) 252deg,
+    rgba(255, 137, 101, .8) 276deg,
+    #fff 294deg,
+    var(--primary-bright) 310deg,
+    transparent 336deg 360deg
+  );
+  pointer-events: none;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: search-light-loop 2.35s linear infinite;
+}
+
+.search-page-field .search-field.active::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: -5px;
+  padding: 5px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--search-light-angle),
+    transparent 0deg 262deg,
+    rgba(255, 95, 52, .22) 292deg,
+    transparent 326deg 360deg
+  );
+  filter: blur(7px);
+  opacity: .75;
+  pointer-events: none;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: search-light-loop 2.35s linear infinite;
+}
+
+.search-page-field .search-field.active > * {
+  position: relative;
+  z-index: 1;
+}
+
+@property --search-light-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes search-light-loop {
+  to { --search-light-angle: 360deg; }
 }
 
 .search-button {
@@ -1042,6 +1121,11 @@ img {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .search-page-field .search-field.active::before,
+  .search-page-field .search-field.active::after {
+    animation: none !important;
+  }
+
   *,
   *::before,
   *::after {

@@ -114,13 +114,15 @@ function SearchField({
   onChange,
   onSubmit,
   onFocus,
-  active = false
+  active = false,
+  autoFocus = false
 }: {
   value: string;
   onChange: (value: string) => void;
   onSubmit: () => void;
   onFocus?: () => void;
   active?: boolean;
+  autoFocus?: boolean;
 }) {
   const submit = (event: FormEvent) => {
     event.preventDefault();
@@ -136,6 +138,7 @@ function SearchField({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         onFocus={onFocus}
+        autoFocus={autoFocus}
         placeholder={active ? "รองเท้า" : "ค้นหาสินค้า"}
         aria-label="ค้นหาสินค้า"
       />
@@ -171,6 +174,7 @@ function HomeScreen({ go, query, setQuery }: { go: (screen: Screen) => void; que
         <SearchField
           value={query}
           onChange={setQuery}
+          onFocus={() => go("search")}
           onSubmit={() => go("search")}
         />
       </div>
@@ -209,7 +213,7 @@ function SearchScreen({ go, query, setQuery }: { go: (screen: Screen) => void; q
     <section className="screen search-screen">
       <StatusBar />
       <div className="search-page-field">
-        <SearchField value={query} onChange={setQuery} onSubmit={submit} active />
+        <SearchField value={query} onChange={setQuery} onSubmit={submit} active autoFocus />
       </div>
       <main className="search-content">
         <h2>สินค้าแนะนำ</h2>
