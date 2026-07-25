@@ -1,6 +1,7 @@
 "use client";
 
 import { CSSProperties, FormEvent, PointerEvent, useEffect, useMemo, useRef, useState } from "react";
+import { ProductCard, ProductCardData } from "./components/ProductCard";
 
 type Screen =
   | "home"
@@ -96,8 +97,33 @@ const spriteIcons: Record<string, { screen: string; x: number; y: number; width:
   ai: { screen: "history", x: 37, y: 576, width: 39, height: 39 }
 };
 
-const products = [
-  { id: 1, image: `${ASSET}/result-1.png`, price: 3328 },
+type ProductResult = {
+  id: number;
+  image?: string;
+  price: number;
+  data?: ProductCardData;
+};
+
+const nikeAirForceOne: ProductCardData = {
+  id: 1,
+  productName: "Nike Air Force 1 '07",
+  platform: "Shopee",
+  price: 4300,
+  discountPrice: 3594,
+  percent: 16,
+  rating: 5,
+  sold: 56,
+  freeShip: true,
+  mall: true,
+  imageUrl: "https://drive.google.com/uc?export=view&id=1_KjhSWjJJiIIVQTt9jfFOzXhslK0Z8-_",
+  productUrl: "https://shopee.co.th/product/1676687866/56408537514",
+  averagePrice: 3437.33,
+  trendLabel: "เพิ่มจากค่าเฉลี่ย",
+  trendPercent: 5
+};
+
+const products: ProductResult[] = [
+  { id: 1, price: nikeAirForceOne.discountPrice, data: nikeAirForceOne },
   { id: 2, image: `${ASSET}/result-2.png`, price: 3594 },
   { id: 3, image: `${ASSET}/result-3.png`, price: 3390 },
   { id: 4, image: `${ASSET}/result-4.png`, price: 3750 },
@@ -431,7 +457,11 @@ function ResultsScreen({
               type="button"
               aria-pressed={isSelected}
             >
-              <img src={product.image} alt={`สินค้าราคา ${product.price.toLocaleString()} บาท`} />
+              {product.data ? (
+                <ProductCard product={product.data} />
+              ) : (
+                <img src={product.image} alt={`สินค้าราคา ${product.price.toLocaleString()} บาท`} />
+              )}
               {isSelected && <span className="selected-ring" />}
             </button>
           );
