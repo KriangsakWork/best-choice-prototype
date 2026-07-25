@@ -243,49 +243,16 @@ img {
   position: absolute;
   z-index: 4;
   inset: -1px;
-  overflow: hidden;
-  padding: 2px;
-  border-radius: inherit;
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
+  overflow: visible;
   pointer-events: none;
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask-composite: exclude;
 }
 
-.search-gradient-border > span {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 440px;
-  height: 440px;
-  background: conic-gradient(
-    from 0deg,
-    #eb3b0c 0deg,
-    #fd7d32 48deg,
-    #ff9860 82deg,
-    #ffad52 108deg,
-    #ffc45e 134deg,
-    #ffd477 150deg,
-    #ffc45e 168deg,
-    #ffad52 192deg,
-    #ff7644 216deg,
-    #eb3b0c 242deg,
-    #ff8f51 270deg,
-    #ffad52 294deg,
-    #ffc45e 316deg,
-    #ffd477 328deg,
-    #ffc45e 340deg,
-    #ff9a4d 352deg,
-    #eb3b0c 360deg
-  );
-  transform: translate(-50%, -50%) rotate(0deg);
-  transform-origin: center;
-  animation: search-gradient-spin 5.6s linear infinite;
+.search-gradient-segment {
+  stroke-linecap: butt;
+  stroke-dashoffset: var(--segment-offset);
+  animation: search-gradient-flow 5.6s linear infinite;
 }
 
 .search-field > *:not(.search-gradient-border) {
@@ -293,8 +260,9 @@ img {
   z-index: 1;
 }
 
-@keyframes search-gradient-spin {
-  to { transform: translate(-50%, -50%) rotate(360deg); }
+@keyframes search-gradient-flow {
+  from { stroke-dashoffset: var(--segment-offset); }
+  to { stroke-dashoffset: calc(var(--segment-offset) - 100); }
 }
 
 .search-button {
@@ -1107,7 +1075,7 @@ img {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .search-gradient-border > span {
+  .search-gradient-segment {
     animation: none !important;
   }
 
