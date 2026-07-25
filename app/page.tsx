@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, PointerEvent, useEffect, useMemo, useRef, useState } from "react";
+import { CSSProperties, FormEvent, PointerEvent, useEffect, useMemo, useRef, useState } from "react";
 
 type Screen =
   | "home"
@@ -21,6 +21,9 @@ type Period = "7 วัน" | "30 วัน" | "2 เดือน" | "3 เด�
 
 const ASSET = "/assets";
 const SCREENSHOT = `${ASSET}/screens`;
+const PROTOTYPE_WIDTH = 402;
+const PROTOTYPE_HEIGHT = 874;
+const MOBILE_STATUS_BAR_CROP = 50;
 const SEARCH_GRADIENT_SEGMENTS = 192;
 
 function mixColor(start: [number, number, number], end: [number, number, number], amount: number) {
@@ -48,6 +51,36 @@ function usePrefersReducedMotion() {
   }, []);
 
   return prefersReducedMotion;
+}
+
+function usePrototypeScale() {
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const viewport = window.visualViewport;
+
+    const updateScale = () => {
+      const viewportWidth = viewport?.width ?? window.innerWidth;
+      const nextScale = viewportWidth <= 820
+        ? Math.min(viewportWidth / PROTOTYPE_WIDTH, 1)
+        : 1;
+
+      setScale((currentScale) =>
+        Math.abs(currentScale - nextScale) < 0.001 ? currentScale : nextScale
+      );
+    };
+
+    updateScale();
+    window.addEventListener("resize", updateScale);
+    viewport?.addEventListener("resize", updateScale);
+
+    return () => {
+      window.removeEventListener("resize", updateScale);
+      viewport?.removeEventListener("resize", updateScale);
+    };
+  }, []);
+
+  return scale;
 }
 
 const spriteIcons: Record<string, { screen: string; x: number; y: number; width: number; height: number }> = {
@@ -669,36 +702,45 @@ export default function BestChoiceApp() {
   const [screen, setScreen] = useState<Screen>("home");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<number[]>([]);
+  const prototypeScale = usePrototypeScale();
+  const prototypeStyle = {
+    "--prototype-scale": prototypeScale,
+    "--prototype-scaled-width": `${PROTOTYPE_WIDTH * prototypeScale}px`,
+    "--prototype-scaled-height": `${(PROTOTYPE_HEIGHT - MOBILE_STATUS_BAR_CROP) * prototypeScale}px`,
+    "--prototype-mobile-offset": `${-MOBILE_STATUS_BAR_CROP * prototypeScale}px`
+  } as CSSProperties;
 
   const go = (next: Screen) => setScreen(next);
 
   return (
-    <main className="prototype-stage">
-      <div className="phone-shell">
-        {screen === "home" && <HomeScreen go={go} query={query} setQuery={setQuery} />}
-        {screen === "search" && <SearchScreen go={go} query={query} setQuery={setQuery} />}
-        {screen === "results" && (
-          <ResultsScreen
-            go={go}
-            query={query || "รองเท้าวิ่ง Nike"}
-            setQuery={setQuery}
-            selected={selected}
-            setSelected={setSelected}
-          />
-        )}
-        {screen === "compare" && <CompareScreen go={go} selected={selected} />}
-        {screen === "history" && <HistoryScreen go={go} />}
-        {[
-          "total-save",
-          "profile",
-          "interest",
-          "interest-confirm",
-          "interest-removed",
-          "interest-empty",
-          "no-results",
-          "interest-last",
-          "interest-last-confirm"
-        ].includes(screen) && <ReferenceScreen screen={screen} go={go} />}
+    <main className="prototype-stage" style={prototypeStyle}>
+      <div className="phone-viewport">
+        <div className="phone-shell">
+          {screen === "home" && <HomeScreen go={go} query={query} setQuery={setQuery} />}
+          {screen === "search" && <SearchScreen go={go} query={query} setQuery={setQuery} />}
+          {screen === "results" && (
+            <ResultsScreen
+              go={go}
+              query={query || "รองเท้าวิ่ง Nike"}
+              setQuery={setQuery}
+              selected={selected}
+              setSelected={setSelected}
+            />
+          )}
+          {screen === "compare" && <CompareScreen go={go} selected={selected} />}
+          {screen === "history" && <HistoryScreen go={go} />}
+          {[
+            "total-save",
+            "profile",
+            "interest",
+            "interest-confirm",
+            "interest-removed",
+            "interest-empty",
+            "no-results",
+            "interest-last",
+            "interest-last-confirm"
+          ].includes(screen) && <ReferenceScreen screen={screen} go={go} />}
+        </div>
       </div>
       <aside className="demo-note">
         <span>FIGMA-MATCHED PROTOTYPE</span>
