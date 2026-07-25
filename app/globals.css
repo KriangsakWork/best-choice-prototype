@@ -241,61 +241,47 @@ img {
     0 4px 20px rgba(235, 59, 12, .14);
 }
 
-.search-page-field .search-field.active::before {
-  content: "";
+.search-border-light {
   position: absolute;
-  z-index: 3;
-  top: 0;
-  left: 0;
-  width: 58px;
-  height: 6px;
-  border-radius: 999px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 151, 119, .9) 24%,
-    #fff 48%,
-    #ff3a13 68%,
-    transparent
-  );
-  box-shadow:
-    0 0 5px #fff,
-    0 0 9px rgba(255, 58, 19, .95),
-    0 0 18px rgba(255, 58, 19, .58);
-  offset-path: path("M 25 1 H 346 A 24 24 0 0 1 370 25 A 24 24 0 0 1 346 49 H 25 A 24 24 0 0 1 1 25 A 24 24 0 0 1 25 1 Z");
-  offset-distance: 0%;
-  offset-anchor: center;
-  offset-rotate: auto;
+  z-index: 4;
+  inset: -2px;
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  overflow: visible;
   pointer-events: none;
-  animation: search-light-orbit 2s linear infinite;
 }
 
-.search-page-field .search-field.active::after {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  inset: -3px;
-  border-radius: inherit;
-  border: 2px solid rgba(255, 89, 45, .28);
-  box-shadow:
-    0 0 10px rgba(255, 58, 19, .28),
-    inset 0 0 7px rgba(255, 58, 19, .11);
-  pointer-events: none;
-  animation: search-border-breathe 1.2s ease-in-out infinite alternate;
+.search-border-light rect {
+  fill: none;
+  stroke-dasharray: .14 .86;
+  stroke-dashoffset: 0;
+  stroke-linecap: round;
+  animation: search-light-orbit 1.85s linear infinite;
 }
 
-.search-page-field .search-field.active > * {
+.search-border-light-glow {
+  stroke: var(--primary-bright);
+  stroke-width: 8;
+  opacity: .38;
+  filter: blur(3px);
+}
+
+.search-border-light-core {
+  stroke: #fff;
+  stroke-width: 3;
+  filter:
+    drop-shadow(0 0 2px #fff)
+    drop-shadow(0 0 4px #ff3a13)
+    drop-shadow(0 0 7px rgba(255, 58, 19, .8));
+}
+
+.search-field > *:not(.search-border-light) {
   position: relative;
   z-index: 1;
 }
 
 @keyframes search-light-orbit {
-  to { offset-distance: 100%; }
-}
-
-@keyframes search-border-breathe {
-  from { opacity: .5; }
-  to { opacity: 1; }
+  to { stroke-dashoffset: -1; }
 }
 
 .search-button {
@@ -1108,8 +1094,7 @@ img {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .search-page-field .search-field.active::before,
-  .search-page-field .search-field.active::after {
+  .search-border-light rect {
     animation: none !important;
   }
 

@@ -115,7 +115,8 @@ function SearchField({
   onSubmit,
   onFocus,
   active = false,
-  autoFocus = false
+  autoFocus = false,
+  showLight = false
 }: {
   value: string;
   onChange: (value: string) => void;
@@ -123,6 +124,7 @@ function SearchField({
   onFocus?: () => void;
   active?: boolean;
   autoFocus?: boolean;
+  showLight?: boolean;
 }) {
   const submit = (event: FormEvent) => {
     event.preventDefault();
@@ -131,6 +133,33 @@ function SearchField({
 
   return (
     <form className={`search-field ${active ? "active" : ""}`} onSubmit={submit}>
+      {showLight && (
+        <svg
+          className="search-border-light"
+          viewBox="0 0 371 50"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <rect
+            className="search-border-light-glow"
+            x="1.5"
+            y="1.5"
+            width="368"
+            height="47"
+            rx="23.5"
+            pathLength="1"
+          />
+          <rect
+            className="search-border-light-core"
+            x="1.5"
+            y="1.5"
+            width="368"
+            height="47"
+            rx="23.5"
+            pathLength="1"
+          />
+        </svg>
+      )}
       <button className="search-button" type="submit" aria-label="ค้นหา">
         <Icon name={active ? "search-active" : "search"} />
       </button>
@@ -217,7 +246,7 @@ function SearchScreen({ go, query, setQuery }: { go: (screen: Screen) => void; q
     <section className="screen search-screen">
       <StatusBar />
       <div className="search-page-field">
-        <SearchField value={query} onChange={setQuery} onSubmit={submit} active autoFocus />
+        <SearchField value={query} onChange={setQuery} onSubmit={submit} active autoFocus showLight />
       </div>
       <main className="search-content">
         <h2>สินค้าแนะนำ</h2>
