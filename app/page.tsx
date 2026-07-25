@@ -2,7 +2,21 @@
 
 import { FormEvent, PointerEvent, useMemo, useRef, useState } from "react";
 
-type Screen = "home" | "search" | "results" | "compare" | "history";
+type Screen =
+  | "home"
+  | "search"
+  | "results"
+  | "compare"
+  | "history"
+  | "total-save"
+  | "profile"
+  | "interest"
+  | "interest-confirm"
+  | "interest-removed"
+  | "interest-empty"
+  | "no-results"
+  | "interest-last"
+  | "interest-last-confirm";
 type Period = "7 วัน" | "30 วัน" | "2 เดือน" | "3 เดือน";
 
 const ASSET = "/assets";
@@ -73,9 +87,9 @@ function StatusBar() {
 function BottomNav({ active, go }: { active?: string; go: (screen: Screen) => void }) {
   const items = [
     { key: "home", label: "หน้าหลัก", screen: "home" as Screen },
-    { key: "interest", label: "สนใจ", screen: "results" as Screen },
-    { key: "savings", label: "ประหยัด", screen: "history" as Screen },
-    { key: "profile", label: "โปรไฟล์", screen: "home" as Screen }
+    { key: "interest", label: "สนใจ", screen: "interest" as Screen },
+    { key: "savings", label: "ประหยัด", screen: "total-save" as Screen },
+    { key: "profile", label: "โปรไฟล์", screen: "profile" as Screen }
   ];
 
   return (
@@ -161,7 +175,7 @@ function HomeScreen({ go, query, setQuery }: { go: (screen: Screen) => void; que
           onSubmit={() => go("results")}
         />
       </div>
-      <button className="savings-hero" onClick={() => go("history")} type="button">
+      <button className="savings-hero" onClick={() => go("total-save")} type="button">
         <img src={`${ASSET}/home-savings.png`} alt="ยอดประหยัดรวม 10,250 บาท" />
       </button>
       <main className="home-content">
@@ -272,7 +286,14 @@ function ResultsScreen({
             <button
               key={filter}
               className={filters.includes(filter) ? "selected" : ""}
-              onClick={() => setFilters(filters.includes(filter) ? filters.filter((item) => item !== filter) : [...filters, filter])}
+              onClick={() => {
+                if (filter === "ราคาถูก" && !filters.includes(filter)) {
+                  setFilters([...filters, filter]);
+                  go("no-results");
+                  return;
+                }
+                setFilters(filters.includes(filter) ? filters.filter((item) => item !== filter) : [...filters, filter]);
+              }}
               type="button"
             >
               {filter}
@@ -474,6 +495,91 @@ function HistoryScreen({ go }: { go: (screen: Screen) => void }) {
   );
 }
 
+type ReferenceAction = {
+  label: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  target: Screen;
+};
+
+const referenceActions: Partial<Record<Screen, ReferenceAction[]>> = {
+  "total-save": [
+    { label: "ย้อนกลับ", x: 12, y: 50, width: 48, height: 52, target: "home" }
+  ],
+  interest: [
+    { label: "นำสินค้าชิ้นแรกออก", x: 157, y: 178, width: 40, height: 40, target: "interest-confirm" }
+  ],
+  "interest-confirm": [
+    { label: "ยกเลิก", x: 16, y: 780, width: 176, height: 50, target: "interest" },
+    { label: "ยืนยันนำออก", x: 210, y: 780, width: 176, height: 50, target: "interest-removed" }
+  ],
+  "interest-removed": [
+    { label: "เลิกทำ", x: 304, y: 732, width: 82, height: 54, target: "interest" },
+    { label: "ดูสถานะรายการสุดท้าย", x: 157, y: 178, width: 40, height: 40, target: "interest-last" }
+  ],
+  "interest-last": [
+    { label: "นำสินค้าชิ้นสุดท้ายออก", x: 157, y: 178, width: 40, height: 40, target: "interest-last-confirm" }
+  ],
+  "interest-last-confirm": [
+    { label: "ยกเลิก", x: 16, y: 780, width: 176, height: 50, target: "interest-last" },
+    { label: "ยืนยันนำออก", x: 210, y: 780, width: 176, height: 50, target: "interest-empty" }
+  ],
+  "interest-empty": [
+    { label: "เริ่มค้นหาสินค้า", x: 91, y: 450, width: 220, height: 50, target: "search" }
+  ],
+  "no-results": [
+    { label: "แก้ไขคำค้นหา", x: 18, y: 66, width: 331, height: 50, target: "search" },
+    { label: "ล้างตัวกรอง", x: 106, y: 502, width: 190, height: 50, target: "results" }
+  ]
+};
+
+const referenceLabels: Partial<Record<Screen, string>> = {
+  "total-save": "สรุปยอดประหยัดทั้งหมด",
+  profile: "โปรไฟล์",
+  interest: "สินค้าที่สนใจ 12 รายการ",
+  "interest-confirm": "ยืนยันนำสินค้าออกจากรายการสนใจ",
+  "interest-removed": "นำสินค้าออกแล้ว พร้อมปุ่มเลิกทำ",
+  "interest-empty": "ยังไม่มีสินค้าที่สนใจ",
+  "no-results": "ไม่พบผลลัพธ์",
+  "interest-last": "สินค้าที่สนใจรายการสุดท้าย",
+  "interest-last-confirm": "ยืนยันนำสินค้ารายการสุดท้ายออก"
+};
+
+function ReferenceScreen({ screen, go }: { screen: Screen; go: (screen: Screen) => void }) {
+  const modalOpen = screen === "interest-confirm" || screen === "interest-last-confirm";
+  const nav = [
+    { label: "หน้าหลัก", target: "home" as Screen },
+    { label: "สนใจ", target: "interest" as Screen },
+    { label: "ประหยัด", target: "total-save" as Screen },
+    { label: "โปรไฟล์", target: "profile" as Screen }
+  ];
+
+  return (
+    <section className={`screen reference-screen reference-${screen}`} aria-label={referenceLabels[screen]}>
+      <img src={`${SCREENSHOT}/${screen}.png`} alt={referenceLabels[screen] || ""} />
+      {(referenceActions[screen] || []).map((action) => (
+        <button
+          key={action.label}
+          className="reference-hotspot"
+          style={{ left: action.x, top: action.y, width: action.width, height: action.height }}
+          type="button"
+          aria-label={action.label}
+          onClick={() => go(action.target)}
+        />
+      ))}
+      {!modalOpen && (
+        <nav className="reference-nav" aria-label="เมนูหลัก">
+          {nav.map((item) => (
+            <button key={item.label} type="button" aria-label={item.label} onClick={() => go(item.target)} />
+          ))}
+        </nav>
+      )}
+    </section>
+  );
+}
+
 export default function BestChoiceApp() {
   const [screen, setScreen] = useState<Screen>("home");
   const [query, setQuery] = useState("");
@@ -497,11 +603,22 @@ export default function BestChoiceApp() {
         )}
         {screen === "compare" && <CompareScreen go={go} selected={selected} />}
         {screen === "history" && <HistoryScreen go={go} />}
+        {[
+          "total-save",
+          "profile",
+          "interest",
+          "interest-confirm",
+          "interest-removed",
+          "interest-empty",
+          "no-results",
+          "interest-last",
+          "interest-last-confirm"
+        ].includes(screen) && <ReferenceScreen screen={screen} go={go} />}
       </div>
       <aside className="demo-note">
         <span>FIGMA-MATCHED PROTOTYPE</span>
         <h2>Best Choice</h2>
-        <p>พิมพ์ค้นหา เลือกสินค้าอย่างน้อย 2 รายการ แล้วลากดูประวัติราคาได้จริง</p>
+        <p>ค้นหา เปรียบเทียบ ลากดูกราฟ และทดลองลบสินค้าในรายการสนใจได้ครบทั้ง loop</p>
         <button onClick={() => { setScreen("home"); setQuery(""); setSelected([]); }} type="button">เริ่ม Demo ใหม่</button>
       </aside>
     </main>

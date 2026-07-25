@@ -78,6 +78,62 @@ img {
   animation: screen-in .24s cubic-bezier(.22, 1, .36, 1);
 }
 
+.reference-screen {
+  background: #fff;
+}
+
+.reference-screen > img {
+  position: absolute;
+  inset: 0;
+  width: 402px;
+  height: 874px;
+  max-width: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+.reference-hotspot {
+  position: absolute;
+  z-index: 12;
+  border-radius: 12px;
+}
+
+.reference-hotspot:focus-visible,
+.reference-nav button:focus-visible {
+  outline: 3px solid rgba(235, 59, 12, .48);
+  outline-offset: -3px;
+}
+
+.reference-hotspot:active,
+.reference-nav button:active {
+  background: rgba(235, 59, 12, .07);
+}
+
+.reference-nav {
+  position: absolute;
+  z-index: 10;
+  bottom: 0;
+  left: 0;
+  width: 402px;
+  height: 77px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.reference-nav button {
+  width: 100%;
+  height: 100%;
+}
+
+.reference-total-save > img {
+  animation: total-save-enter .55s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+@keyframes total-save-enter {
+  from { opacity: .35; transform: translateY(7px) scale(.995); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 .sprite-icon {
   position: relative;
   display: block;
