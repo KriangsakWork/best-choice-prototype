@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, PointerEvent, useMemo, useRef, useState } from "react";
 
 type Screen = "home" | "search" | "results" | "compare" | "history";
 type Period = "7 วัน" | "30 วัน" | "2 เดือน" | "3 เดือน";
@@ -285,29 +285,115 @@ function PriceChart({ period }: { period: Period }) {
   const data = chartData[period];
   const min = Math.min(...data);
   const max = Math.max(...data);
-  const points = data.map((value, index) => {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const chartPoints = data.map((value, index) => {
     const x = 8 + (index / (data.length - 1)) * 304;
     const y = 90 - ((value - min) / Math.max(1, max - min)) * 56;
-    return `${x},${y}`;
-  }).join(" ");
+    return { x, y, value };
+  });
+  const points = chartPoints.map(({ x, y }) => `${x},${y}`).join(" ");
+  const linePath = chartPoints.map(({ x, y }, index) => `${index ? "L" : "M"} ${x} ${y}`).join(" ");
+  const areaPath = `${linePath} L 312 104 L 8 104 Z`;
+  const selectedPoint = chartPoints[activeIndex ?? chartPoints.length - 1];
+  const updateSelectedPoint = (event: PointerEvent<SVGSVGElement>) => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const bounds = svg.getBoundingClientRect();
+    const viewBoxX = ((event.clientX - bounds.left) / bounds.width) * 328;
+    const nearest = chartPoints.reduce((best, point, index) => (
+      Math.abs(point.x - viewBoxX) < Math.abs(chartPoints[best].x - viewBoxX) ? index : best
+    ), 0);
+    setActiveIndex(nearest);
+  };
+  const beginDrag = (event: PointerEvent<SVGSVGElement>) => {
+    setDragging(true);
+    event.currentTarget.setPointerCapture(event.pointerId);
+    updateSelectedPoint(event);
+  };
+  const endDrag = (event: PointerEvent<SVGSVGElement>) => {
+    setDragging(false);
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  };
   return (
     <div className="chart-wrap">
       <div className="chart-summary">
-        <strong>฿{data[data.length - 1].toLocaleString()}</strong>
+        <strong key={`${period}-${activeIndex ?? "latest"}`}>฿{selectedPoint.value.toLocaleString()}</strong>
         <span>-20%</span>
-        <em>ถูกสุดในรอบ 90 วัน</em>
+        <em>{activeIndex === null ? "ถูกสุดในรอบ 90 วัน" : `จุดที่ ${activeIndex + 1} จาก ${data.length}`}</em>
       </div>
-      <svg viewBox="0 0 328 118" role="img" aria-label={`กราฟราคา ${period}`}>
+      <svg
+        ref={svgRef}
+        className={dragging ? "is-dragging" : ""}
+        viewBox="0 0 328 118"
+        role="img"
+        aria-label={`กราฟราคา ${period} ลากเพื่อดูราคาแต่ละช่วง`}
+        onPointerDown={beginDrag}
+        onPointerMove={(event) => {
+          if (dragging || event.pointerType === "mouse") updateSelectedPoint(event);
+        }}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        onPointerLeave={() => {
+          if (!dragging) setActiveIndex(null);
+        }}
+      >
         <defs>
           <linearGradient id="priceFill" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#ff9c82" stopOpacity=".45" />
             <stop offset="100%" stopColor="#fff" stopOpacity=".05" />
           </linearGradient>
+          <clipPath id="chartReveal">
+            <rect className="chart-reveal-clip" x="0" y="0" width="328" height="118" />
+          </clipPath>
         </defs>
-        <polygon points={`8,104 ${points} 312,104`} fill="url(#priceFill)" />
-        <polyline points={points} fill="none" stroke="#eb3b0c" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-        <circle cx="312" cy={points.split(" ").at(-1)?.split(",")[1]} r="7" fill="#eb3b0c" stroke="white" strokeWidth="2" />
+        <g clipPath="url(#chartReveal)">
+          <path className="chart-area" d={areaPath} fill="url(#priceFill)" />
+        </g>
+        <path
+          className="chart-line"
+          d={linePath}
+          pathLength="1"
+          fill="none"
+          stroke="#eb3b0c"
+          strokeWidth="3"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        {activeIndex !== null && (
+          <g className="chart-cursor">
+            <line x1={selectedPoint.x} y1="18" x2={selectedPoint.x} y2="104" />
+            <rect
+              x={Math.min(252, Math.max(4, selectedPoint.x - 36))}
+              y={Math.max(3, selectedPoint.y - 29)}
+              width="72"
+              height="23"
+              rx="8"
+            />
+            <text
+              x={Math.min(288, Math.max(40, selectedPoint.x))}
+              y={Math.max(19, selectedPoint.y - 14)}
+              textAnchor="middle"
+            >
+              ฿{selectedPoint.value.toLocaleString()}
+            </text>
+          </g>
+        )}
+        <circle
+          className="chart-current-dot"
+          cx={selectedPoint.x}
+          cy={selectedPoint.y}
+          r="7"
+          fill="#eb3b0c"
+          stroke="white"
+          strokeWidth="2"
+        />
+        <polyline points={points} fill="none" stroke="transparent" strokeWidth="18" />
       </svg>
+      <p className="chart-hint">แตะหรือลากบนกราฟเพื่อดูราคาแต่ละช่วง</p>
       <div className="chart-labels"><span>เม.ย.</span><span>พ.ค.</span><span>มิ.ย.</span><span>ก.ค.</span></div>
     </div>
   );
@@ -332,7 +418,7 @@ function HistoryScreen({ go }: { go: (s: Screen) => void }) {
             <button key={item} className={period === item ? "active" : ""} onClick={() => setPeriod(item)} type="button" role="tab">{item}</button>
           ))}
         </div>
-        <PriceChart period={period} />
+        <PriceChart key={period} period={period} />
         <div className="ai-card">
           <span>✦</span>
           <div>
