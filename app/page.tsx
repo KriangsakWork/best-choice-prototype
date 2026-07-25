@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, PointerEvent, useMemo, useRef, useState } from "react";
+import { CSSProperties, FormEvent, PointerEvent, useMemo, useRef, useState } from "react";
 
 type Screen =
   | "home"
@@ -21,6 +21,19 @@ type Period = "7 วัน" | "30 วัน" | "2 เดือน" | "3 เด�
 
 const ASSET = "/assets";
 const SCREENSHOT = `${ASSET}/screens`;
+const SEARCH_GRADIENT_SEGMENTS = 192;
+
+function mixColor(start: [number, number, number], end: [number, number, number], amount: number) {
+  const channel = (index: number) => Math.round(start[index] + (end[index] - start[index]) * amount);
+  return `rgb(${channel(0)} ${channel(1)} ${channel(2)})`;
+}
+
+function searchGradientColor(position: number) {
+  const primary: [number, number, number] = [235, 59, 12];
+  const goldOrange: [number, number, number] = [255, 202, 104];
+  const blend = (1 - Math.cos(position * Math.PI * 2)) / 2;
+  return mixColor(primary, goldOrange, blend);
+}
 
 const spriteIcons: Record<string, { screen: string; x: number; y: number; width: number; height: number }> = {
   search: { screen: "home", x: 27, y: 76, width: 32, height: 32 },
@@ -109,6 +122,42 @@ function BottomNav({ active, go }: { active?: string; go: (screen: Screen) => vo
   );
 }
 
+function SearchGradientBorder() {
+  const segmentLength = 100 / SEARCH_GRADIENT_SEGMENTS + 0.08;
+
+  return (
+    <svg
+      className="search-gradient-border"
+      viewBox="0 0 373 52"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+      focusable="false"
+    >
+      {Array.from({ length: SEARCH_GRADIENT_SEGMENTS }, (_, index) => {
+        const offset = -(index * 100) / SEARCH_GRADIENT_SEGMENTS;
+
+        return (
+          <rect
+            key={index}
+            className="search-gradient-segment"
+            x="1"
+            y="1"
+            width="371"
+            height="50"
+            rx="25"
+            pathLength="100"
+            fill="none"
+            stroke={searchGradientColor(index / SEARCH_GRADIENT_SEGMENTS)}
+            strokeWidth="2"
+            strokeDasharray={`${segmentLength} ${100 - segmentLength}`}
+            style={{ "--segment-offset": offset } as CSSProperties}
+          />
+        );
+      })}
+    </svg>
+  );
+}
+
 function SearchField({
   value,
   onChange,
@@ -133,11 +182,7 @@ function SearchField({
 
   return (
     <form className={`search-field ${active ? "active" : ""}`} onSubmit={submit}>
-      {showLight && (
-        <span className="search-gradient-border" aria-hidden="true">
-          <span />
-        </span>
-      )}
+      {showLight && <SearchGradientBorder />}
       <button className="search-button" type="submit" aria-label="ค้นหา">
         <Icon name={active ? "search-active" : "search"} />
       </button>
