@@ -5,47 +5,82 @@ import { FormEvent, PointerEvent, useMemo, useRef, useState } from "react";
 type Screen = "home" | "search" | "results" | "compare" | "history";
 type Period = "7 วัน" | "30 วัน" | "2 เดือน" | "3 เดือน";
 
+const ASSET = "/assets";
+const SCREENSHOT = `${ASSET}/screens`;
+
+const spriteIcons: Record<string, { screen: string; x: number; y: number; width: number; height: number }> = {
+  search: { screen: "home", x: 27, y: 76, width: 32, height: 32 },
+  "search-active": { screen: "search", x: 28, y: 76, width: 32, height: 32 },
+  camera: { screen: "home", x: 328, y: 80, width: 24, height: 24 },
+  mic: { screen: "home", x: 357, y: 80, width: 24, height: 24 },
+  close: { screen: "search", x: 356, y: 80, width: 24, height: 24 },
+  sort: { screen: "results", x: 357, y: 75, width: 32, height: 32 },
+  back: { screen: "history", x: 17, y: 60, width: 33, height: 33 },
+  heart: { screen: "history", x: 47, y: 701, width: 20, height: 20 },
+  bag: { screen: "history", x: 246, y: 701, width: 20, height: 20 },
+  ai: { screen: "history", x: 37, y: 576, width: 39, height: 39 }
+};
+
 const products = [
-  { id: 1, image: "/assets/result-1.png", name: "Nike Air Force 1 '07", price: 3328, oldPrice: 4300 },
-  { id: 2, image: "/assets/result-2.png", name: "Nike Air Force 1 '07", price: 3594, oldPrice: 4300 },
-  { id: 3, image: "/assets/result-3.png", name: "Nike Air Force 1 '07", price: 3390, oldPrice: 5290 },
-  { id: 4, image: "/assets/result-4.png", name: "Adidas Ultraboost Light", price: 3750, oldPrice: 7000 },
-  { id: 5, image: "/assets/result-1.png", name: "Nike Revolution 7", price: 2890, oldPrice: 3790 },
-  { id: 6, image: "/assets/result-4.png", name: "Nike Pegasus Trail", price: 4100, oldPrice: 5590 }
+  { id: 1, image: `${ASSET}/result-1.png`, price: 3328 },
+  { id: 2, image: `${ASSET}/result-2.png`, price: 3594 },
+  { id: 3, image: `${ASSET}/result-3.png`, price: 3390 },
+  { id: 4, image: `${ASSET}/result-4.png`, price: 3750 },
+  { id: 5, image: `${ASSET}/result-5.png`, price: 2890 },
+  { id: 6, image: `${ASSET}/result-6.png`, price: 4100 }
 ];
 
 const suggestions = [
-  { label: "รองเท้าวิ่ง Nike", trend: "+32%" },
-  { label: "รองเท้าผู้หญิง", trend: "+18%" },
-  { label: "รองเท้า Air Force", trend: "+11%" },
-  { label: "รองเท้าออกกำลังกาย", trend: "-6%" }
+  { label: "หมวกไหมพรม", trend: "+32%" },
+  { label: "หมวกคาวบอย", trend: "+18%" },
+  { label: "หมวกแก๊ป", trend: "-6%" },
+  { label: "หมวก", trend: "+11%" }
 ];
 
 const chartData: Record<Period, number[]> = {
-  "7 วัน": [6500, 6360, 6460, 6240, 6320, 6150, 6200, 5980],
-  "30 วัน": [6820, 6580, 6700, 6410, 6500, 6200, 6280, 5950],
-  "2 เดือน": [7100, 6920, 6800, 6550, 6660, 6370, 6120, 5900],
-  "3 เดือน": [7350, 7080, 6900, 6650, 6400, 6210, 6050, 5800]
+  "7 วัน": [6800, 6600, 6720, 6400, 6480, 6250, 6320, 5950],
+  "30 วัน": [7000, 6750, 6870, 6510, 6630, 6300, 6420, 5950],
+  "2 เดือน": [7200, 6990, 6820, 6580, 6700, 6410, 6200, 5950],
+  "3 เดือน": [7350, 7100, 6900, 6650, 6500, 6280, 6120, 5950]
 };
+
+function Icon({ name, className = "" }: { name: string; className?: string }) {
+  const sprite = spriteIcons[name];
+  if (!sprite) return null;
+  return (
+    <span
+      className={`sprite-icon ${className}`}
+      style={{ width: sprite.width, height: sprite.height }}
+      aria-hidden="true"
+    >
+      <img
+        src={`${SCREENSHOT}/${sprite.screen}.png`}
+        alt=""
+        style={{ left: -sprite.x, top: -sprite.y }}
+      />
+    </span>
+  );
+}
 
 function StatusBar() {
   return (
     <div className="status-bar" aria-hidden="true">
-      <strong>9:41</strong>
-      <span className="status-icons">▮▮▮ ︵ ▰</span>
+      <img src={`${SCREENSHOT}/home.png`} alt="" />
     </div>
   );
 }
 
-function BottomNav({ active, go }: { active: string; go: (screen: Screen) => void }) {
+function BottomNav({ active, go }: { active?: string; go: (screen: Screen) => void }) {
   const items = [
-    { key: "home", icon: "⌂", label: "หน้าหลัก", screen: "home" as Screen },
-    { key: "interest", icon: "♡", label: "สนใจ", screen: "results" as Screen },
-    { key: "savings", icon: "▥", label: "ประหยัด", screen: "history" as Screen },
-    { key: "profile", icon: "♙", label: "โปรไฟล์", screen: "home" as Screen }
+    { key: "home", label: "หน้าหลัก", screen: "home" as Screen },
+    { key: "interest", label: "สนใจ", screen: "results" as Screen },
+    { key: "savings", label: "ประหยัด", screen: "history" as Screen },
+    { key: "profile", label: "โปรไฟล์", screen: "home" as Screen }
   ];
+
   return (
     <nav className="bottom-nav" aria-label="เมนูหลัก">
+      <img className="nav-visual" src={`${SCREENSHOT}/${active === "home" ? "home" : "history"}.png`} alt="" aria-hidden="true" />
       {items.map((item) => (
         <button
           key={item.key}
@@ -53,11 +88,9 @@ function BottomNav({ active, go }: { active: string; go: (screen: Screen) => voi
           onClick={() => go(item.screen)}
           type="button"
         >
-          <span className="nav-icon">{item.icon}</span>
-          <span>{item.label}</span>
+          <span className="sr-only">{item.label}</span>
         </button>
       ))}
-      <span className="home-indicator" />
     </nav>
   );
 }
@@ -67,71 +100,80 @@ function SearchField({
   onChange,
   onSubmit,
   onFocus,
-  compact = false
+  active = false
 }: {
   value: string;
   onChange: (value: string) => void;
   onSubmit: () => void;
   onFocus?: () => void;
-  compact?: boolean;
+  active?: boolean;
 }) {
   const submit = (event: FormEvent) => {
     event.preventDefault();
     onSubmit();
   };
+
   return (
-    <form className={`search-field ${compact ? "compact" : ""}`} onSubmit={submit}>
-      <button className="search-orb" type="submit" aria-label="ค้นหา">
-        ⌕
+    <form className={`search-field ${active ? "active" : ""}`} onSubmit={submit}>
+      <button className="search-button" type="submit" aria-label="ค้นหา">
+        <Icon name={active ? "search-active" : "search"} />
       </button>
       <input
-        aria-label="ค้นหาสินค้า"
         value={value}
         onChange={(event) => onChange(event.target.value)}
         onFocus={onFocus}
-        placeholder="ค้นหาสินค้า"
+        placeholder={active ? "รองเท้า" : "ค้นหาสินค้า"}
+        aria-label="ค้นหาสินค้า"
       />
       {value ? (
-        <button className="clear-search" type="button" onClick={() => onChange("")} aria-label="ล้างคำค้น">
-          ×
+        <button className="clear-button" type="button" onClick={() => onChange("")} aria-label="ล้างคำค้น">
+          <Icon name="close" />
         </button>
       ) : (
-        <span className="search-tools" aria-hidden="true">⌾ ♩</span>
+        <div className="search-actions" aria-hidden="true">
+          <Icon name="camera" />
+          <Icon name="mic" />
+        </div>
       )}
     </form>
   );
 }
 
-function HeaderBack({ title, onBack }: { title: string; onBack: () => void }) {
+function Header({ title, onBack }: { title: string; onBack: () => void }) {
   return (
     <header className="page-header">
-      <button onClick={onBack} type="button" aria-label="ย้อนกลับ">←</button>
+      <button type="button" onClick={onBack} aria-label="ย้อนกลับ"><Icon name="back" /></button>
       <h1>{title}</h1>
       <span />
     </header>
   );
 }
 
-function HomeScreen({ go, query, setQuery }: { go: (s: Screen) => void; query: string; setQuery: (q: string) => void }) {
+function HomeScreen({ go, query, setQuery }: { go: (screen: Screen) => void; query: string; setQuery: (value: string) => void }) {
   return (
     <section className="screen home-screen">
       <StatusBar />
-      <div className="top-search">
-        <SearchField value={query} onChange={setQuery} onFocus={() => go("search")} onSubmit={() => go("results")} />
+      <div className="home-search">
+        <SearchField
+          value={query}
+          onChange={setQuery}
+          onFocus={() => go("search")}
+          onSubmit={() => go("results")}
+        />
       </div>
       <button className="savings-hero" onClick={() => go("history")} type="button">
-        <img src="/assets/home-savings.png" alt="ยอดประหยัดรวม 10,250 บาท" />
+        <img src={`${ASSET}/home-savings.png`} alt="ยอดประหยัดรวม 10,250 บาท" />
       </button>
-      <main className="home-scroll">
+      <main className="home-content">
         <h2>ค้นหาล่าสุด</h2>
         <div className="home-grid">
-          <button onClick={() => go("results")} type="button"><img src="/assets/home-card-1.png" alt="Nike Air Force 1" /></button>
-          <button onClick={() => go("results")} type="button"><img src="/assets/home-card-2.png" alt="Vans Old Skool" /></button>
+          <button onClick={() => go("results")} type="button"><img src={`${ASSET}/home-card-1.png`} alt="Nike Air Force 1" /></button>
+          <button onClick={() => go("results")} type="button"><img src={`${ASSET}/home-card-2.png`} alt="Vans Old Skool" /></button>
         </div>
         <h2>สินค้าแนะนำ</h2>
         <div className="home-grid">
-          <button onClick={() => go("results")} type="button"><img src="/assets/result-3.png" alt="Hoka Clifton" /></button>
-          <button onClick={() => go("results")} type="button"><img src="/assets/result-4.png" alt="Womenager shoes" /></button>
+          <button onClick={() => go("results")} type="button"><img src={`${ASSET}/result-3.png`} alt="รองเท้าแนะนำ" /></button>
+          <button onClick={() => go("results")} type="button"><img src={`${ASSET}/result-4.png`} alt="รองเท้าแนะนำ" /></button>
         </div>
       </main>
       <BottomNav active="home" go={go} />
@@ -139,43 +181,45 @@ function HomeScreen({ go, query, setQuery }: { go: (s: Screen) => void; query: s
   );
 }
 
-function SearchScreen({ go, query, setQuery }: { go: (s: Screen) => void; query: string; setQuery: (q: string) => void }) {
+function SearchScreen({ go, query, setQuery }: { go: (screen: Screen) => void; query: string; setQuery: (value: string) => void }) {
   const filtered = useMemo(
-    () => suggestions.filter((item) => item.label.toLowerCase().includes(query.toLowerCase())),
+    () => suggestions.filter((item) => item.label.includes(query.trim()) || !query.trim()),
     [query]
   );
-  const submitSearch = () => {
+
+  const submit = () => {
     if (!query.trim()) setQuery("รองเท้าวิ่ง Nike");
     go("results");
   };
+
   return (
     <section className="screen search-screen">
       <StatusBar />
-      <div className="top-search">
-        <SearchField value={query} onChange={setQuery} onSubmit={submitSearch} />
+      <div className="search-page-field">
+        <SearchField value={query} onChange={setQuery} onSubmit={submit} active />
       </div>
-      <main className="suggestion-scroll">
-        <h2>{query ? "คำค้นหาที่แนะนำ" : "สินค้าแนะนำ"}</h2>
-        <div className="suggestion-list">
-          {(query ? filtered : suggestions).map((item) => (
-            <button key={item.label} onClick={() => { setQuery(item.label); go("results"); }} type="button">
+      <main className="search-content">
+        <h2>สินค้าแนะนำ</h2>
+        <div className="suggestions">
+          {(filtered.length ? filtered : suggestions).map((item) => (
+            <button
+              key={item.label}
+              onClick={() => { setQuery(item.label); go("results"); }}
+              type="button"
+            >
               <span>{item.label}</span>
-              <small className={item.trend.startsWith("-") ? "down" : ""}>⌁ นิยม {item.trend}</small>
+              <small className={item.trend.startsWith("-") ? "down" : ""}>
+                <span aria-hidden="true">{item.trend.startsWith("-") ? "⌁" : "⌁"}</span> นิยม {item.trend}
+              </small>
             </button>
           ))}
-          {query && filtered.length === 0 && (
-            <div className="no-suggestion">
-              <strong>ยังไม่พบคำค้นนี้</strong>
-              <span>กด Enter เพื่อดูหน้าผลลัพธ์เปล่า</span>
-            </div>
-          )}
         </div>
-        <h2 className="recent-title">ค้นหาล่าสุด</h2>
+        <h2 className="recent-heading">ค้นหาล่าสุด</h2>
         <div className="recent-list">
           {[
-            ["รองเท้าวิ่ง", "/assets/search-recent-1.png"],
-            ["เลโก้", "/assets/search-recent-2.png"],
-            ["หมวก", "/assets/search-recent-3.png"]
+            ["รองเท้าวิ่ง", `${ASSET}/search-recent-1.png`],
+            ["เลโก้", `${ASSET}/search-recent-2.png`],
+            ["หมวก", `${ASSET}/search-recent-3.png`]
           ].map(([label, image]) => (
             <button key={label} onClick={() => { setQuery(label); go("results"); }} type="button">
               <span>{label}</span><img src={image} alt="" />
@@ -183,7 +227,7 @@ function SearchScreen({ go, query, setQuery }: { go: (s: Screen) => void; query:
           ))}
         </div>
       </main>
-      <BottomNav active="" go={go} />
+      <BottomNav go={go} />
     </section>
   );
 }
@@ -195,11 +239,11 @@ function ResultsScreen({
   selected,
   setSelected
 }: {
-  go: (s: Screen) => void;
+  go: (screen: Screen) => void;
   query: string;
-  setQuery: (q: string) => void;
+  setQuery: (value: string) => void;
   selected: number[];
-  setSelected: (ids: number[]) => void;
+  setSelected: (value: number[]) => void;
 }) {
   const [filters, setFilters] = useState(["ส่งฟรี"]);
   const [sortLow, setSortLow] = useState(false);
@@ -207,76 +251,81 @@ function ResultsScreen({
     () => sortLow ? [...products].sort((a, b) => a.price - b.price) : products,
     [sortLow]
   );
-  const toggleFilter = (filter: string) => {
-    setFilters((current) => current.includes(filter) ? current.filter((item) => item !== filter) : [...current, filter]);
-  };
+
   const toggleProduct = (id: number) => {
-    if (selected.includes(id)) {
-      setSelected(selected.filter((item) => item !== id));
-    } else if (selected.length < 3) {
-      setSelected([...selected, id]);
-    }
+    if (selected.includes(id)) setSelected(selected.filter((item) => item !== id));
+    else if (selected.length < 3) setSelected([...selected, id]);
   };
+
   return (
     <section className="screen results-screen">
       <StatusBar />
-      <div className="results-head">
+      <header className="results-header">
         <div className="results-search-row">
-          <SearchField value={query} onChange={setQuery} onSubmit={() => undefined} compact />
-          <button className={`sort-button ${sortLow ? "on" : ""}`} onClick={() => setSortLow(!sortLow)} type="button" aria-label="เรียงราคา">≡</button>
+          <SearchField value={query} onChange={setQuery} onSubmit={() => undefined} active />
+          <button className={sortLow ? "sort active" : "sort"} onClick={() => setSortLow(!sortLow)} type="button" aria-label="เรียงราคา">
+            <Icon name="sort" />
+          </button>
         </div>
         <div className="chips">
           {["Mall", "ส่งฟรี", "ราคาถูก"].map((filter) => (
-            <button key={filter} className={filters.includes(filter) ? "selected" : ""} onClick={() => toggleFilter(filter)} type="button">{filter}</button>
+            <button
+              key={filter}
+              className={filters.includes(filter) ? "selected" : ""}
+              onClick={() => setFilters(filters.includes(filter) ? filters.filter((item) => item !== filter) : [...filters, filter])}
+              type="button"
+            >
+              {filter}
+            </button>
           ))}
         </div>
-        <small>พบ {filters.length ? 989 - filters.length * 104 : 989} รายการ</small>
-      </div>
+        <small>พบ 989 รายการ</small>
+      </header>
       <main className="results-grid">
         {visibleProducts.map((product) => {
           const isSelected = selected.includes(product.id);
           return (
             <button
-              className={`result-card ${isSelected ? "selected" : ""}`}
+              className={isSelected ? "product-card selected" : "product-card"}
               key={product.id}
               onClick={() => toggleProduct(product.id)}
               type="button"
               aria-pressed={isSelected}
             >
-              <img src={product.image} alt={`${product.name} ราคา ${product.price} บาท`} />
-              <span className="selection-dot">{isSelected ? "✓" : "+"}</span>
+              <img src={product.image} alt={`สินค้าราคา ${product.price.toLocaleString()} บาท`} />
+              {isSelected && <span className="selected-ring" />}
             </button>
           );
         })}
       </main>
       <button
-        className={`compare-fab ${selected.length >= 2 ? "ready" : ""}`}
-        disabled={selected.length < 2}
-        onClick={() => go("compare")}
+        className={selected.length >= 2 ? "compare-button ready" : "compare-button"}
+        onClick={() => selected.length >= 2 && go("compare")}
         type="button"
+        aria-disabled={selected.length < 2}
       >
-        {selected.length >= 2 ? `เปรียบเทียบ ${selected.length} รายการ` : "เลือกอย่างน้อย 2 รายการ"}
+        เปรียบเทียบ
       </button>
-      <BottomNav active="" go={go} />
+      <BottomNav go={go} />
     </section>
   );
 }
 
-function CompareScreen({ go, selected }: { go: (s: Screen) => void; selected: number[] }) {
-  const count = Math.max(2, selected.length);
+function CompareScreen({ go, selected }: { go: (screen: Screen) => void; selected: number[] }) {
+  const count = Math.max(2, Math.min(3, selected.length));
+
   return (
     <section className="screen compare-screen">
       <StatusBar />
-      <HeaderBack title="ผลการเปรียบเทียบ" onBack={() => go("results")} />
-      <main className="compare-list">
-        {[0, 1, 2].slice(0, count).map((_, index) => (
-          <button key={index} className={`compare-card ${index === 0 ? "winner" : ""}`} onClick={() => go("history")} type="button">
-            <img src={`/assets/compare-${Math.min(index + 1, 3)}.png`} alt={`สินค้าที่เปรียบเทียบลำดับ ${index + 1}`} />
-            {index === 0 && <span className="winner-pill">คุ้มที่สุด</span>}
+      <Header title="ผลการเปรียบเทียบ" onBack={() => go("results")} />
+      <main className="compare-content">
+        {[1, 2, 3].slice(0, count).map((index) => (
+          <button key={index} className={`compare-card card-${index}`} onClick={() => go("history")} type="button">
+            <img src={`${ASSET}/compare-${index}.png`} alt={`ตัวเลือกที่ ${index}`} />
           </button>
         ))}
       </main>
-      <BottomNav active="" go={go} />
+      <BottomNav go={go} />
     </section>
   );
 }
@@ -288,149 +337,135 @@ function PriceChart({ period }: { period: Period }) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [dragging, setDragging] = useState(false);
-  const chartPoints = data.map((value, index) => {
-    const x = 8 + (index / (data.length - 1)) * 304;
-    const y = 90 - ((value - min) / Math.max(1, max - min)) * 56;
-    return { x, y, value };
-  });
-  const points = chartPoints.map(({ x, y }) => `${x},${y}`).join(" ");
-  const linePath = chartPoints.map(({ x, y }, index) => `${index ? "L" : "M"} ${x} ${y}`).join(" ");
-  const areaPath = `${linePath} L 312 104 L 8 104 Z`;
-  const selectedPoint = chartPoints[activeIndex ?? chartPoints.length - 1];
-  const updateSelectedPoint = (event: PointerEvent<SVGSVGElement>) => {
+  const chartPoints = data.map((value, index) => ({
+    value,
+    x: 8 + (index / (data.length - 1)) * 320,
+    y: 114 - ((value - min) / Math.max(1, max - min)) * 65
+  }));
+  const linePath = chartPoints.map((point, index) => `${index ? "L" : "M"} ${point.x} ${point.y}`).join(" ");
+  const areaPath = `${linePath} L 328 139 L 8 139 Z`;
+  const selectedIndex = activeIndex ?? chartPoints.length - 1;
+  const selectedPoint = chartPoints[selectedIndex];
+
+  const choosePoint = (event: PointerEvent<SVGSVGElement>) => {
     const svg = svgRef.current;
     if (!svg) return;
     const bounds = svg.getBoundingClientRect();
-    const viewBoxX = ((event.clientX - bounds.left) / bounds.width) * 328;
-    const nearest = chartPoints.reduce((best, point, index) => (
-      Math.abs(point.x - viewBoxX) < Math.abs(chartPoints[best].x - viewBoxX) ? index : best
-    ), 0);
+    const x = ((event.clientX - bounds.left) / bounds.width) * 344;
+    const nearest = chartPoints.reduce(
+      (best, point, index) => Math.abs(point.x - x) < Math.abs(chartPoints[best].x - x) ? index : best,
+      0
+    );
     setActiveIndex(nearest);
   };
-  const beginDrag = (event: PointerEvent<SVGSVGElement>) => {
-    setDragging(true);
-    event.currentTarget.setPointerCapture(event.pointerId);
-    updateSelectedPoint(event);
-  };
-  const endDrag = (event: PointerEvent<SVGSVGElement>) => {
-    setDragging(false);
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId);
-    }
-  };
+
   return (
-    <div className="chart-wrap">
-      <div className="chart-summary">
-        <strong key={`${period}-${activeIndex ?? "latest"}`}>฿{selectedPoint.value.toLocaleString()}</strong>
+    <div className="chart-card">
+      <div className="chart-head">
+        <strong>฿{selectedPoint.value.toLocaleString()}</strong>
         <span>-20%</span>
-        <em>{activeIndex === null ? "ถูกสุดในรอบ 90 วัน" : `จุดที่ ${activeIndex + 1} จาก ${data.length}`}</em>
+        <em>{activeIndex === null ? "ถูกสุดในรอบ 90 วัน" : `ราคา ณ จุดที่ ${selectedIndex + 1}`}</em>
       </div>
       <svg
         ref={svgRef}
-        className={dragging ? "is-dragging" : ""}
-        viewBox="0 0 328 118"
+        viewBox="0 0 344 150"
         role="img"
-        aria-label={`กราฟราคา ${period} ลากเพื่อดูราคาแต่ละช่วง`}
-        onPointerDown={beginDrag}
+        aria-label={`กราฟราคา ${period} แตะหรือลากเพื่อดูราคา`}
+        onPointerDown={(event) => {
+          setDragging(true);
+          event.currentTarget.setPointerCapture(event.pointerId);
+          choosePoint(event);
+        }}
         onPointerMove={(event) => {
-          if (dragging || event.pointerType === "mouse") updateSelectedPoint(event);
+          if (dragging || event.pointerType === "mouse") choosePoint(event);
         }}
-        onPointerUp={endDrag}
-        onPointerCancel={endDrag}
-        onPointerLeave={() => {
-          if (!dragging) setActiveIndex(null);
+        onPointerUp={(event) => {
+          setDragging(false);
+          if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
         }}
+        onPointerLeave={() => !dragging && setActiveIndex(null)}
       >
         <defs>
-          <linearGradient id="priceFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#ff9c82" stopOpacity=".45" />
-            <stop offset="100%" stopColor="#fff" stopOpacity=".05" />
+          <linearGradient id="price-fill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#ffb09c" stopOpacity=".56" />
+            <stop offset="100%" stopColor="#fff" stopOpacity=".08" />
           </linearGradient>
-          <clipPath id="chartReveal">
-            <rect className="chart-reveal-clip" x="0" y="0" width="328" height="118" />
+          <clipPath id="chart-reveal">
+            <rect className="chart-reveal" width="344" height="150" />
           </clipPath>
         </defs>
-        <g clipPath="url(#chartReveal)">
-          <path className="chart-area" d={areaPath} fill="url(#priceFill)" />
+        <g clipPath="url(#chart-reveal)">
+          <path className="chart-area" d={areaPath} fill="url(#price-fill)" />
         </g>
-        <path
-          className="chart-line"
-          d={linePath}
-          pathLength="1"
-          fill="none"
-          stroke="#eb3b0c"
-          strokeWidth="3"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        {activeIndex !== null && (
-          <g className="chart-cursor">
-            <line x1={selectedPoint.x} y1="18" x2={selectedPoint.x} y2="104" />
-            <rect
-              x={Math.min(252, Math.max(4, selectedPoint.x - 36))}
-              y={Math.max(3, selectedPoint.y - 29)}
-              width="72"
-              height="23"
-              rx="8"
-            />
-            <text
-              x={Math.min(288, Math.max(40, selectedPoint.x))}
-              y={Math.max(19, selectedPoint.y - 14)}
-              textAnchor="middle"
-            >
-              ฿{selectedPoint.value.toLocaleString()}
-            </text>
-          </g>
-        )}
-        <circle
-          className="chart-current-dot"
-          cx={selectedPoint.x}
-          cy={selectedPoint.y}
-          r="7"
-          fill="#eb3b0c"
-          stroke="white"
-          strokeWidth="2"
-        />
-        <polyline points={points} fill="none" stroke="transparent" strokeWidth="18" />
+        <path className="chart-line" pathLength="1" d={linePath} />
+        <text className="average-label" x="174" y="61" textAnchor="middle">ราคาเฉลี่ย</text>
+        <rect className="average-pill" x="149" y="66" width="50" height="20" rx="10" />
+        <text className="average-price" x="174" y="80" textAnchor="middle">฿6,150</text>
+        {activeIndex !== null && <line className="cursor-line" x1={selectedPoint.x} y1="45" x2={selectedPoint.x} y2="139" />}
+        <circle className="chart-dot" cx={selectedPoint.x} cy={selectedPoint.y} r="8" />
+        <g className="price-label" transform={`translate(${Math.min(286, Math.max(4, selectedPoint.x - 27))} ${Math.max(8, selectedPoint.y - 30)})`}>
+          <rect width="55" height="22" rx="11" />
+          <text x="27.5" y="15" textAnchor="middle">฿{selectedPoint.value.toLocaleString()}</text>
+        </g>
       </svg>
-      <p className="chart-hint">แตะหรือลากบนกราฟเพื่อดูราคาแต่ละช่วง</p>
-      <div className="chart-labels"><span>เม.ย.</span><span>พ.ค.</span><span>มิ.ย.</span><span>ก.ค.</span></div>
+      <div className="month-labels"><span>เม.ย.</span><span>พ.ค.</span><span>มิ.ย.</span><span>ก.ค.</span></div>
     </div>
   );
 }
 
-function HistoryScreen({ go }: { go: (s: Screen) => void }) {
+function HistoryScreen({ go }: { go: (screen: Screen) => void }) {
   const [period, setPeriod] = useState<Period>("7 วัน");
   const [favorite, setFavorite] = useState(false);
   const [toast, setToast] = useState("");
+
   const flash = (message: string) => {
     setToast(message);
     window.setTimeout(() => setToast(""), 1800);
   };
+
   return (
     <section className="screen history-screen">
       <StatusBar />
-      <HeaderBack title="ประวัติราคาล่าสุด" onBack={() => go("compare")} />
+      <Header title="ประวัติราคาล่าสุด" onBack={() => go("compare")} />
       <main className="history-content">
-        <img className="history-product" src="/assets/history-product.png" alt="รองเท้ากีฬา Nike ราคา 5,800 บาท" />
+        <img className="history-product" src={`${ASSET}/history-product.png`} alt="รองเท้ากีฬา Nike ราคา 5,800 บาท" />
         <div className="period-tabs" role="tablist" aria-label="ช่วงเวลา">
           {(Object.keys(chartData) as Period[]).map((item) => (
-            <button key={item} className={period === item ? "active" : ""} onClick={() => setPeriod(item)} type="button" role="tab">{item}</button>
+            <button
+              key={item}
+              className={period === item ? "active" : ""}
+              onClick={() => setPeriod(item)}
+              type="button"
+              role="tab"
+              aria-selected={period === item}
+            >
+              {item}
+            </button>
           ))}
         </div>
         <PriceChart key={period} period={period} />
         <div className="ai-card">
-          <span>✦</span>
+          <Icon name="ai" />
           <div>
-            <strong>ราคาดีที่สุดในรอบ 90 วัน! ✨</strong>
-            <p>ซื้อตอนนี้ประหยัดกว่าราคาเฉลี่ยถึง 350 บาท แนะนำให้ตัดสินใจซื้อเพื่อความคุ้มค่าสูงสุด</p>
+            <strong>ราคาดีที่สุดในรอบ 90 วัน!✨</strong>
+            <span />
+            <p>ซื้อตอนนี้ประหยัดกว่าราคาเฉลี่ยถึง 350 บาท แนะนำให้ตัดสินใจซื้อได้เลยเพื่อความคุ้มค่าสูงสุด</p>
           </div>
         </div>
-        <div className="history-actions">
-          <button className={favorite ? "favorited" : ""} onClick={() => { setFavorite(!favorite); flash(favorite ? "นำออกจากรายการโปรดแล้ว" : "บันทึกในรายการโปรดแล้ว"); }} type="button">
-            {favorite ? "♥" : "♡"} รายการโปรด
+        <div className="history-buttons">
+          <button
+            className={favorite ? "favorite active" : "favorite"}
+            onClick={() => {
+              setFavorite(!favorite);
+              flash(favorite ? "นำออกจากรายการโปรดแล้ว" : "บันทึกในรายการโปรดแล้ว");
+            }}
+            type="button"
+          >
+            <Icon name="heart" /> รายการโปรด
           </button>
-          <button onClick={() => flash("กำลังเปิดร้านค้าที่ราคาดีที่สุด")} type="button">▣ ซื้อเลย</button>
+          <button onClick={() => flash("กำลังเปิดร้านค้าที่ราคาดีที่สุด")} type="button">
+            <Icon name="bag" /> ซื้อเลย
+          </button>
         </div>
       </main>
       {toast && <div className="toast" role="status">{toast}</div>}
@@ -443,6 +478,7 @@ export default function BestChoiceApp() {
   const [screen, setScreen] = useState<Screen>("home");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<number[]>([]);
+
   const go = (next: Screen) => setScreen(next);
 
   return (
@@ -450,14 +486,22 @@ export default function BestChoiceApp() {
       <div className="phone-shell">
         {screen === "home" && <HomeScreen go={go} query={query} setQuery={setQuery} />}
         {screen === "search" && <SearchScreen go={go} query={query} setQuery={setQuery} />}
-        {screen === "results" && <ResultsScreen go={go} query={query || "รองเท้าวิ่ง Nike"} setQuery={setQuery} selected={selected} setSelected={setSelected} />}
+        {screen === "results" && (
+          <ResultsScreen
+            go={go}
+            query={query || "รองเท้าวิ่ง Nike"}
+            setQuery={setQuery}
+            selected={selected}
+            setSelected={setSelected}
+          />
+        )}
         {screen === "compare" && <CompareScreen go={go} selected={selected} />}
         {screen === "history" && <HistoryScreen go={go} />}
       </div>
       <aside className="demo-note">
-        <span>FUNCTIONAL PROTOTYPE</span>
+        <span>FIGMA-MATCHED PROTOTYPE</span>
         <h2>Best Choice</h2>
-        <p>ลองพิมพ์ค้นหา เลือกสินค้า 2–3 รายการ แล้วเปิดดูกราฟประวัติราคา</p>
+        <p>พิมพ์ค้นหา เลือกสินค้าอย่างน้อย 2 รายการ แล้วลากดูประวัติราคาได้จริง</p>
         <button onClick={() => { setScreen("home"); setQuery(""); setSelected([]); }} type="button">เริ่ม Demo ใหม่</button>
       </aside>
     </main>
