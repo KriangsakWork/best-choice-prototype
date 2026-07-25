@@ -134,31 +134,9 @@ function SearchField({
   return (
     <form className={`search-field ${active ? "active" : ""}`} onSubmit={submit}>
       {showLight && (
-        <svg
-          className="search-border-light"
-          viewBox="0 0 371 50"
-          preserveAspectRatio="none"
-          aria-hidden="true"
-        >
-          <rect
-            className="search-border-light-glow"
-            x="1.5"
-            y="1.5"
-            width="368"
-            height="47"
-            rx="23.5"
-            pathLength="1"
-          />
-          <rect
-            className="search-border-light-core"
-            x="1.5"
-            y="1.5"
-            width="368"
-            height="47"
-            rx="23.5"
-            pathLength="1"
-          />
-        </svg>
+        <span className="search-gradient-border" aria-hidden="true">
+          <span />
+        </span>
       )}
       <button className="search-button" type="submit" aria-label="ค้นหา">
         <Icon name={active ? "search-active" : "search"} />
