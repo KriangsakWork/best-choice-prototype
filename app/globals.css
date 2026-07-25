@@ -251,18 +251,11 @@ img {
 
 .search-gradient-segment {
   stroke-linecap: butt;
-  stroke-dashoffset: var(--segment-offset);
-  animation: search-gradient-flow 5.6s linear infinite;
 }
 
 .search-field > *:not(.search-gradient-border) {
   position: relative;
   z-index: 1;
-}
-
-@keyframes search-gradient-flow {
-  from { stroke-dashoffset: var(--segment-offset); }
-  to { stroke-dashoffset: calc(var(--segment-offset) - 100); }
 }
 
 .search-button {
@@ -1075,10 +1068,6 @@ img {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .search-gradient-segment {
-    animation: none !important;
-  }
-
   *,
   *::before,
   *::after {
