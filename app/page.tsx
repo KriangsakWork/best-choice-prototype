@@ -173,9 +173,13 @@ function HomeScreen({ go, query, setQuery }: { go: (screen: Screen) => void; que
       <div className="home-search">
         <SearchField
           value={query}
-          onChange={setQuery}
-          onFocus={() => go("search")}
-          onSubmit={() => go("search")}
+          onChange={(value) => {
+            setQuery(value);
+            if (value.length > 0) go("search");
+          }}
+          onSubmit={() => {
+            if (query.trim()) go("search");
+          }}
         />
       </div>
       <button className="savings-hero" onClick={() => go("total-save")} type="button">

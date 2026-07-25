@@ -235,65 +235,53 @@ img {
 }
 
 .search-page-field .search-field.active {
-  border-color: rgba(255, 58, 19, .38);
+  border-color: var(--primary-bright);
   box-shadow:
-    0 0 0 1px rgba(255, 58, 19, .06),
-    0 4px 18px rgba(235, 59, 12, .08);
+    0 0 0 1px rgba(255, 58, 19, .14),
+    0 4px 20px rgba(235, 59, 12, .14);
 }
 
 .search-page-field .search-field.active::before {
   content: "";
   position: absolute;
-  z-index: 0;
-  inset: -2px;
-  padding: 2px;
-  border-radius: inherit;
-  background: conic-gradient(
-    from var(--search-light-angle),
-    transparent 0deg 230deg,
-    rgba(255, 207, 191, .2) 252deg,
-    rgba(255, 137, 101, .8) 276deg,
-    #fff 294deg,
-    var(--primary-bright) 310deg,
-    transparent 336deg 360deg
+  z-index: 3;
+  top: 0;
+  left: 0;
+  width: 58px;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 151, 119, .9) 24%,
+    #fff 48%,
+    #ff3a13 68%,
+    transparent
   );
+  box-shadow:
+    0 0 5px #fff,
+    0 0 9px rgba(255, 58, 19, .95),
+    0 0 18px rgba(255, 58, 19, .58);
+  offset-path: path("M 25 1 H 346 A 24 24 0 0 1 370 25 A 24 24 0 0 1 346 49 H 25 A 24 24 0 0 1 1 25 A 24 24 0 0 1 25 1 Z");
+  offset-distance: 0%;
+  offset-anchor: center;
+  offset-rotate: auto;
   pointer-events: none;
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask-composite: exclude;
-  animation: search-light-loop 2.35s linear infinite;
+  animation: search-light-orbit 2s linear infinite;
 }
 
 .search-page-field .search-field.active::after {
   content: "";
   position: absolute;
   z-index: 0;
-  inset: -5px;
-  padding: 5px;
+  inset: -3px;
   border-radius: inherit;
-  background: conic-gradient(
-    from var(--search-light-angle),
-    transparent 0deg 262deg,
-    rgba(255, 95, 52, .22) 292deg,
-    transparent 326deg 360deg
-  );
-  filter: blur(7px);
-  opacity: .75;
+  border: 2px solid rgba(255, 89, 45, .28);
+  box-shadow:
+    0 0 10px rgba(255, 58, 19, .28),
+    inset 0 0 7px rgba(255, 58, 19, .11);
   pointer-events: none;
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask-composite: exclude;
-  animation: search-light-loop 2.35s linear infinite;
+  animation: search-border-breathe 1.2s ease-in-out infinite alternate;
 }
 
 .search-page-field .search-field.active > * {
@@ -301,14 +289,13 @@ img {
   z-index: 1;
 }
 
-@property --search-light-angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
+@keyframes search-light-orbit {
+  to { offset-distance: 100%; }
 }
 
-@keyframes search-light-loop {
-  to { --search-light-angle: 360deg; }
+@keyframes search-border-breathe {
+  from { opacity: .5; }
+  to { opacity: 1; }
 }
 
 .search-button {
