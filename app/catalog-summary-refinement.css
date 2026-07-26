@@ -1,0 +1,32 @@
+.catalog-result-card {
+  background: #fff;
+}
+
+.catalog-result-card .real-product-card {
+  border-radius: 8px 8px 0 0;
+}
+
+.catalog-result-summary {
+  position: relative;
+  margin-top: -1px;
+  padding: 5px 9px 6px;
+  gap: 0;
+  border-top: 1px solid #e7e5e4;
+  border-radius: 0 0 8px 8px;
+  color: #312d2a;
+  background: #fff;
+}
+
+.catalog-platform-count {
+  color: #7a7068;
+}
+
+.catalog-platform-count b {
+  margin: 0 3px;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.catalog-price-range {
+  color: #312d2a;
+}
