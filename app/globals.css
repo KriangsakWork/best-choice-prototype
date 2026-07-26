@@ -271,6 +271,12 @@ img {
   stroke-linecap: butt;
 }
 
+.search-field:focus-within {
+  box-shadow:
+    0 0 0 3px rgba(235, 59, 12, .08),
+    0 6px 18px rgba(235, 59, 12, .12);
+}
+
 .search-field > *:not(.search-gradient-border) {
   position: relative;
   z-index: 1;
@@ -420,6 +426,7 @@ img {
   font-weight: 700;
   line-height: 48px;
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 .savings-hero__change {
