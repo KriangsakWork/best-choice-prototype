@@ -295,11 +295,51 @@ function SearchGradientBorder() {
   );
 }
 
+function AnimatedSavingsTotal() {
+  const startValue = 1250;
+  const targetValue = 10250;
+  const duration = 1500;
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const [value, setValue] = useState(startValue);
+
+  useEffect(() => {
+    if (prefersReducedMotion) {
+      setValue(targetValue);
+      return;
+    }
+
+    let animationFrame = 0;
+    let startedAt: number | null = null;
+
+    const updateValue = (time: number) => {
+      if (startedAt === null) startedAt = time;
+
+      const progress = Math.min((time - startedAt) / duration, 1);
+      const easedProgress = 1 - Math.pow(1 - progress, 3);
+      setValue(Math.round(startValue + (targetValue - startValue) * easedProgress));
+
+      if (progress < 1) {
+        animationFrame = window.requestAnimationFrame(updateValue);
+      }
+    };
+
+    animationFrame = window.requestAnimationFrame(updateValue);
+    return () => window.cancelAnimationFrame(animationFrame);
+  }, [prefersReducedMotion]);
+
+  return (
+    <strong aria-label="ยอดประหยัดรวม 10,250 บาท">
+      <span aria-hidden="true">฿{value.toLocaleString("en-US")}</span>
+    </strong>
+  );
+}
+
 function SearchField({
   value,
   onChange,
   onSubmit,
   onFocus,
+  onBlur,
   active = false,
   autoFocus = false,
   showLight = false
@@ -308,6 +348,7 @@ function SearchField({
   onChange: (value: string) => void;
   onSubmit: () => void;
   onFocus?: () => void;
+  onBlur?: () => void;
   active?: boolean;
   autoFocus?: boolean;
   showLight?: boolean;
@@ -327,6 +368,7 @@ function SearchField({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         onFocus={onFocus}
+        onBlur={onBlur}
         autoFocus={autoFocus}
         placeholder={active ? "รองเท้า" : "ค้นหาสินค้า"}
         aria-label="ค้นหาสินค้า"
@@ -368,6 +410,8 @@ function HomeScreen({
   homeFavorites: Record<string, boolean>;
   toggleHomeFavorite: (key: string) => void;
 }) {
+  const [searchFocused, setSearchFocused] = useState(false);
+
   const duplicatedHomeCards = Array.from({ length: 2 }, (_, index) => ({
     ...nikeAirForceOne,
     id: index + 1
@@ -415,6 +459,9 @@ function HomeScreen({
           onSubmit={() => {
             if (query.trim()) go("search");
           }}
+          onFocus={() => setSearchFocused(true)}
+          onBlur={() => setSearchFocused(false)}
+          showLight={searchFocused}
         />
       </div>
 
@@ -427,7 +474,7 @@ function HomeScreen({
         />
         <span className="savings-hero__content">
           <span className="savings-hero__eyebrow">Total Save</span>
-          <strong>฿10,250</strong>
+          <AnimatedSavingsTotal />
           <span className="savings-hero__change">
             <img
               src={`${ASSET}/SVG/Up total.svg`}
