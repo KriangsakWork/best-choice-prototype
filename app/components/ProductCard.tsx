@@ -6,7 +6,7 @@ export type ProductCardData = {
   discountPrice: number;
   percent: number;
   rating: number;
-  sold: number;
+  sold: number | string;
   freeShip: boolean;
   mall: boolean;
   imageUrl: string;
