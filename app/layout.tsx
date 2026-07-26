@@ -3,6 +3,8 @@ import "@fontsource-variable/inter";
 import "@fontsource-variable/noto-sans-thai";
 import "./globals.css";
 import "./search-animation.css";
+import "./catalog-flow.css";
+import { CatalogFlow } from "./components/CatalogFlow";
 
 export const metadata: Metadata = {
   title: "Best Choice — Smart Price Comparison",
@@ -27,7 +29,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="th">
-      <body>{children}</body>
+      <body>
+        {children}
+        <CatalogFlow />
+      </body>
     </html>
   );
 }
