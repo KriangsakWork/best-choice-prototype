@@ -1,0 +1,72 @@
+/* Search screen entrance: keep the search field fixed and reveal only the content below. */
+.search-screen {
+  animation: none;
+}
+
+.search-screen .search-content > h2,
+.search-screen .suggestions > button,
+.search-screen .recent-list > button {
+  opacity: 0;
+  transform: translateY(8px);
+  animation: search-content-rise 240ms cubic-bezier(.22, 1, .36, 1) both;
+  will-change: opacity, transform;
+}
+
+.search-screen .search-content > h2:first-child {
+  animation-delay: 30ms;
+}
+
+.search-screen .suggestions > button:nth-child(1) {
+  animation-delay: 75ms;
+}
+
+.search-screen .suggestions > button:nth-child(2) {
+  animation-delay: 120ms;
+}
+
+.search-screen .suggestions > button:nth-child(3) {
+  animation-delay: 165ms;
+}
+
+.search-screen .suggestions > button:nth-child(4) {
+  animation-delay: 210ms;
+}
+
+.search-screen .recent-heading {
+  animation-delay: 270ms;
+}
+
+.search-screen .recent-list > button:nth-child(1) {
+  animation-delay: 315ms;
+}
+
+.search-screen .recent-list > button:nth-child(2) {
+  animation-delay: 360ms;
+}
+
+.search-screen .recent-list > button:nth-child(3) {
+  animation-delay: 405ms;
+}
+
+@keyframes search-content-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-screen .search-content > h2,
+  .search-screen .suggestions > button,
+  .search-screen .recent-list > button {
+    opacity: 1;
+    transform: none;
+    animation: none;
+    will-change: auto;
+  }
+}
