@@ -1,0 +1,27 @@
+.interest-product-item .real-product-card__heart {
+  top: 0;
+  right: 0;
+  left: auto;
+  width: 40px;
+  height: 40px;
+  display: block;
+  padding: 0;
+}
+
+.interest-product-item .real-product-card__heart img {
+  position: absolute;
+  top: 7px;
+  right: 9px;
+  width: 17.44px;
+  height: 16px;
+}
+
+.interest-product-item .real-product-card__heart:focus-visible {
+  border-radius: 8px;
+  outline: 2px solid rgba(235, 59, 12, .34);
+  outline-offset: -2px;
+}
+
+.interest-product-item .real-product-card__heart:active img {
+  transform: scale(.86);
+}
