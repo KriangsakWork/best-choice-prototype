@@ -1014,9 +1014,6 @@ function TotalSaveScreen({ go }: { go: (screen: Screen) => void }) {
   const chart = savingsChartData[period];
   const chartMax = Math.ceil(Math.max(...chart.values) / 500) * 500;
   const axisLabels = [chartMax, chartMax * .75, chartMax * .5, chartMax * .25, 0];
-  const linePoints = chart.values
-    .map((value, index) => ((index + .5) / chart.values.length) * 100 + "," + (100 - (value / chartMax) * 100))
-    .join(" ");
 
   return (
     <section className="screen total-save-screen">
@@ -1072,15 +1069,6 @@ function TotalSaveScreen({ go }: { go: (screen: Screen) => void }) {
                 </div>
               ))}
             </div>
-            <svg
-              className="total-save-trend-line"
-              key={"trend-" + period}
-              viewBox="0 0 100 100"
-              preserveAspectRatio="none"
-              aria-hidden="true"
-            >
-              <polyline points={linePoints} pathLength="1" />
-            </svg>
             <div className="total-save-months">
               {chart.labels.map((label) => <span key={label}>{label}</span>)}
             </div>
