@@ -22,6 +22,7 @@ type Period = "7 วัน" | "30 วัน" | "2 เดือน" | "3 เด�
 
 const ASSET = "/assets";
 const SCREENSHOT = `${ASSET}/screens`;
+const TRENDING_UP_ICON = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAARpJREFUeAHd0y1vwkAcBvDn4FbKmJmYQe3FDbdkbmLJXtTkxr7BzL4EX2LT6Ba3zEAJBgVY0ChCgIACroVSerxcaDkIhCoe1f7T/PL8ry0Z9zoOAkgIASUwiO7zsMP6ABt4h+opiBrbHRoV/8H+0mtzepNA9Cu1z2rb34kUsnIarKzmmZ08vOEslYby/C6FqAwxDV3cK69JcT2ulmAZmXmD8wtMem15Iz9i5nXRbFQpgOm/83Z3j4i8JOWNVhHl6QMg7sy955jdrLttygJRP79h18oeiPAv249EFuuY/KxWGi6RZWwXD13fgkRjIMzIOEPtZw0R6y0wP+IPnXRbGxEefhY0foVw4h7bMlvNbtQRjl/ikJDj/fsDg6aoAnbaNoJXUgAAAABJRU5ErkJggg==";
 const PROTOTYPE_WIDTH = 402;
 const PROTOTYPE_HEIGHT = 874;
 const MOBILE_STATUS_BAR_CROP = 50;
@@ -1013,6 +1014,9 @@ function TotalSaveScreen({ go }: { go: (screen: Screen) => void }) {
   const chart = savingsChartData[period];
   const chartMax = Math.ceil(Math.max(...chart.values) / 500) * 500;
   const axisLabels = [chartMax, chartMax * .75, chartMax * .5, chartMax * .25, 0];
+  const linePoints = chart.values
+    .map((value, index) => ((index + .5) / chart.values.length) * 100 + "," + (100 - (value / chartMax) * 100))
+    .join(" ");
 
   return (
     <section className="screen total-save-screen">
@@ -1024,7 +1028,7 @@ function TotalSaveScreen({ go }: { go: (screen: Screen) => void }) {
           <span>Total Save</span>
           <AnimatedSavingsTotal />
           <div className="total-save-change">
-            <span className="total-save-trend-icon" aria-hidden="true">↗</span>
+            <img className="total-save-trend-icon" src={TRENDING_UP_ICON} alt="" aria-hidden="true" />
             <b>฿1,000 จากเดือนก่อน</b>
           </div>
         </section>
@@ -1068,6 +1072,15 @@ function TotalSaveScreen({ go }: { go: (screen: Screen) => void }) {
                 </div>
               ))}
             </div>
+            <svg
+              className="total-save-trend-line"
+              key={"trend-" + period}
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <polyline points={linePoints} pathLength="1" />
+            </svg>
             <div className="total-save-months">
               {chart.labels.map((label) => <span key={label}>{label}</span>)}
             </div>
