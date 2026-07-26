@@ -1621,7 +1621,7 @@ img {
   display: flex;
   align-items: flex-end;
   justify-content: space-around;
-  gap: 8px;
+  gap: 0;
 }
 
 .total-save-bar-column {
