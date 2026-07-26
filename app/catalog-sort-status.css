@@ -48,7 +48,7 @@
   align-items: center;
   justify-content: flex-start;
   padding: 0 6px;
-  border-bottom: 1px solid #e7e5e4;
+  border-bottom: 1px solid rgba(49, 45, 42, .08);
   border-radius: 4px;
   color: #000;
   font-size: 12px;
