@@ -778,12 +778,14 @@ const referenceLabels: Partial<Record<Screen, string>> = {
 
 function ReferenceScreen({ screen, go }: { screen: Screen; go: (screen: Screen) => void }) {
   const modalOpen = screen === "interest-confirm" || screen === "interest-last-confirm";
-  const nav = [
-    { label: "หน้าหลัก", target: "home" as Screen },
-    { label: "สนใจ", target: "interest" as Screen },
-    { label: "ประหยัด", target: "total-save" as Screen },
-    { label: "โปรไฟล์", target: "profile" as Screen }
-  ];
+  const activeNav =
+    screen === "profile"
+      ? "profile"
+      : screen === "total-save"
+        ? "savings"
+        : screen.startsWith("interest")
+          ? "interest"
+          : undefined;
 
   return (
     <section className={`screen reference-screen reference-${screen}`} aria-label={referenceLabels[screen]}>
@@ -798,13 +800,7 @@ function ReferenceScreen({ screen, go }: { screen: Screen; go: (screen: Screen) 
           onClick={() => go(action.target)}
         />
       ))}
-      {!modalOpen && (
-        <nav className="reference-nav" aria-label="เมนูหลัก">
-          {nav.map((item) => (
-            <button key={item.label} type="button" aria-label={item.label} onClick={() => go(item.target)} />
-          ))}
-        </nav>
-      )}
+      {!modalOpen && <BottomNav active={activeNav} go={go} />}
     </section>
   );
 }
