@@ -9,7 +9,9 @@ import "./catalog-recommendations.css";
 import "./catalog-sort-status.css";
 import "./catalog-chip-figma.css";
 import "./catalog-navbar-sync.css";
+import "./interest-figma-screen.css";
 import { CatalogFlowSortStatus } from "./components/CatalogFlowSortStatus";
+import { InterestFigmaScreen } from "./components/InterestFigmaScreen";
 
 export const metadata: Metadata = {
   title: "Best Choice — Smart Price Comparison",
@@ -37,6 +39,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         {children}
         <CatalogFlowSortStatus />
+        <InterestFigmaScreen />
       </body>
     </html>
   );
