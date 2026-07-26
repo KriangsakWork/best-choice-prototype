@@ -739,6 +739,10 @@ img {
   background: var(--primary);
 }
 
+.real-product-card__platform.is-lazada {
+  background: #0e1472;
+}
+
 .real-product-card__platform img {
   width: 10px;
   height: 10px;
@@ -752,13 +756,13 @@ img {
   position: absolute;
   z-index: 2;
   top: 7px;
-  left: 154px;
-  width: 18px;
+  left: 154.16px;
+  width: 17.44px;
   height: 16px;
 }
 
 .real-product-card__heart img {
-  width: 18px;
+  width: 17.44px;
   height: 16px;
 }
 
@@ -872,7 +876,7 @@ img {
 }
 
 .real-product-card__separator {
-  color: #d7d2ce;
+  color: #978f89;
   font-size: 7.215px;
   font-weight: 500;
   line-height: normal;
