@@ -234,10 +234,50 @@ img {
 .bottom-nav button img {
   width: 24px;
   height: 24px;
+  transform-origin: 50% 80%;
+  will-change: transform;
+}
+
+.bottom-nav button:active img {
+  transform: scale(.88);
 }
 
 .bottom-nav button.active {
   color: var(--primary);
+}
+
+.bottom-nav button.active img {
+  animation: nav-icon-pop .32s cubic-bezier(.2, .9, .3, 1.25) both;
+}
+
+.bottom-nav button.active span {
+  animation: nav-label-settle .24s ease-out both;
+}
+
+@keyframes nav-icon-pop {
+  0% {
+    transform: scale(.9) rotate(0);
+  }
+  45% {
+    transform: scale(1.25) rotate(-8deg);
+  }
+  72% {
+    transform: scale(1.06) rotate(-1deg);
+  }
+  100% {
+    transform: scale(1.1) rotate(-3deg);
+  }
+}
+
+@keyframes nav-label-settle {
+  0% {
+    opacity: .68;
+    transform: translateY(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .search-field {
