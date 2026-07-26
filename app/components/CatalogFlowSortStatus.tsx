@@ -343,7 +343,7 @@ function CatalogCompareBuy({
 
   return (
     <button className="compare-buy" type="button" onClick={buy}>
-      <span className="catalog-buy-icon" aria-hidden="true">▣</span>
+      <span className="catalog-buy-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 8V6a5 5 0 0 1 10 0v2h2.1l1.2 13H3.7L4.9 8H7Zm2 0h6V6a3 3 0 0 0-6 0v2Zm-2.3 2-.8 9h12.2l-.8-9H17v2h-2v-2H9v2H7v-2h-.3Z" /></svg></span>
       ซื้อเลย
     </button>
   );
