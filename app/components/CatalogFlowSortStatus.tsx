@@ -717,9 +717,9 @@ export function CatalogFlowSortStatus() {
                     <span>เปรียบเทียบ {offers.length} ร้านค้า</span>
                   </div>
                   <button
-                    className={favorite ? "compare-heart active" : "compare-heart"}
+                    className={favorite ? "compare-follow-price active" : "compare-follow-price"}
                     type="button"
-                    aria-label={favorite ? "นำออกจากสินค้าที่สนใจ" : "เพิ่มในสินค้าที่สนใจ"}
+                    aria-label={favorite ? "ยกเลิกติดตามราคา" : "ติดตามราคา"}
                     aria-pressed={favorite}
                     onClick={() => setFavoriteGroupIds((current) =>
                       current.includes(selectedGroup.id)
@@ -733,6 +733,7 @@ export function CatalogFlowSortStatus() {
                       width={17.44}
                       height={16}
                     />
+                    <span>{favorite ? "ติดตามแล้ว" : "ติดตามราคา"}</span>
                   </button>
                 </section>
               </div>
@@ -744,7 +745,6 @@ export function CatalogFlowSortStatus() {
                 <article className="compare-best-offer">
                   <div className="compare-best-head">
                     <CatalogCompareTags offer={bestOffer} />
-                    <span className="compare-cheapest">ราคาถูก</span>
                   </div>
                   <div className="compare-best-price">
                     <strong>฿{bestOffer.discountPrice.toLocaleString("en-US")}</strong>
