@@ -1,0 +1,282 @@
+.interest-figma-screen {
+  position: absolute;
+  z-index: 120;
+  inset: 0;
+  overflow: hidden;
+  color: var(--text);
+  background: #fff;
+  animation: interest-screen-in 220ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.interest-status-bar {
+  height: 50px;
+  background: #fff url('/assets/SVG/Status bar.svg') center / 100% 50px no-repeat;
+}
+
+.interest-page-heading {
+  position: absolute;
+  top: 66px;
+  left: 16px;
+}
+
+.interest-page-heading h1 {
+  margin: 0;
+  color: #0f0d0c;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 33px;
+}
+
+.interest-page-heading p {
+  margin: -1px 0 0;
+  color: #312d2a;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+}
+
+.interest-platform-filters {
+  position: absolute;
+  z-index: 3;
+  top: 128px;
+  left: 16px;
+  width: 370px;
+  height: 34px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.interest-platform-filters::-webkit-scrollbar,
+.interest-products-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.interest-platform-filters button {
+  flex: 0 0 auto;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid #e7e5e4;
+  border-radius: 999px;
+  color: #0f0d0c;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  transition: color 150ms ease, background 150ms ease, border-color 150ms ease, transform 120ms ease;
+}
+
+.interest-platform-filters button.selected {
+  border-color: #eb3b0c;
+  color: #fff;
+  background: #eb3b0c;
+}
+
+.interest-platform-filters button:active {
+  transform: scale(.96);
+}
+
+.interest-platform-filters button:focus-visible {
+  outline: 2px solid rgba(235, 59, 12, .28);
+  outline-offset: 2px;
+}
+
+.interest-products-scroll {
+  position: absolute;
+  top: 178px;
+  bottom: 76px;
+  left: 16px;
+  width: 370px;
+  display: grid;
+  grid-template-columns: repeat(2, 181px);
+  grid-auto-rows: 255px;
+  align-content: start;
+  gap: 14px 8px;
+  padding-bottom: 18px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+
+.interest-product-item,
+.interest-product-item .real-product-card {
+  width: 181px;
+  height: 255px;
+}
+
+.interest-product-item .real-product-card {
+  flex: none;
+}
+
+.interest-product-item .real-product-card__heart {
+  width: 40px;
+  height: 40px;
+  top: 0;
+  right: 0;
+  display: grid;
+  place-items: start end;
+  padding: 7px 9px 0 0;
+}
+
+.interest-filter-empty {
+  position: absolute;
+  inset: 178px 24px 76px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 60px;
+  text-align: center;
+}
+
+.interest-filter-empty strong {
+  color: #0f0d0c;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.interest-filter-empty p {
+  margin: 8px 0 20px;
+  color: #7a7068;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.interest-filter-empty button {
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 20px;
+  color: #fff;
+  background: #eb3b0c;
+  font-size: 14px;
+}
+
+.interest-bottom-nav {
+  z-index: 125;
+}
+
+.interest-confirm-layer {
+  position: absolute;
+  z-index: 150;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(15, 13, 12, .34);
+  animation: interest-scrim-in 160ms ease both;
+}
+
+.interest-confirm-sheet {
+  width: 100%;
+  padding: 10px 16px calc(18px + env(safe-area-inset-bottom, 0px));
+  border-radius: 20px 20px 0 0;
+  background: #fff;
+  box-shadow: 0 -12px 32px rgba(35, 29, 25, .15);
+  animation: interest-sheet-in 220ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.interest-sheet-handle {
+  width: 40px;
+  height: 4px;
+  margin: 0 auto 18px;
+  border-radius: 999px;
+  background: #d9d5d2;
+}
+
+.interest-confirm-sheet h2 {
+  margin: 0;
+  color: #0f0d0c;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 27px;
+}
+
+.interest-confirm-sheet p {
+  margin: 5px 0 20px;
+  overflow: hidden;
+  color: #7a7068;
+  font-size: 13px;
+  line-height: 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.interest-confirm-sheet > div:last-child {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.interest-confirm-sheet button {
+  height: 48px;
+  border: 1px solid #e7e5e4;
+  border-radius: 24px;
+  color: #312d2a;
+  background: #fff;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.interest-confirm-sheet button.danger {
+  border-color: #eb3b0c;
+  color: #fff;
+  background: #eb3b0c;
+}
+
+.interest-snackbar {
+  position: absolute;
+  z-index: 145;
+  right: 16px;
+  bottom: 88px;
+  left: 16px;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 12px 0 16px;
+  border-radius: 12px;
+  color: #fff;
+  background: #312d2a;
+  box-shadow: 0 8px 22px rgba(35, 29, 25, .22);
+  font-size: 13px;
+  animation: interest-snackbar-in 200ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.interest-snackbar button {
+  min-width: 60px;
+  height: 36px;
+  color: #ffb09c;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+@keyframes interest-screen-in {
+  from { opacity: .35; transform: translateX(10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes interest-scrim-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes interest-sheet-in {
+  from { transform: translateY(24px); }
+  to { transform: translateY(0); }
+}
+
+@keyframes interest-snackbar-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .interest-figma-screen,
+  .interest-confirm-layer,
+  .interest-confirm-sheet,
+  .interest-snackbar {
+    animation: none;
+  }
+}
