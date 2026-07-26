@@ -41,7 +41,15 @@ const platformBadges: Record<ProductCardData["platform"], { src: string; width: 
   }
 };
 
-export function ProductCard({ product }: { product: ProductCardData }) {
+export function ProductCard({
+  product,
+  favorite = true,
+  onFavoriteToggle
+}: {
+  product: ProductCardData;
+  favorite?: boolean;
+  onFavoriteToggle?: () => void;
+}) {
   const trendIsLower = product.trendLabel.includes("ลด");
   const platformBadge = platformBadges[product.platform];
 
@@ -69,9 +77,29 @@ export function ProductCard({ product }: { product: ProductCardData }) {
         {product.freeShip && <span className="real-product-card__shipping">ส่งฟรี</span>}
       </div>
 
-      <span className="real-product-card__heart" aria-label="อยู่ในรายการโปรด">
-        <img src="/assets/SVG/Like/Property 1=Like.svg" alt="" width={17.44} height={16} />
-      </span>
+      {onFavoriteToggle ? (
+        <button
+          className="real-product-card__heart"
+          type="button"
+          aria-label={favorite ? "นำออกจากรายการสนใจ" : "เพิ่มในรายการสนใจ"}
+          aria-pressed={favorite}
+          onClick={(event) => {
+            event.stopPropagation();
+            onFavoriteToggle();
+          }}
+        >
+          <img
+            src={favorite ? "/assets/SVG/Like/Property 1=Like.svg" : "/assets/SVG/Like/Property 1=Normal.svg"}
+            alt=""
+            width={17.44}
+            height={16}
+          />
+        </button>
+      ) : (
+        <span className="real-product-card__heart" aria-label="อยู่ในรายการสนใจ">
+          <img src="/assets/SVG/Like/Property 1=Like.svg" alt="" width={17.44} height={16} />
+        </span>
+      )}
 
       <div className="real-product-card__info">
         <h3>{product.productName}</h3>
