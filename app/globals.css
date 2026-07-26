@@ -194,7 +194,7 @@ img {
 .bottom-nav {
   position: absolute;
   z-index: 35;
-  bottom: 0;
+  bottom: env(safe-area-inset-bottom, 0px);
   left: 0;
   width: 100%;
   height: 77px;
@@ -204,6 +204,17 @@ img {
   border-top: 1px solid rgba(230, 232, 235, .72);
   background: var(--surface);
   box-shadow: 0 -3px 12px rgba(35, 29, 25, .04);
+}
+
+.bottom-nav::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: env(safe-area-inset-bottom, 0px);
+  background: var(--surface);
+  pointer-events: none;
 }
 
 .bottom-nav button {
@@ -446,7 +457,7 @@ img {
 .home-content {
   position: absolute;
   top: 335px;
-  bottom: 77px;
+  bottom: calc(77px + env(safe-area-inset-bottom, 0px));
   left: 16px;
   right: 16px;
   overflow-y: auto;
@@ -507,7 +518,7 @@ img {
 .search-content {
   position: absolute;
   top: 143px;
-  bottom: 77px;
+  bottom: calc(77px + env(safe-area-inset-bottom, 0px));
   left: 37px;
   right: 37px;
   overflow: hidden;
@@ -650,7 +661,7 @@ img {
 .results-grid {
   position: absolute;
   top: 180px;
-  bottom: 77px;
+  bottom: calc(77px + env(safe-area-inset-bottom, 0px));
   left: 16px;
   right: 16px;
   display: grid;
@@ -896,7 +907,7 @@ img {
 .compare-button {
   position: absolute;
   z-index: 30;
-  bottom: 86px;
+  bottom: calc(86px + env(safe-area-inset-bottom, 0px));
   left: 50%;
   width: 226px;
   height: 49px;
@@ -931,7 +942,7 @@ img {
   top: 128px;
   left: 16px;
   right: 16px;
-  bottom: 77px;
+  bottom: calc(77px + env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -966,7 +977,7 @@ img {
   top: 113px;
   left: 17px;
   right: 17px;
-  bottom: 77px;
+  bottom: calc(77px + env(safe-area-inset-bottom, 0px));
 }
 
 .history-product {
