@@ -369,11 +369,10 @@ img {
   width: 370px;
   height: 178px;
   overflow: hidden;
-  border-radius: 13px;
+  border-radius: 12px;
   color: #fff;
   text-align: left;
   background: #ee3f12;
-  box-shadow: 0 6px 18px rgba(235, 59, 12, .16);
 }
 
 .savings-hero__background {
@@ -387,61 +386,61 @@ img {
 .savings-hero__content {
   position: absolute;
   z-index: 1;
-  top: 14px;
+  top: 19px;
   left: 19px;
+  width: 313px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
 
 .savings-hero__eyebrow {
+  width: 90px;
+  color: #fff;
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
+  white-space: nowrap;
 }
 
 .savings-hero__content > strong {
-  margin-top: 1px;
+  color: #fff;
   font-size: 32px;
   font-weight: 700;
-  line-height: 43px;
+  line-height: 48px;
+  white-space: nowrap;
 }
 
 .savings-hero__change {
-  height: 27px;
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  margin-top: 3px;
-  padding: 3px 9px 3px 5px;
+  margin-top: 4px;
+  padding: 4px 8px;
   border-radius: 999px;
   color: #fff;
-  background: rgba(199, 47, 8, .72);
-  backdrop-filter: blur(2px);
+  background: #d9390c;
+  white-space: nowrap;
 }
 
-.savings-hero__change b {
-  width: 14px;
-  height: 14px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  color: #fff;
-  background: #23c76f;
-  font-size: 11px;
-  line-height: 14px;
+.savings-hero__change > img {
+  flex: 0 0 auto;
+  width: 12px;
+  height: 12px;
 }
 
 .savings-hero__change > span {
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 20px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
 }
 
 .savings-hero__change small {
-  font-size: 11px;
+  color: #fff;
+  font-size: 12px;
   font-weight: 400;
-  line-height: 16px;
+  line-height: 18px;
 }
 
 .home-content {
