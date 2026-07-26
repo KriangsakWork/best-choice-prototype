@@ -703,3 +703,13 @@
 .compare-best-head {
   justify-content: flex-start;
 }
+
+
+.compare-product-summary .compare-follow-price span {
+  width: auto;
+  margin: 0;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+}
