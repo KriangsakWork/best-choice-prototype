@@ -135,7 +135,7 @@ type ProductResult = {
 const nikeAirForceOne: ProductCardData = {
   id: 1,
   productName: "Nike Air Force 1 '07",
-  platform: "Lazada",
+  platform: "Shopee",
   price: 4300,
   discountPrice: 3594,
   percent: 16,
@@ -143,12 +143,174 @@ const nikeAirForceOne: ProductCardData = {
   sold: 56,
   freeShip: true,
   mall: true,
-  imageUrl: "/assets/products/1-nike-shopee.jpg",
+  imageUrl: `${ASSET}/products/product-pic/1-nike-shopee.webp`,
   productUrl: "https://shopee.co.th/product/1676687866/56408537514",
   averagePrice: 3437.33,
   trendLabel: "เพิ่มจากค่าเฉลี่ย",
   trendPercent: 5
 };
+
+const homeRecentProducts: ProductCardData[] = [
+  {
+    ...nikeAirForceOne
+  },
+  {
+    id: 2,
+    productName: "Nike Air Force 1 '07",
+    platform: "Lazada",
+    price: 4300,
+    discountPrice: 3328,
+    percent: 23,
+    rating: 5,
+    sold: 22,
+    freeShip: true,
+    mall: true,
+    imageUrl: `${ASSET}/products/product-pic/1-nike-lazada.webp`,
+    productUrl: "",
+    averagePrice: 3437.33,
+    trendLabel: "ลดจากค่าเฉลี่ย",
+    trendPercent: 3
+  }
+];
+
+const homeRecommendedProducts: ProductCardData[] = [
+  {
+    id: 4,
+    productName: "Converse Chuck Taylor",
+    platform: "Shopee",
+    price: 3090,
+    discountPrice: 3090,
+    percent: 0,
+    rating: 4.9,
+    sold: "2k+",
+    freeShip: true,
+    mall: true,
+    imageUrl: `${ASSET}/products/product-pic/2-converse-shopee.webp`,
+    productUrl: "",
+    averagePrice: 3026.67,
+    trendLabel: "เพิ่มจากค่าเฉลี่ย",
+    trendPercent: 2
+  },
+  {
+    id: 9,
+    productName: "Vans Old Skool",
+    platform: "TikTok",
+    price: 2690,
+    discountPrice: 2190,
+    percent: 19,
+    rating: 4.3,
+    sold: 151,
+    freeShip: true,
+    mall: true,
+    imageUrl: `${ASSET}/products/product-pic/3-vans-tiktok.webp`,
+    productUrl: "",
+    averagePrice: 2448.33,
+    trendLabel: "ลดจากค่าเฉลี่ย",
+    trendPercent: 11
+  },
+  {
+    id: 11,
+    productName: "NEW BALANCE 740",
+    platform: "Lazada",
+    price: 7000,
+    discountPrice: 1949,
+    percent: 72,
+    rating: 5,
+    sold: 16,
+    freeShip: true,
+    mall: false,
+    imageUrl: `${ASSET}/products/product-pic/4-nb-lazada.webp`,
+    productUrl: "",
+    averagePrice: 3383,
+    trendLabel: "ลดจากค่าเฉลี่ย",
+    trendPercent: 42
+  },
+  {
+    id: 17,
+    productName: "Adidas Ultraboost Light",
+    platform: "Lazada",
+    price: 7000,
+    discountPrice: 3750,
+    percent: 46,
+    rating: 5,
+    sold: 2,
+    freeShip: true,
+    mall: true,
+    imageUrl: `${ASSET}/products/product-pic/6-adidas-lazada.webp`,
+    productUrl: "",
+    averagePrice: 4220,
+    trendLabel: "ลดจากค่าเฉลี่ย",
+    trendPercent: 11
+  },
+  {
+    id: 19,
+    productName: "Crocs Classic Clog",
+    platform: "Shopee",
+    price: 2190,
+    discountPrice: 2040,
+    percent: 7,
+    rating: 4.9,
+    sold: "9k+",
+    freeShip: true,
+    mall: true,
+    imageUrl: `${ASSET}/products/product-pic/7-crocs-shopee.webp`,
+    productUrl: "",
+    averagePrice: 2090,
+    trendLabel: "ลดจากค่าเฉลี่ย",
+    trendPercent: 2
+  },
+  {
+    id: 24,
+    productName: "Birkenstock Arizona",
+    platform: "TikTok",
+    price: 3990,
+    discountPrice: 3311,
+    percent: 17,
+    rating: 5,
+    sold: 157,
+    freeShip: true,
+    mall: true,
+    imageUrl: `${ASSET}/products/product-pic/8-birken-tiktok.webp`,
+    productUrl: "",
+    averagePrice: 4163.67,
+    trendLabel: "ลดจากค่าเฉลี่ย",
+    trendPercent: 20
+  },
+  {
+    id: 27,
+    productName: "Kito BioCare",
+    platform: "TikTok",
+    price: 628,
+    discountPrice: 486,
+    percent: 23,
+    rating: 5,
+    sold: 95,
+    freeShip: true,
+    mall: true,
+    imageUrl: `${ASSET}/products/product-pic/9-kito-tiktok.png`,
+    productUrl: "",
+    averagePrice: 513,
+    trendLabel: "ลดจากค่าเฉลี่ย",
+    trendPercent: 5
+  },
+  {
+    id: 31,
+    productName: "Flynn - Ballet Flats",
+    platform: "Shopee",
+    price: 1490,
+    discountPrice: 1352,
+    percent: 9,
+    rating: 4.9,
+    sold: "4k+",
+    freeShip: true,
+    mall: true,
+    imageUrl: `${ASSET}/products/product-pic/11-flynn-shopee.webp`,
+    productUrl: "",
+    averagePrice: 1427.33,
+    trendLabel: "ลดจากค่าเฉลี่ย",
+    trendPercent: 5
+  }
+];
 
 const products: ProductResult[] = [
   { id: 1, price: nikeAirForceOne.discountPrice, data: nikeAirForceOne },
@@ -162,8 +324,14 @@ const products: ProductResult[] = [
 const initialHomeFavorites: Record<string, boolean> = {
   "recent-1": true,
   "recent-2": true,
-  "recommended-1": true,
-  "recommended-2": true
+  "recommended-4": true,
+  "recommended-9": true,
+  "recommended-11": true,
+  "recommended-17": true,
+  "recommended-19": true,
+  "recommended-24": true,
+  "recommended-27": true,
+  "recommended-31": true
 };
 
 const suggestions = [
@@ -412,11 +580,6 @@ function HomeScreen({
 }) {
   const [searchFocused, setSearchFocused] = useState(false);
 
-  const duplicatedHomeCards = Array.from({ length: 2 }, (_, index) => ({
-    ...nikeAirForceOne,
-    id: index + 1
-  }));
-
   const openResultsWithKeyboard = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
@@ -493,12 +656,12 @@ function HomeScreen({
       <main className="home-content">
         <h2>ค้นหาล่าสุด</h2>
         <div className="home-grid">
-          {duplicatedHomeCards.map((product) => renderHomeCard(product, "recent"))}
+          {homeRecentProducts.map((product) => renderHomeCard(product, "recent"))}
         </div>
 
         <h2>สินค้าแนะนำ</h2>
         <div className="home-grid">
-          {duplicatedHomeCards.map((product) => renderHomeCard(product, "recommended"))}
+          {homeRecommendedProducts.map((product) => renderHomeCard(product, "recommended"))}
         </div>
       </main>
 
