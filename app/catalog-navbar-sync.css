@@ -1,0 +1,69 @@
+.catalog-bottom-nav {
+  position: absolute;
+  z-index: 35;
+  bottom: max(0px, calc(env(safe-area-inset-bottom, 0px) - 22px));
+  left: 0;
+  width: 100%;
+  height: 77px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 5px 0 7px;
+  border-top: 1px solid rgba(230, 232, 235, .72);
+  background: var(--surface);
+  box-shadow: 0 -3px 12px rgba(35, 29, 25, .04);
+}
+
+.catalog-bottom-nav::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: max(0px, calc(env(safe-area-inset-bottom, 0px) - 22px));
+  background: var(--surface);
+  pointer-events: none;
+}
+
+.catalog-bottom-nav button {
+  min-width: 0;
+  height: 65px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: var(--nav-muted);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+.catalog-bottom-nav button img {
+  width: 24px;
+  height: 24px;
+  transform-origin: 50% 80%;
+  will-change: transform;
+}
+
+.catalog-bottom-nav button:active img {
+  transform: scale(.88);
+}
+
+.catalog-bottom-nav button.active {
+  color: var(--primary);
+}
+
+.catalog-bottom-nav button.active img {
+  animation: nav-icon-pop .32s cubic-bezier(.2, .9, .3, 1.25) both;
+}
+
+.catalog-bottom-nav button.active span {
+  animation: nav-label-settle .24s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .catalog-bottom-nav button.active img,
+  .catalog-bottom-nav button.active span {
+    animation: none;
+  }
+}
