@@ -40,9 +40,12 @@ export function ProductCard({ product }: { product: ProductCardData }) {
       </div>
 
       <div className="real-product-card__badges" aria-label={`จำหน่ายโดย ${product.platform}${product.freeShip ? " ส่งฟรี" : ""}`}>
-        <span className="real-product-card__platform">
+        <span className={`real-product-card__platform is-${product.platform.toLowerCase()}`}>
           {product.platform === "Shopee" && (
             <img src="/assets/product-card/shopee-mark.svg" alt="" width={10} height={10} aria-hidden="true" />
+          )}
+          {product.platform === "Lazada" && (
+            <img src="/assets/product-card/lazada-mark.svg" alt="" width={10} height={10} aria-hidden="true" />
           )}
           {product.platform}
         </span>
