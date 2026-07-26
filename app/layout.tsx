@@ -4,6 +4,7 @@ import "@fontsource-variable/noto-sans-thai";
 import "./globals.css";
 import "./search-animation.css";
 import "./catalog-flow.css";
+import "./catalog-summary-refinement.css";
 import { CatalogFlowFigma } from "./components/CatalogFlowFigma";
 
 export const metadata: Metadata = {
