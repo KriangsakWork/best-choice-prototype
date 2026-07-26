@@ -47,13 +47,16 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  padding: 0 6px;
   border-bottom: 1px solid #e7e5e4;
+  border-radius: 4px;
   color: #000;
   font-size: 12px;
   font-weight: 400;
   line-height: 18px;
   text-align: left;
   white-space: nowrap;
+  transition: color 140ms ease, background 140ms ease;
 }
 
 .catalog-sort-menu button:last-child {
@@ -61,12 +64,14 @@
 }
 
 .catalog-sort-menu button.selected {
+  color: var(--primary);
+  background: rgba(235, 59, 12, .08);
   font-weight: 500;
 }
 
 .catalog-sort-menu button:active {
   color: var(--primary);
-  background: rgba(235, 59, 12, .05);
+  background: rgba(235, 59, 12, .12);
 }
 
 @keyframes catalog-sort-menu-in {
