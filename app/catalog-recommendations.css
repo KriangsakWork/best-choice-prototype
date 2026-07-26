@@ -1,0 +1,60 @@
+.catalog-results-grid {
+  padding-bottom: 28px;
+}
+
+.catalog-recommendation-heading {
+  grid-column: 1 / -1;
+  margin: 12px 0 2px;
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 27px;
+  text-align: left;
+}
+
+.catalog-result-card {
+  height: auto;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+}
+
+.catalog-result-card:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
+.catalog-result-card .real-product-card {
+  flex: none;
+  width: 181px;
+  height: 255px;
+  border-radius: 8px;
+}
+
+.catalog-result-summary {
+  height: auto;
+  min-height: 38px;
+  margin-top: 5px;
+  padding: 0 1px;
+  gap: 0;
+  color: var(--text);
+  background: transparent;
+}
+
+.catalog-platform-count {
+  color: #7a7068;
+}
+
+.catalog-platform-count b {
+  margin: 0 2px;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.catalog-price-range {
+  color: #312d2a;
+}
+
+.catalog-compare-button {
+  display: none;
+}
