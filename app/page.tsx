@@ -381,9 +381,16 @@ function HomeScreen({ go, query, setQuery }: { go: (screen: Screen) => void; que
           <span className="savings-hero__eyebrow">Total Save</span>
           <strong>฿10,250</strong>
           <span className="savings-hero__change">
-            <b aria-hidden="true">+</b>
+            <img
+              src={`${ASSET}/SVG/Up total.svg`}
+              alt=""
+              width={12}
+              height={12}
+              aria-hidden="true"
+            />
             <span>+฿1,250</span>
-            <small>จากเดือนก่อน (+18%)</small>
+            <small>จากเดือนก่อน</small>
+            <small>(+18%)</small>
           </span>
         </span>
       </button>
