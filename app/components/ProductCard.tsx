@@ -53,7 +53,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
       </div>
 
       <span className="real-product-card__heart" aria-label="อยู่ในรายการโปรด">
-        <img src="/assets/product-card/heart-filled.svg" alt="" width={18} height={16} />
+        <img src="/assets/SVG/Like/Property 1=Like.svg" alt="" width={17.44} height={16} />
       </span>
 
       <div className="real-product-card__info">
