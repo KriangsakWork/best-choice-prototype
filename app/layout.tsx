@@ -8,6 +8,7 @@ import "./catalog-summary-refinement.css";
 import "./catalog-recommendations.css";
 import "./catalog-sort-status.css";
 import "./catalog-chip-figma.css";
+import "./catalog-navbar-sync.css";
 import { CatalogFlowSortStatus } from "./components/CatalogFlowSortStatus";
 
 export const metadata: Metadata = {
