@@ -22,6 +22,7 @@ type Period = "7 วัน" | "30 วัน" | "2 เดือน" | "3 เด�
 
 const ASSET = "/assets";
 const SCREENSHOT = `${ASSET}/screens`;
+const COMPARE_UP_ICON = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAABBJREFUeAEBBQD6/wAAAAAAAAUAAWR4lTgAAAAASUVORK5CYII=";
 const TRENDING_UP_ICON = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAARpJREFUeAHd0y1vwkAcBvDn4FbKmJmYQe3FDbdkbmLJXtTkxr7BzL4EX2LT6Ba3zEAJBgVY0ChCgIACroVSerxcaDkIhCoe1f7T/PL8ry0Z9zoOAkgIASUwiO7zsMP6ABt4h+opiBrbHRoV/8H+0mtzepNA9Cu1z2rb34kUsnIarKzmmZ08vOEslYby/C6FqAwxDV3cK69JcT2ulmAZmXmD8wtMem15Iz9i5nXRbFQpgOm/83Z3j4i8JOWNVhHl6QMg7sy955jdrLttygJRP79h18oeiPAv249EFuuY/KxWGi6RZWwXD13fgkRjIMzIOEPtZw0R6y0wP+IPnXRbGxEefhY0foVw4h7bMlvNbtQRjl/ikJDj/fsDg6aoAnbaNoJXUgAAAABJRU5ErkJggg==";
 const PROFILE_ICONS = {
   "profile": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAAtxJREFUeAGlVUtME0EY/lsW7EsomhhKor2IBxKaqBc0tlxLaS+aKLEmXkg0tDFysdHoSUPEi5JYw0VPaJAEL1JMvNGaeLJEDF56orwUoqV0S2kp1vmn3e3M9kELX7KZnZmd7/vnf61q+YI+Bwy4iRK5qtOyUNd7oB4gn8BOStQNRtA6roPmnBUaOywgmMx0Pbu2CJnIPKRmp2F75m1FchU+6CJpworoet1gvDsC6qNGqIbs6iLEXw9zQiyfakkRA4TxzjMw9A/S93Q4BMmZcciEv1DLEQ3kNk3kMTjdcOSsla5tvfdD/IWPEwH2Bkryf4k4JN4MQ2LCX2IVy2K45oWWgfvkpi2wRb7dHPVxxqqVbpHINzx2mbyh3Qwn/J+g/fMynPwqQuvDMRDazFRRnHwJvz299Exzvwf0DjcnwLmobWqBBjL+3AeJyaLlpg8LcoBZ36/fvAh7YpzODVe90Dr0lAqtXO6EXGFdzVqPJDvhIEeOFinJEQK5lcbmkl2WIDdJz4WoqwyOG0UXSS/aHhcdU4F3PFEZcgkNplPcXJzOZ5Lm/KVSgcaOLjpmIt+5Q7trUaiELNljA5+eCxa4LAqBXNHSTOQHPSAdSgU/UqIS8tUoTd+cQhDB3lq9X3/AYK0P2iEZyF8fg7hDamPDa4f9wLUKLCJUFohflRbv/YrC3ye36MMeVqLpjEXmKt6ggF3iGoTG6oJqFrHuKxE4LcVxXv5GkA6mv4VAa3OSbOojxZNPU2x2Glsf6HqcFZtdkulBzQMP6JiaDchrqmh3vtAwf01TP+kYI4WWEzfranYqYsyxoREa/JUrnUWBpe5iL9KRAjn+aAwOgz+Pb4NIsksC14u2yYY48QoOCmx2LDkVkN8KSrHRewcSQfKYopMi5BiwwAV0l5EETVC0AyWwLpBYDIyX3a8oIAGF9DSLurgswrTGgkOXoEgllAjU+uMv+wMqA3W5Q7WgFnLc/w81cE86WIs6JwAAAABJRU5ErkJggg==",
@@ -330,6 +331,101 @@ const products: ProductResult[] = [
   { id: 5, image: `${ASSET}/result-5.png`, price: 2890 },
   { id: 6, image: `${ASSET}/result-6.png`, price: 4100 }
 ];
+
+type CompareOffer = {
+  id: number;
+  platform: "Shopee" | "Lazada" | "TikTok";
+  price: number;
+  originalPrice: number;
+  rating: number;
+  sold: string;
+  freeShip: boolean;
+  mall: boolean;
+  productName: string;
+  productImage: string;
+  productUrl: string;
+};
+
+const compareOfferById: Record<number, CompareOffer> = {
+  1: {
+    id: 1,
+    platform: "Shopee",
+    price: nikeAirForceOne.discountPrice,
+    originalPrice: nikeAirForceOne.price,
+    rating: nikeAirForceOne.rating,
+    sold: String(nikeAirForceOne.sold),
+    freeShip: nikeAirForceOne.freeShip,
+    mall: nikeAirForceOne.mall,
+    productName: nikeAirForceOne.productName,
+    productImage: nikeAirForceOne.imageUrl,
+    productUrl: nikeAirForceOne.productUrl
+  },
+  2: {
+    id: 2,
+    platform: "Lazada",
+    price: 3594,
+    originalPrice: 4290,
+    rating: 4.8,
+    sold: "86K",
+    freeShip: true,
+    mall: true,
+    productName: nikeAirForceOne.productName,
+    productImage: nikeAirForceOne.imageUrl,
+    productUrl: ""
+  },
+  3: {
+    id: 3,
+    platform: "TikTok",
+    price: 3390,
+    originalPrice: 3990,
+    rating: 4.7,
+    sold: "42K",
+    freeShip: true,
+    mall: true,
+    productName: nikeAirForceOne.productName,
+    productImage: nikeAirForceOne.imageUrl,
+    productUrl: ""
+  },
+  4: {
+    id: 4,
+    platform: "Shopee",
+    price: 3750,
+    originalPrice: 4390,
+    rating: 4.9,
+    sold: "120K",
+    freeShip: true,
+    mall: true,
+    productName: nikeAirForceOne.productName,
+    productImage: nikeAirForceOne.imageUrl,
+    productUrl: ""
+  },
+  5: {
+    id: 5,
+    platform: "Lazada",
+    price: 2890,
+    originalPrice: 3590,
+    rating: 4.8,
+    sold: "86K",
+    freeShip: true,
+    mall: true,
+    productName: nikeAirForceOne.productName,
+    productImage: nikeAirForceOne.imageUrl,
+    productUrl: ""
+  },
+  6: {
+    id: 6,
+    platform: "TikTok",
+    price: 4100,
+    originalPrice: 4590,
+    rating: 4.7,
+    sold: "42K",
+    freeShip: false,
+    mall: false,
+    productName: nikeAirForceOne.productName,
+    productImage: nikeAirForceOne.imageUrl,
+    productUrl: ""
+  }
+};
 
 const initialHomeFavorites: Record<string, boolean> = {
   "recent-1": true,
@@ -821,20 +917,141 @@ function ResultsScreen({
   );
 }
 
-function CompareScreen({ go, selected }: { go: (screen: Screen) => void; selected: number[] }) {
-  const count = Math.max(2, Math.min(3, selected.length));
+function CompareTags({ offer }: { offer: CompareOffer }) {
+  return (
+    <div className="compare-tags" aria-label={offer.platform + (offer.mall ? " Mall" : "")}>
+      {offer.mall && <span className="compare-tag mall">● MALL</span>}
+      <span className={"compare-tag platform " + offer.platform.toLowerCase()}>{offer.platform}</span>
+      {offer.freeShip && <span className="compare-tag free">ส่งฟรี</span>}
+    </div>
+  );
+}
+
+function CompareMiniTrend({ price }: { price: number }) {
+  const values = [price + 500, price + 390, price + 420, price + 260, price + 310, price + 120, price + 170, price];
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const points = values.map((value, index) => ({
+    x: 2 + (index / (values.length - 1)) * 101,
+    y: 3 + ((max - value) / Math.max(1, max - min)) * 27
+  }));
+  const path = points.map((point, index) => (index ? "L" : "M") + " " + point.x + " " + point.y).join(" ");
+
+  return (
+    <svg viewBox="0 0 106 34" aria-hidden="true">
+      <path d={path} pathLength="1" />
+      <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r="2.5" />
+    </svg>
+  );
+}
+
+function CompareBuyButton({ offer, onUnavailable }: { offer: CompareOffer; onUnavailable: () => void }) {
+  const buy = () => {
+    if (offer.productUrl) {
+      window.open(offer.productUrl, "_blank", "noopener,noreferrer");
+      return;
+    }
+    onUnavailable();
+  };
+
+  return (
+    <button className="compare-buy" type="button" onClick={buy}>
+      <Icon name="bag" />
+      ซื้อเลย
+    </button>
+  );
+}
+
+function CompareScreen({
+  go,
+  selected,
+  favorite,
+  toggleFavorite
+}: {
+  go: (screen: Screen) => void;
+  selected: number[];
+  favorite: boolean;
+  toggleFavorite: () => void;
+}) {
+  const [toast, setToast] = useState("");
+  const effectiveIds = selected.length >= 2 ? selected.slice(0, 3) : [1, 2, 3];
+  const offers = effectiveIds.map((id) => compareOfferById[id]).filter(Boolean).sort((a, b) => a.price - b.price);
+  const bestOffer = offers[0];
+  const otherOffers = offers.slice(1);
+
+  const flash = (message: string) => {
+    setToast(message);
+    window.setTimeout(() => setToast(""), 1800);
+  };
+
+  if (!bestOffer) return null;
 
   return (
     <section className="screen compare-screen">
       <StatusBar />
       <Header title="ผลการเปรียบเทียบ" onBack={() => go("results")} />
+
       <main className="compare-content">
-        {[1, 2, 3].slice(0, count).map((index) => (
-          <button key={index} className={`compare-card card-${index}`} onClick={() => go("history")} type="button">
-            <img src={`${ASSET}/compare-${index}.png`} alt={`ตัวเลือกที่ ${index}`} />
+        <div className="compare-summary-glow">
+          <section className="compare-product-summary">
+            <img src={bestOffer.productImage} alt="" />
+            <div>
+              <strong>{bestOffer.productName}</strong>
+              <span>เปรียบเทียบ {offers.length} ร้านค้า</span>
+            </div>
+            <button
+              className={favorite ? "compare-heart active" : "compare-heart"}
+              type="button"
+              aria-label={favorite ? "นำออกจากสินค้าที่สนใจ" : "เพิ่มในสินค้าที่สนใจ"}
+              aria-pressed={favorite}
+              onClick={toggleFavorite}
+            >
+              ♥
+            </button>
+          </section>
+        </div>
+
+        <h2 className="compare-section-label">ข้อเสนอที่คุ้มที่สุด</h2>
+        <article className="compare-best-offer">
+          <div className="compare-best-head">
+            <CompareTags offer={bestOffer} />
+            <span className="compare-cheapest">ราคาถูก</span>
+          </div>
+          <div className="compare-best-price">
+            <strong>฿{bestOffer.price.toLocaleString("en-US")}</strong>
+            <del>฿{bestOffer.originalPrice.toLocaleString("en-US")}</del>
+          </div>
+          <button className="compare-history-link" type="button" onClick={() => go("history")}>
+            <CompareMiniTrend price={bestOffer.price} />
+            <span>
+              <b>ถูกที่สุด • {bestOffer.freeShip ? "ส่งฟรี • " : ""}ประหยัด ฿{(bestOffer.originalPrice - bestOffer.price).toLocaleString("en-US")}</b>
+              <small>ราคาย้อนหลัง 30 วัน ›</small>
+            </span>
           </button>
-        ))}
+          <div className="compare-rating">★ {bestOffer.rating} <span>• ขายแล้ว {bestOffer.sold} ชิ้น</span></div>
+          <CompareBuyButton offer={bestOffer} onUnavailable={() => flash("ยังไม่มีลิงก์ร้านค้านี้ใน Prototype")} />
+        </article>
+
+        {otherOffers.length > 0 && <h2 className="compare-section-label other">ข้อเสนออื่น</h2>}
+        <div className="compare-other-list">
+          {otherOffers.map((offer) => (
+            <article className="compare-other-offer" key={offer.id}>
+              <CompareTags offer={offer} />
+              <div className="compare-other-price">฿{offer.price.toLocaleString("en-US")}</div>
+              <CompareBuyButton offer={offer} onUnavailable={() => flash("ยังไม่มีลิงก์ร้านค้านี้ใน Prototype")} />
+              <div className="compare-rating">★ {offer.rating} <span>• ขายแล้ว {offer.sold} ชิ้น</span></div>
+              <div className="compare-difference">
+                <img src={COMPARE_UP_ICON} alt="" aria-hidden="true" />
+                แพงกว่าดีลคุ้มสุด ฿{(offer.price - bestOffer.price).toLocaleString("en-US")}
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <small className="compare-updated">อัปเดตราคาล่าสุด 10 นาทีที่แล้ว</small>
       </main>
+
+      {toast && <div className="toast" role="status">{toast}</div>}
       <BottomNav go={go} />
     </section>
   );
@@ -1361,7 +1578,16 @@ export default function BestChoiceApp() {
               setSelected={setSelected}
             />
           )}
-          {screen === "compare" && <CompareScreen go={go} selected={selected} />}
+          {screen === "compare" && (
+            <CompareScreen
+              go={go}
+              selected={selected}
+              favorite={Boolean(homeFavorites["recent-1"])}
+              toggleFavorite={() =>
+                setHomeFavorites((current) => ({ ...current, "recent-1": !current["recent-1"] }))
+              }
+            />
+          )}
           {screen === "history" && <HistoryScreen go={go} />}
           {screen === "total-save" && <TotalSaveScreen go={go} />}
           {screen === "profile" && <ProfileScreen go={go} />}
