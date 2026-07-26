@@ -630,3 +630,76 @@
     animation: none;
   }
 }
+
+
+/* Reduced-noise compare hierarchy and a clearer follow-price action. */
+.compare-follow-price {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  min-width: 112px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 10px;
+  border: 1px solid rgba(235, 59, 12, .55);
+  border-radius: 999px;
+  color: var(--primary);
+  background: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  white-space: nowrap;
+  transition: background .18s ease, border-color .18s ease, transform .18s ease;
+}
+
+.compare-follow-price img {
+  width: 17.44px;
+  height: 16px;
+  display: block;
+}
+
+.compare-follow-price.active {
+  border-color: rgba(235, 59, 12, .22);
+  background: #fff2ed;
+}
+
+.compare-follow-price:active {
+  transform: scale(.97);
+}
+
+.compare-product-summary span {
+  width: 110px;
+}
+
+.compare-best-deal {
+  height: 235.5px;
+  margin-top: 10px;
+  box-shadow: 0 2px 7px rgba(235, 59, 12, .08);
+}
+
+.compare-best-banner {
+  height: 32px;
+  background: linear-gradient(90deg, #eb3b0c 0%, #f04b20 100%);
+}
+
+.compare-best-banner > span {
+  gap: 2px;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.compare-best-banner img {
+  width: 20px;
+  height: 20px;
+}
+
+.compare-best-deal .compare-best-offer {
+  top: 31.5px;
+}
+
+.compare-best-head {
+  justify-content: flex-start;
+}
