@@ -326,11 +326,11 @@ const initialHomeFavorites: Record<string, boolean> = {
   "recent-28": true,
   "recommended-4": true,
   "recommended-9": false,
-  "recommended-11": true,
-  "recommended-17": false,
+  "recommended-11": false,
+  "recommended-17": true,
   "recommended-19": true,
-  "recommended-24": false,
-  "recommended-27": true,
+  "recommended-24": true,
+  "recommended-27": false,
   "recommended-31": false
 };
 
