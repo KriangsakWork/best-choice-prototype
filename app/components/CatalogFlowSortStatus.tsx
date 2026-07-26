@@ -290,11 +290,27 @@ function ProductGroupCard({ group, onOpen }: { group: ProductGroup; onOpen: () =
 }
 
 
+const catalogPlatformBadges: Record<ProductCardData["platform"], { src: string; width: number; label: string }> = {
+  Lazada: { src: "/assets/App/Platform=Lazada.jpg", width: 58, label: "Lazada" },
+  Shopee: { src: "/assets/App/Platform=Shopee.jpg", width: 59, label: "Shopee" },
+  TikTok: { src: "/assets/App/Platform=TikTok Shop.jpg", width: 54, label: "TikTok Shop" }
+};
+
 function CatalogCompareTags({ offer }: { offer: ProductCardData }) {
+  const platformBadge = catalogPlatformBadges[offer.platform];
+
   return (
     <div className="compare-tags" aria-label={offer.platform + (offer.mall ? " Mall" : "")}>
-      {offer.mall && <span className="compare-tag mall">● MALL</span>}
-      <span className={"compare-tag platform " + offer.platform.toLowerCase()}>{offer.platform}</span>
+      {offer.mall && (
+        <img className="compare-badge-image mall" src="/assets/App/Platform=MALL.jpg" alt="MALL" height={16} />
+      )}
+      <img
+        className="compare-badge-image platform"
+        src={platformBadge.src}
+        alt={platformBadge.label}
+        width={platformBadge.width}
+        height={16}
+      />
       {offer.freeShip && <span className="compare-tag free">ส่งฟรี</span>}
     </div>
   );
@@ -711,43 +727,52 @@ export function CatalogFlowSortStatus() {
                         : [...current, selectedGroup.id]
                     )}
                   >
-                    ♥
+                    <img
+                      src={favorite ? "/assets/SVG/Like/Property 1=Like.svg" : "/assets/SVG/Like/Property 1=Normal.svg"}
+                      alt=""
+                      width={17.44}
+                      height={16}
+                    />
                   </button>
                 </section>
               </div>
 
-              <h2 className="compare-section-label">ข้อเสนอที่คุ้มที่สุด</h2>
-              <article className="compare-best-offer">
-                <div className="compare-best-head">
-                  <CatalogCompareTags offer={bestOffer} />
-                  <span className="compare-cheapest">ราคาถูก</span>
+              <section className="compare-best-deal" aria-label="ข้อเสนอที่คุ้มที่สุด">
+                <div className="compare-best-banner">
+                  <span>ข้อเสนอที่คุ้มที่สุด <img src="/assets/SVG/compare-fire.svg" alt="" width={24} height={24} /></span>
                 </div>
-                <div className="compare-best-price">
-                  <strong>฿{bestOffer.discountPrice.toLocaleString("en-US")}</strong>
-                  <del>฿{bestOffer.price.toLocaleString("en-US")}</del>
-                </div>
-                <button
-                  className="compare-history-link"
-                  type="button"
-                  onClick={() => flash("กำลังเปิดประวัติราคา")}
-                >
-                  <CatalogCompareTrend price={bestOffer.discountPrice} />
-                  <span>
-                    <b>
-                      ถูกที่สุด • {bestOffer.freeShip ? "ส่งฟรี • " : ""}
-                      ประหยัด ฿{Math.max(0, bestOffer.price - bestOffer.discountPrice).toLocaleString("en-US")}
-                    </b>
-                    <small>ราคาย้อนหลัง 30 วัน ›</small>
-                  </span>
-                </button>
-                <div className="compare-rating">
-                  ★ {bestOffer.rating} <span>• ขายแล้ว {bestOffer.sold} ชิ้น</span>
-                </div>
-                <CatalogCompareBuy
-                  offer={bestOffer}
-                  onUnavailable={() => flash("ยังไม่มีลิงก์ร้านค้านี้ใน Prototype")}
-                />
-              </article>
+                <article className="compare-best-offer">
+                  <div className="compare-best-head">
+                    <CatalogCompareTags offer={bestOffer} />
+                    <span className="compare-cheapest">ราคาถูก</span>
+                  </div>
+                  <div className="compare-best-price">
+                    <strong>฿{bestOffer.discountPrice.toLocaleString("en-US")}</strong>
+                    <del>฿{bestOffer.price.toLocaleString("en-US")}</del>
+                  </div>
+                  <button
+                    className="compare-history-link"
+                    type="button"
+                    onClick={() => flash("กำลังเปิดประวัติราคา")}
+                  >
+                    <CatalogCompareTrend price={bestOffer.discountPrice} />
+                    <span>
+                      <b>
+                        ถูกที่สุด • {bestOffer.freeShip ? "ส่งฟรี • " : ""}
+                        ประหยัด ฿{Math.max(0, bestOffer.price - bestOffer.discountPrice).toLocaleString("en-US")}
+                      </b>
+                      <small>ราคาย้อนหลัง 30 วัน ›</small>
+                    </span>
+                  </button>
+                  <div className="compare-rating">
+                    ★ {bestOffer.rating} <span>• ขายแล้ว {bestOffer.sold} ชิ้น</span>
+                  </div>
+                  <CatalogCompareBuy
+                    offer={bestOffer}
+                    onUnavailable={() => flash("ยังไม่มีลิงก์ร้านค้านี้ใน Prototype")}
+                  />
+                </article>
+              </section>
 
               {otherOffers.length > 0 && <h2 className="compare-section-label other">ข้อเสนออื่น</h2>}
               <div className="compare-other-list">
@@ -764,7 +789,7 @@ export function CatalogFlowSortStatus() {
                     </div>
                     <div className="compare-difference">
                       <CatalogCompareUpIcon />
-                      แพงกว่าดีลคุ้มสุด ฿{(offer.discountPrice - bestOffer.discountPrice).toLocaleString("en-US")}
+                      แพงกว่า ฿{(offer.discountPrice - bestOffer.discountPrice).toLocaleString("en-US")} (+{Math.round(((offer.discountPrice - bestOffer.discountPrice) / bestOffer.discountPrice) * 100)}%)
                     </div>
                   </article>
                 ))}
