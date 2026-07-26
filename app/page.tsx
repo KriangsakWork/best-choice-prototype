@@ -159,6 +159,13 @@ const products: ProductResult[] = [
   { id: 6, image: `${ASSET}/result-6.png`, price: 4100 }
 ];
 
+const initialHomeFavorites: Record<string, boolean> = {
+  "recent-1": true,
+  "recent-2": true,
+  "recommended-1": true,
+  "recommended-2": true
+};
+
 const suggestions = [
   { label: "หมวกไหมพรม", trend: "+32%" },
   { label: "หมวกคาวบอย", trend: "+18%" },
@@ -348,11 +355,52 @@ function Header({ title, onBack }: { title: string; onBack: () => void }) {
   );
 }
 
-function HomeScreen({ go, query, setQuery }: { go: (screen: Screen) => void; query: string; setQuery: (value: string) => void }) {
+function HomeScreen({
+  go,
+  query,
+  setQuery,
+  homeFavorites,
+  toggleHomeFavorite
+}: {
+  go: (screen: Screen) => void;
+  query: string;
+  setQuery: (value: string) => void;
+  homeFavorites: Record<string, boolean>;
+  toggleHomeFavorite: (key: string) => void;
+}) {
   const duplicatedHomeCards = Array.from({ length: 2 }, (_, index) => ({
     ...nikeAirForceOne,
     id: index + 1
   }));
+
+  const openResultsWithKeyboard = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      go("results");
+    }
+  };
+
+  const renderHomeCard = (product: ProductCardData, section: "recent" | "recommended") => {
+    const favoriteKey = `${section}-${product.id}`;
+
+    return (
+      <div
+        className="home-card-action"
+        key={favoriteKey}
+        role="link"
+        tabIndex={0}
+        onClick={() => go("results")}
+        onKeyDown={openResultsWithKeyboard}
+        aria-label={`ดูผลการค้นหา ${product.productName}`}
+      >
+        <ProductCard
+          product={product}
+          favorite={homeFavorites[favoriteKey]}
+          onFavoriteToggle={() => toggleHomeFavorite(favoriteKey)}
+        />
+      </div>
+    );
+  };
 
   return (
     <section className="screen home-screen">
@@ -398,20 +446,12 @@ function HomeScreen({ go, query, setQuery }: { go: (screen: Screen) => void; que
       <main className="home-content">
         <h2>ค้นหาล่าสุด</h2>
         <div className="home-grid">
-          {duplicatedHomeCards.map((product) => (
-            <button key={`recent-${product.id}`} onClick={() => go("results")} type="button">
-              <ProductCard product={product} />
-            </button>
-          ))}
+          {duplicatedHomeCards.map((product) => renderHomeCard(product, "recent"))}
         </div>
 
         <h2>สินค้าแนะนำ</h2>
         <div className="home-grid">
-          {duplicatedHomeCards.map((product) => (
-            <button key={`recommended-${product.id}`} onClick={() => go("results")} type="button">
-              <ProductCard product={product} />
-            </button>
-          ))}
+          {duplicatedHomeCards.map((product) => renderHomeCard(product, "recommended"))}
         </div>
       </main>
 
@@ -809,6 +849,7 @@ export default function BestChoiceApp() {
   const [screen, setScreen] = useState<Screen>("home");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<number[]>([]);
+  const [homeFavorites, setHomeFavorites] = useState<Record<string, boolean>>(initialHomeFavorites);
   const prototypeScale = usePrototypeScale();
   const prototypeStyle = {
     "--prototype-scale": prototypeScale,
@@ -823,7 +864,17 @@ export default function BestChoiceApp() {
     <main className="prototype-stage" style={prototypeStyle}>
       <div className="phone-viewport">
         <div className="phone-shell">
-          {screen === "home" && <HomeScreen go={go} query={query} setQuery={setQuery} />}
+          {screen === "home" && (
+            <HomeScreen
+              go={go}
+              query={query}
+              setQuery={setQuery}
+              homeFavorites={homeFavorites}
+              toggleHomeFavorite={(key) =>
+                setHomeFavorites((current) => ({ ...current, [key]: !current[key] }))
+              }
+            />
+          )}
           {screen === "search" && <SearchScreen go={go} query={query} setQuery={setQuery} />}
           {screen === "results" && (
             <ResultsScreen
@@ -853,7 +904,7 @@ export default function BestChoiceApp() {
         <span>FIGMA-MATCHED PROTOTYPE</span>
         <h2>Best Choice</h2>
         <p>ค้นหา เปรียบเทียบ ลากดูกราฟ และทดลองลบสินค้าในรายการสนใจได้ครบทั้ง loop</p>
-        <button onClick={() => { setScreen("home"); setQuery(""); setSelected([]); }} type="button">เริ่ม Demo ใหม่</button>
+        <button onClick={() => { setScreen("home"); setQuery(""); setSelected([]); setHomeFavorites(initialHomeFavorites); }} type="button">เริ่ม Demo ใหม่</button>
       </aside>
     </main>
   );
