@@ -510,3 +510,11 @@
   z-index: 90;
 }
 
+
+
+.catalog-buy-icon svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+  fill: currentColor;
+}
