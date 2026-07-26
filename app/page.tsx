@@ -23,6 +23,15 @@ type Period = "7 วัน" | "30 วัน" | "2 เดือน" | "3 เด�
 const ASSET = "/assets";
 const SCREENSHOT = `${ASSET}/screens`;
 const TRENDING_UP_ICON = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAARpJREFUeAHd0y1vwkAcBvDn4FbKmJmYQe3FDbdkbmLJXtTkxr7BzL4EX2LT6Ba3zEAJBgVY0ChCgIACroVSerxcaDkIhCoe1f7T/PL8ry0Z9zoOAkgIASUwiO7zsMP6ABt4h+opiBrbHRoV/8H+0mtzepNA9Cu1z2rb34kUsnIarKzmmZ08vOEslYby/C6FqAwxDV3cK69JcT2ulmAZmXmD8wtMem15Iz9i5nXRbFQpgOm/83Z3j4i8JOWNVhHl6QMg7sy955jdrLttygJRP79h18oeiPAv249EFuuY/KxWGi6RZWwXD13fgkRjIMzIOEPtZw0R6y0wP+IPnXRbGxEefhY0foVw4h7bMlvNbtQRjl/ikJDj/fsDg6aoAnbaNoJXUgAAAABJRU5ErkJggg==";
+const PROFILE_ICONS = {
+  "profile": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAAtxJREFUeAGlVUtME0EY/lsW7EsomhhKor2IBxKaqBc0tlxLaS+aKLEmXkg0tDFysdHoSUPEi5JYw0VPaJAEL1JMvNGaeLJEDF56orwUoqV0S2kp1vmn3e3M9kELX7KZnZmd7/vnf61q+YI+Bwy4iRK5qtOyUNd7oB4gn8BOStQNRtA6roPmnBUaOywgmMx0Pbu2CJnIPKRmp2F75m1FchU+6CJpworoet1gvDsC6qNGqIbs6iLEXw9zQiyfakkRA4TxzjMw9A/S93Q4BMmZcciEv1DLEQ3kNk3kMTjdcOSsla5tvfdD/IWPEwH2Bkryf4k4JN4MQ2LCX2IVy2K45oWWgfvkpi2wRb7dHPVxxqqVbpHINzx2mbyh3Qwn/J+g/fMynPwqQuvDMRDazFRRnHwJvz299Exzvwf0DjcnwLmobWqBBjL+3AeJyaLlpg8LcoBZ36/fvAh7YpzODVe90Dr0lAqtXO6EXGFdzVqPJDvhIEeOFinJEQK5lcbmkl2WIDdJz4WoqwyOG0UXSS/aHhcdU4F3PFEZcgkNplPcXJzOZ5Lm/KVSgcaOLjpmIt+5Q7trUaiELNljA5+eCxa4LAqBXNHSTOQHPSAdSgU/UqIS8tUoTd+cQhDB3lq9X3/AYK0P2iEZyF8fg7hDamPDa4f9wLUKLCJUFohflRbv/YrC3ye36MMeVqLpjEXmKt6ggF3iGoTG6oJqFrHuKxE4LcVxXv5GkA6mv4VAa3OSbOojxZNPU2x2Glsf6HqcFZtdkulBzQMP6JiaDchrqmh3vtAwf01TP+kYI4WWEzfranYqYsyxoREa/JUrnUWBpe5iL9KRAjn+aAwOgz+Pb4NIsksC14u2yYY48QoOCmx2LDkVkN8KSrHRewcSQfKYopMi5BiwwAV0l5EETVC0AyWwLpBYDIyX3a8oIAGF9DSLurgswrTGgkOXoEgllAjU+uMv+wMqA3W5Q7WgFnLc/w81cE86WIs6JwAAAABJRU5ErkJggg==",
+  "orders": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAAZVJREFUeAHtVj1MwkAU/qhgKRj8G3BQF0djHNxw9W9FTSQx4oYRVxxxwU1mjW7+JbAQNxVdcdHFRBcTNhcGYzRACyHUuzM0NC0tljRx4Esube/dfV/fe/de66iLJRk2wtnOomruGmLmBLXnh99N0wHwCyG4F9dM9zrMPCifH0A8TerahHAMnvCu0XZwRsbKbUoh90QTGLp6Y8Ozk2Bz4lkSFeKdZQEpm1bIheUIHH39bAjBiCIikdBZFmjEXC/W/HxItaYVVDmQsimUD+OQi9+wAm5kDMJGjLxQSF/gc30G9cI7OgENIc2TItps7JScQi5+qZ4Nc0CTO3DxBM7r09hoOAYvHyFsxowojAWcE5PoIUT8akRj6w0sgfOPwzU1C8sC1dwNu7qDW3Cv0GPqY4MWmDe6z2zSXdqIQp3kjzm/ZoF3O8HI9SBmjsmp29PMD98XlHvTXlQ6iqOWfwFPjp6L9CCaxFr+lRVY1aSK2/LACpo94GAzugL/TECvJfyZkFR+SwH6EeH8o7CKRpWr5uz+q7A9Bz8eWYqw7XPXuwAAAABJRU5ErkJggg==",
+  "history": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAAOtJREFUeAHtlj0OgjAYhj8aBkFD4qSDegn1Iq4obi6uMDo5yuzgiDFx8QJewVuog0yiQWABFMcWbAExIfFZSD4oT9q3f1zgPkIoEAQFw+MFb78FZzmD0L4nNuJqElQGExAVDWhw+BBd5S4E5hlYEBSVKiGGiOXnwlh9P11DB8dYpBOwII40ZknmkFkluWYRLvF2q+8IfPMYK3HWOvEtDxmw5H5sPbRvRK3whfb7lYxT3xwANTqx7/zLCaxh72N7ag/y7oTUHiQFyso/Ayrlz4AQoKoEWUHNNl0gTuevUFuQlugYjU44ol76W8UT4KVTfDhJqtEAAAAASUVORK5CYII=",
+  "settings": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAAhlJREFUeAHVVj1M20AU/uySYDcRVCx0aKeqU6UydGq6VrQw8TOAhPhZiAQLCxkzwZas/AgmYAEk/iYUJEayI8GCxAQDDICC4sQJxOG9SDlysY0tIgY+ydL5fO/e3Xff986KlTfKeEOoeGP4SmAerOO25ztu/rZXHm6bW0t+QqH4oehu6Bes60s5MNyKtt0zr1DvHVjZe9vkjHI2g7KR8QpHU32HsRBH8WgfgZ8R6P1R5LaXXYONuTgCf7rxcHyEh/Q+gpEuhCZnpDESRYXUOrKJKTSC0MQMNFpYFYKi0tUFcqsJNIrcWlKiTiR4pG06cV3Fh28/0NwXhT4yDbX9i+s4PhsztSHexRmUFdcYaH3jxO2seP84EqOVJpBfSTqOZ4XZdqB1DkIfnbYNVj9/lSYXSYZjaOqIOC5G6xywJ6gGBf8NSgHByH+4IVCXgCmsX4zNB0qoBa+FArtnpQTsgcK2XAIKB5twA/ulFiZ5pl6JIgF7wKm+sCqM+bitnw+5dH5q68+vJqXEQkXWC7Y3aVdFcmqAnMoonZ+QrNOu4y3jXrSFk7nmZLio1Xx8DVh1nxYPhVQFRWq4BdpYDI1CJ4/U+kAqdnpvFBaVjEqxIzqCHb9RSKdQpPNxQjPpXSNp5neWK5WAJV3rAYbnfcDU3dEF44S2vTOSdetL4d73AVOnOniDufaa3FcCBp+NEn5Owm0uen6gvPu/iifXAcq6D6EJ8gAAAABJRU5ErkJggg==",
+  "help": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAAhFJREFUeAHVVjssQ1EY/vqSW23aYGDAgI3EYPKYSAiTx2AQNhUMBuloqq0MFhKbIGFQRsRaCwMJi2DAoJNnKXVvnf9Kb3vdc+5V0cG39Nzbc77//7//ca5NeY2nkEfYkWc4zf5MPT8gsbOO5HEU8uUplNvrL6/KKuCoqkVBcxekjn4zCthEEr3trCG+MMWMPJoSkDH3YFBoiGuAiBMbi8gFUm8AnrGQ0YG/ICckIouIz0+ZGyBZeOQkg282guKtM5TsxeCbicBeWs41QjnLhk6iu4EGKLEbw8Gi1QNGWAn54gQKy4mrvkn9fZzsZu9O9YRev7rf5vHrIyDveeR0gBL9shzG/UgbI+1Ro7R7fayKOg3705WXhlamb/vb4IEOEHE25NgVzJA8isLNkq6LQD4/wU+glmVfADLrCYqah2zZtAiU2LUVt0ruZ8kmfUkqnqTfuZzIAd7gnJrsp/CEIblCp7RFaYXlZko4SfMukIbHpUXgqKmzlIlk+Qkc1bUZY+mFq77R8mBBUydcbMBZ7mvJ7NEajRrngRotzh9uTtZc/tlNdX0/0irMARVC0cph5llbsMZxj4cgAhFS/VMOUrdiKd1DQd2zYZr+dtgRpN5hNlGnde8M09QzGoLUF8BfkBOEF05idw2vS2FhM2kETNpCRiy153DhfDeUjG7jgyZp1pXprK5TE0/E1B9CB/79V8Unl+v1kuC1K6EAAAAASUVORK5CYII=",
+  "security": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAAbdJREFUeAHtVb9PwkAUfi3WUiEwOOCii24aZXCRbsYQcYNFB4NO8AcIjv4DwMJgIpu64CCOinEVZw1uOukggwkS+S3guyMQy7WUarr5JU3b17vve3337juuXS13wETwYDLGRhnU+fyAWvYMGrlL+i56t0Bwr4DFNaM7lxtWouZ9DionMWg951GkxHwXvZsgyBsgyuswsgDJtppJQQ2vn6TCkgekYARKewGGhJ+aBmERv+9EmL9iBIrhVcz4sU8qyD6wYqac3Ulj72su0MIYjncmLpSxwUE9ckcigwIyGMEXlnQQml1klFwLprfpv4AumC7ibQ5ol0ua7Th5U2BirbcXKG4v91tZwccE5hbAKFpPeXq3zM7rCwhuDxhF/e6K3sdxU+oKWP1hMAJSnkY2TZ/VPIktkd1Bt/yoqJzGu+RoJ7yKu6p2kT2apIuth2rmiGbPYVITaHRqUBWwoDtad6OgR145PKDPUjCqmj2B5oEj+UNd6z6OK+K9M6JnbMTCpUBIi2b4gUNQu06jSAzahVflRCyLbT8Josc3bLq+AAHplObDLdTPU3QTkgUlWattrF8J/AWme9E36byb8MZzsBIAAAAASUVORK5CYII=",
+  "chevron": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAAKRJREFUeAHN1L0KwjAUhuEvBTuYXISIu0MRdBMEL1ocdBGE4uBevAPTwTjUIaZLh8Jpz+kP9IVAhvAMJyTKhzBAEQZqfCi3Fl/3QW/oej7hEhYXI6F1ksA5x8ZIaLFcYbPdsbHGYUuw1lurY7+i6AaVea+q/SyOu0GvLEN6v0Frjf3hSJ6LJMjcGDkkQRqh5yNlI2WKev25fQfIkMNlQ9Km9438AacKVw5qfVAAAAAAAElFTkSuQmCC"
+} as const;
 const PROTOTYPE_WIDTH = 402;
 const PROTOTYPE_HEIGHT = 874;
 const MOBILE_STATUS_BAR_CROP = 50;
@@ -1109,6 +1118,128 @@ function TotalSaveScreen({ go }: { go: (screen: Screen) => void }) {
   );
 }
 
+
+const profileActivityItems = [
+  { icon: PROFILE_ICONS.orders, label: "ประวัติคำสั่งซื้อ" },
+  { icon: PROFILE_ICONS.history, label: "ประวัติการค้นหา" }
+];
+
+const profileServiceItems = [
+  {
+    icon: PROFILE_ICONS.settings,
+    label: "การตั้งค่า",
+    description: "ความสนใจ ความปลอดภัย และบัญชีเชื่อมต่อ"
+  },
+  {
+    icon: PROFILE_ICONS.help,
+    label: "ศูนย์ช่วยเหลือ",
+    description: "FAQ และติดต่อเรา"
+  },
+  {
+    icon: PROFILE_ICONS.security,
+    label: "ข้อกำหนดและความเป็นส่วนตัว"
+  }
+];
+
+function ProfileMenuItem({
+  icon,
+  label,
+  description,
+  onClick
+}: {
+  icon: string;
+  label: string;
+  description?: string;
+  onClick: () => void;
+}) {
+  return (
+    <button className="profile-menu-item" type="button" onClick={onClick}>
+      <span className="profile-menu-icon"><img src={icon} alt="" /></span>
+      <span className="profile-menu-copy">
+        <strong>{label}</strong>
+        {description && <small>{description}</small>}
+      </span>
+      <img className="profile-chevron" src={PROFILE_ICONS.chevron} alt="" aria-hidden="true" />
+    </button>
+  );
+}
+
+function ProfileScreen({ go }: { go: (screen: Screen) => void }) {
+  const [toast, setToast] = useState("");
+
+  const flash = (message: string) => {
+    setToast(message);
+    window.setTimeout(() => setToast(""), 1800);
+  };
+
+  return (
+    <section className="screen profile-screen">
+      <StatusBar />
+
+      <main className="profile-content">
+        <h1>โปรไฟล์</h1>
+
+        <section className="profile-hero">
+          <span className="profile-orb profile-orb-one" aria-hidden="true" />
+          <span className="profile-orb profile-orb-two" aria-hidden="true" />
+          <div className="profile-avatar">
+            <img src={PROFILE_ICONS.profile} alt="" />
+          </div>
+          <div className="profile-identity">
+            <strong>มนุษย์คนหนึ่ง</strong>
+            <span>สมาชิก Best Choice</span>
+          </div>
+          <button className="profile-edit" type="button" onClick={() => flash("เปิดหน้าแก้ไขโปรไฟล์")}>
+            แก้ไข
+          </button>
+          <div className="profile-hero-divider" />
+          <button className="profile-stat" type="button" onClick={() => go("total-save")}>
+            <span>ประหยัดทั้งหมด</span>
+            <strong>฿10,250</strong>
+          </button>
+          <button className="profile-stat profile-stat-interest" type="button" onClick={() => go("interest")}>
+            <span>สินค้าที่สนใจ</span>
+            <strong>12 รายการ</strong>
+          </button>
+        </section>
+
+        <section className="profile-section">
+          <h2>กิจกรรมของฉัน</h2>
+          <div className="profile-menu-card">
+            {profileActivityItems.map((item) => (
+              <ProfileMenuItem
+                key={item.label}
+                {...item}
+                onClick={() => flash("เปิด" + item.label)}
+              />
+            ))}
+          </div>
+        </section>
+
+        <section className="profile-section">
+          <h2>บัญชีและบริการ</h2>
+          <div className="profile-menu-card profile-service-card">
+            {profileServiceItems.map((item) => (
+              <ProfileMenuItem
+                key={item.label}
+                {...item}
+                onClick={() => flash("เปิด" + item.label)}
+              />
+            ))}
+          </div>
+        </section>
+
+        <button className="profile-logout" type="button" onClick={() => flash("ระบบต้นแบบยังไม่ได้เชื่อมการออกจากระบบ")}>
+          ออกจากระบบ
+        </button>
+      </main>
+
+      {toast && <div className="toast" role="status">{toast}</div>}
+      <BottomNav active="profile" go={go} />
+    </section>
+  );
+}
+
 type ReferenceAction = {
   label: string;
   x: number;
@@ -1233,8 +1364,8 @@ export default function BestChoiceApp() {
           {screen === "compare" && <CompareScreen go={go} selected={selected} />}
           {screen === "history" && <HistoryScreen go={go} />}
           {screen === "total-save" && <TotalSaveScreen go={go} />}
+          {screen === "profile" && <ProfileScreen go={go} />}
           {[
-            "profile",
             "interest",
             "interest-confirm",
             "interest-removed",
