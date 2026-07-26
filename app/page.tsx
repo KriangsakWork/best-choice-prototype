@@ -97,6 +97,34 @@ const spriteIcons: Record<string, { screen: string; x: number; y: number; width:
   ai: { screen: "history", x: 37, y: 576, width: 39, height: 39 }
 };
 
+const realIconAssets: Record<string, string> = {
+  search: `${ASSET}/SVG/Search Bar/icon/Icon Search1.svg`,
+  "search-active": `${ASSET}/SVG/Search Bar/icon/Icon Search2.svg`,
+  camera: `${ASSET}/SVG/Search Bar/icon/Icon Cam.svg`,
+  mic: `${ASSET}/SVG/Search Bar/icon/Icon Mic.svg`,
+  close: `${ASSET}/SVG/Search Bar/icon/Icon Close.svg`,
+  sort: `${ASSET}/SVG/Search Bar/icon/Filter.svg`
+};
+
+const navIconAssets: Record<string, { default: string; active: string }> = {
+  home: {
+    default: `${ASSET}/SVG/Nav Bar/HIC01.svg`,
+    active: `${ASSET}/SVG/Nav Bar/HIC01A.svg`
+  },
+  interest: {
+    default: `${ASSET}/SVG/Nav Bar/HIC02.svg`,
+    active: `${ASSET}/SVG/Nav Bar/HIC02B.svg`
+  },
+  savings: {
+    default: `${ASSET}/SVG/Nav Bar/HIC03.svg`,
+    active: `${ASSET}/SVG/Nav Bar/HIC03B.svg`
+  },
+  profile: {
+    default: `${ASSET}/SVG/Nav Bar/HIC04.svg`,
+    active: `${ASSET}/SVG/Nav Bar/HIC04B.svg`
+  }
+};
+
 type ProductResult = {
   id: number;
   image?: string;
@@ -146,8 +174,19 @@ const chartData: Record<Period, number[]> = {
 };
 
 function Icon({ name, className = "" }: { name: string; className?: string }) {
+  const asset = realIconAssets[name];
+
+  if (asset) {
+    return (
+      <span className={`asset-icon ${className}`} aria-hidden="true">
+        <img src={asset} alt="" />
+      </span>
+    );
+  }
+
   const sprite = spriteIcons[name];
   if (!sprite) return null;
+
   return (
     <span
       className={`sprite-icon ${className}`}
@@ -166,7 +205,7 @@ function Icon({ name, className = "" }: { name: string; className?: string }) {
 function StatusBar() {
   return (
     <div className="status-bar" aria-hidden="true">
-      <img src={`${SCREENSHOT}/home.png`} alt="" />
+      <img src={`${ASSET}/SVG/Status bar.svg`} alt="" />
     </div>
   );
 }
@@ -181,17 +220,23 @@ function BottomNav({ active, go }: { active?: string; go: (screen: Screen) => vo
 
   return (
     <nav className="bottom-nav" aria-label="เมนูหลัก">
-      <img className="nav-visual" src={`${SCREENSHOT}/${active === "home" ? "home" : "history"}.png`} alt="" aria-hidden="true" />
-      {items.map((item) => (
-        <button
-          key={item.key}
-          className={active === item.key ? "active" : ""}
-          onClick={() => go(item.screen)}
-          type="button"
-        >
-          <span className="sr-only">{item.label}</span>
-        </button>
-      ))}
+      {items.map((item) => {
+        const isActive = active === item.key;
+        const icons = navIconAssets[item.key];
+
+        return (
+          <button
+            key={item.key}
+            className={isActive ? "active" : ""}
+            onClick={() => go(item.screen)}
+            type="button"
+            aria-current={isActive ? "page" : undefined}
+          >
+            <img src={isActive ? icons.active : icons.default} alt="" aria-hidden="true" />
+            <span>{item.label}</span>
+          </button>
+        );
+      })}
     </nav>
   );
 }
@@ -304,6 +349,11 @@ function Header({ title, onBack }: { title: string; onBack: () => void }) {
 }
 
 function HomeScreen({ go, query, setQuery }: { go: (screen: Screen) => void; query: string; setQuery: (value: string) => void }) {
+  const duplicatedHomeCards = Array.from({ length: 2 }, (_, index) => ({
+    ...nikeAirForceOne,
+    id: index + 1
+  }));
+
   return (
     <section className="screen home-screen">
       <StatusBar />
@@ -319,21 +369,45 @@ function HomeScreen({ go, query, setQuery }: { go: (screen: Screen) => void; que
           }}
         />
       </div>
-      <button className="savings-hero" onClick={() => go("total-save")} type="button">
-        <img src={`${ASSET}/home-savings.png`} alt="ยอดประหยัดรวม 10,250 บาท" />
+
+      <button className="savings-hero" onClick={() => go("total-save")} type="button" aria-label="ดูยอดประหยัดรวม 10,250 บาท">
+        <img
+          className="savings-hero__background"
+          src={`${ASSET}/SVG/Total Savings BG.jpg`}
+          alt=""
+          aria-hidden="true"
+        />
+        <span className="savings-hero__content">
+          <span className="savings-hero__eyebrow">Total Save</span>
+          <strong>฿10,250</strong>
+          <span className="savings-hero__change">
+            <b aria-hidden="true">+</b>
+            <span>+฿1,250</span>
+            <small>จากเดือนก่อน (+18%)</small>
+          </span>
+        </span>
       </button>
+
       <main className="home-content">
         <h2>ค้นหาล่าสุด</h2>
         <div className="home-grid">
-          <button onClick={() => go("results")} type="button"><img src={`${ASSET}/home-card-1.png`} alt="Nike Air Force 1" /></button>
-          <button onClick={() => go("results")} type="button"><img src={`${ASSET}/home-card-2.png`} alt="Vans Old Skool" /></button>
+          {duplicatedHomeCards.map((product) => (
+            <button key={`recent-${product.id}`} onClick={() => go("results")} type="button">
+              <ProductCard product={product} />
+            </button>
+          ))}
         </div>
+
         <h2>สินค้าแนะนำ</h2>
         <div className="home-grid">
-          <button onClick={() => go("results")} type="button"><img src={`${ASSET}/result-3.png`} alt="รองเท้าแนะนำ" /></button>
-          <button onClick={() => go("results")} type="button"><img src={`${ASSET}/result-4.png`} alt="รองเท้าแนะนำ" /></button>
+          {duplicatedHomeCards.map((product) => (
+            <button key={`recommended-${product.id}`} onClick={() => go("results")} type="button">
+              <ProductCard product={product} />
+            </button>
+          ))}
         </div>
       </main>
+
       <BottomNav active="home" go={go} />
     </section>
   );
