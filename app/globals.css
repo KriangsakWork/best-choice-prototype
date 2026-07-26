@@ -1647,35 +1647,6 @@ img {
   to { transform: scaleY(1); opacity: 1; }
 }
 
-.total-save-trend-line {
-  position: absolute;
-  z-index: 2;
-  top: 0;
-  right: 6px;
-  left: 6px;
-  width: calc(100% - 12px);
-  height: 193px;
-  overflow: visible;
-  pointer-events: none;
-}
-
-.total-save-trend-line polyline {
-  fill: none;
-  stroke: #ff9a7f;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  vector-effect: non-scaling-stroke;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  filter: drop-shadow(0 1px 2px rgba(235, 59, 12, .16));
-  animation: total-save-line-draw .72s .86s cubic-bezier(.22, 1, .36, 1) forwards;
-}
-
-@keyframes total-save-line-draw {
-  to { stroke-dashoffset: 0; }
-}
-
 .total-save-months {
   position: absolute;
   right: 6px;
