@@ -23,8 +23,27 @@ function formatPrice(value: number) {
   });
 }
 
+const platformBadges: Record<ProductCardData["platform"], { src: string; width: number; label: string }> = {
+  Lazada: {
+    src: "/assets/App/Platform=Lazada.jpg",
+    width: 58,
+    label: "Lazada"
+  },
+  Shopee: {
+    src: "/assets/App/Platform=Shopee.jpg",
+    width: 59,
+    label: "Shopee"
+  },
+  TikTok: {
+    src: "/assets/App/Platform=TikTok Shop.jpg",
+    width: 54,
+    label: "TikTok Shop"
+  }
+};
+
 export function ProductCard({ product }: { product: ProductCardData }) {
   const trendIsLower = product.trendLabel.includes("ลด");
+  const platformBadge = platformBadges[product.platform];
 
   return (
     <article className="real-product-card" aria-label={`${product.productName} ราคา ${formatPrice(product.discountPrice)} บาท`}>
@@ -40,15 +59,13 @@ export function ProductCard({ product }: { product: ProductCardData }) {
       </div>
 
       <div className="real-product-card__badges" aria-label={`จำหน่ายโดย ${product.platform}${product.freeShip ? " ส่งฟรี" : ""}`}>
-        <span className={`real-product-card__platform is-${product.platform.toLowerCase()}`}>
-          {product.platform === "Shopee" && (
-            <img src="/assets/product-card/shopee-mark.svg" alt="" width={10} height={10} aria-hidden="true" />
-          )}
-          {product.platform === "Lazada" && (
-            <img src="/assets/product-card/lazada-mark.svg" alt="" width={10} height={10} aria-hidden="true" />
-          )}
-          {product.platform}
-        </span>
+        <img
+          className="real-product-card__platform-badge"
+          src={platformBadge.src}
+          alt={platformBadge.label}
+          width={platformBadge.width}
+          height={16}
+        />
         {product.freeShip && <span className="real-product-card__shipping">ส่งฟรี</span>}
       </div>
 
