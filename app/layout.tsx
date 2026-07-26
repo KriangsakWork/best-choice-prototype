@@ -5,7 +5,8 @@ import "./globals.css";
 import "./search-animation.css";
 import "./catalog-flow.css";
 import "./catalog-summary-refinement.css";
-import { CatalogFlowFigma } from "./components/CatalogFlowFigma";
+import "./catalog-recommendations.css";
+import { CatalogFlowRecommendations } from "./components/CatalogFlowRecommendations";
 
 export const metadata: Metadata = {
   title: "Best Choice — Smart Price Comparison",
@@ -32,7 +33,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="th">
       <body>
         {children}
-        <CatalogFlowFigma />
+        <CatalogFlowRecommendations />
       </body>
     </html>
   );
