@@ -1,43 +1,51 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ProductCard, ProductCardData } from "./ProductCard";
 import { recentSearches, searchSuggestions } from "../data/catalog";
 
-type ProductCategory = "Sneakers" | "RunShoes" | "Sandals" | "WomanShoes";
+type Category = "Sneakers" | "RunShoes" | "Sandals" | "WomanShoes";
 type FlowScreen = "results" | "compare" | "no-results" | null;
 
 type ProductGroup = {
   id: string;
-  category: ProductCategory;
+  category: Category;
   name: string;
   aliases: string[];
   representative: ProductCardData;
   offers: ProductCardData[];
 };
 
+type GroupSeed = {
+  id: string;
+  category: Category;
+  name: string;
+  aliases: string[];
+  image: string;
+  prices: [number, number, number];
+  average: number;
+};
+
 const ASSET = "/assets/products/product-pic";
 
 function makeOffer(
   id: number,
-  productName: string,
+  name: string,
   platform: ProductCardData["platform"],
-  discountPrice: number,
-  averagePrice: number,
+  price: number,
+  average: number,
   imageUrl: string,
   sold: number | string,
-  freeShip = true,
-  mall = true
+  freeShip: boolean,
+  mall: boolean
 ): ProductCardData {
-  const difference = Math.round(Math.abs(discountPrice - averagePrice) / averagePrice * 100);
-
   return {
     id,
-    productName,
+    productName: name,
     platform,
-    price: Math.round(discountPrice * 1.16),
-    discountPrice,
+    price: Math.round(price * 1.16),
+    discountPrice: price,
     percent: 14,
     rating: platform === "TikTok" ? 4.8 : 4.9,
     sold,
@@ -45,43 +53,118 @@ function makeOffer(
     mall,
     imageUrl,
     productUrl: "",
-    averagePrice,
-    trendLabel: discountPrice <= averagePrice ? "ลดจากค่าเฉลี่ย" : "เพิ่มจากค่าเฉลี่ย",
-    trendPercent: difference
+    averagePrice: average,
+    trendLabel: price <= average ? "ลดจากค่าเฉลี่ย" : "เพิ่มจากค่าเฉลี่ย",
+    trendPercent: Math.round(Math.abs(price - average) / average * 100)
   };
 }
 
-function makeGroup(
-  id: string,
-  category: ProductCategory,
-  name: string,
-  aliases: string[],
-  imageUrl: string,
-  prices: [number, number, number],
-  averagePrice: number,
-  startId: number
-): ProductGroup {
+function createGroup(seed: GroupSeed, startId: number): ProductGroup {
   const offers = [
-    makeOffer(startId, name, "Lazada", prices[0], averagePrice, imageUrl, 185, false, true),
-    makeOffer(startId + 1, name, "TikTok", prices[1], averagePrice, imageUrl, 446, true, false),
-    makeOffer(startId + 2, name, "Shopee", prices[2], averagePrice, imageUrl, "2k+", true, true)
+    makeOffer(startId, seed.name, "Lazada", seed.prices[0], seed.average, seed.image, 185, true, true),
+    makeOffer(startId + 1, seed.name, "TikTok", seed.prices[1], seed.average, seed.image, 446, false, false),
+    makeOffer(startId + 2, seed.name, "Shopee", seed.prices[2], seed.average, seed.image, "2k+", true, true)
   ].sort((a, b) => a.discountPrice - b.discountPrice);
 
   return {
-    id,
-    category,
-    name,
-    aliases,
+    id: seed.id,
+    category: seed.category,
+    name: seed.name,
+    aliases: seed.aliases,
     representative: offers[0],
     offers
   };
 }
 
-const nikeOffers: ProductCardData[] = [
+const nikeOffers = [
   makeOffer(1, "Nike Air Force 1 '07", "Lazada", 3328, 3437.33, `${ASSET}/1-nike-lazada.webp`, 86, true, true),
   makeOffer(2, "Nike Air Force 1 '07", "TikTok", 3390, 3437.33, `${ASSET}/1-nike-tiktok.webp`, 70, false, false),
   makeOffer(3, "Nike Air Force 1 '07", "Shopee", 3594, 3437.33, `${ASSET}/1-nike-shopee.webp`, 56, true, true)
 ].sort((a, b) => a.discountPrice - b.discountPrice);
+
+const seeds: GroupSeed[] = [
+  {
+    id: "converse-chuck-taylor",
+    category: "Sneakers",
+    name: "Converse Chuck Taylor",
+    aliases: ["converse", "chuck taylor", "chuck 70", "รองเท้าผ้าใบ"],
+    image: `${ASSET}/2-converse-shopee.webp`,
+    prices: [2950, 3040, 3090],
+    average: 3026.67
+  },
+  {
+    id: "vans-old-skool",
+    category: "Sneakers",
+    name: "Vans Old Skool",
+    aliases: ["vans", "old skool", "old school", "รองเท้าผ้าใบ"],
+    image: `${ASSET}/3-vans-tiktok.webp`,
+    prices: [2190, 2565, 2590],
+    average: 2448.33
+  },
+  {
+    id: "new-balance-740",
+    category: "RunShoes",
+    name: "New Balance 740",
+    aliases: ["new balance", "new balance 740", "nb 740", "รองเท้าวิ่ง"],
+    image: `${ASSET}/4-nb-lazada.webp`,
+    prices: [1949, 4050, 4150],
+    average: 3383
+  },
+  {
+    id: "adidas-ultraboost-light",
+    category: "RunShoes",
+    name: "Adidas Ultraboost Light",
+    aliases: ["adidas", "ultraboost", "adidas ultraboost", "รองเท้าวิ่ง"],
+    image: `${ASSET}/6-adidas-lazada.webp`,
+    prices: [3750, 4410, 4500],
+    average: 4220
+  },
+  {
+    id: "crocs-classic-clog",
+    category: "Sandals",
+    name: "Crocs Classic Clog",
+    aliases: ["crocs", "classic clog", "รองเท้าแตะ"],
+    image: `${ASSET}/7-crocs-shopee.webp`,
+    prices: [2040, 2040, 2190],
+    average: 2090
+  },
+  {
+    id: "birkenstock-arizona",
+    category: "Sandals",
+    name: "Birkenstock Arizona",
+    aliases: ["birkenstock", "arizona", "รองเท้าแตะ"],
+    image: `${ASSET}/8-birken-tiktok.webp`,
+    prices: [3311, 3990, 5190],
+    average: 4163.67
+  },
+  {
+    id: "kito-biocare",
+    category: "Sandals",
+    name: "Kito BioCare",
+    aliases: ["kito", "กีโต้", "รองเท้าแตะ"],
+    image: `${ASSET}/9-kito-tiktok.png`,
+    prices: [486, 524, 529],
+    average: 513
+  },
+  {
+    id: "womenager-jane-original",
+    category: "WomanShoes",
+    name: "Womenager - Jane Original",
+    aliases: ["womenager", "jane original", "รองเท้าผู้หญิง", "คัทชู"],
+    image: `${ASSET}/10-womanager-shopee.webp`,
+    prices: [1740, 1790, 2541],
+    average: 2023.67
+  },
+  {
+    id: "flynn-ballet-flats",
+    category: "WomanShoes",
+    name: "Flynn - Ballet Flats",
+    aliases: ["flynn", "ballet flats", "รองเท้าผู้หญิง", "คัทชู"],
+    image: `${ASSET}/11-flynn-shopee.webp`,
+    prices: [1352, 1440, 1490],
+    average: 1427.33
+  }
+];
 
 const groups: ProductGroup[] = [
   {
@@ -92,96 +175,7 @@ const groups: ProductGroup[] = [
     representative: nikeOffers[0],
     offers: nikeOffers
   },
-  makeGroup(
-    "converse-chuck-taylor",
-    "Sneakers",
-    "Converse Chuck Taylor",
-    ["converse", "chuck taylor", "chuck 70", "รองเท้าผ้าใบ"],
-    `${ASSET}/2-converse-shopee.webp`,
-    [2950, 3040, 3090],
-    3026.67,
-    10
-  ),
-  makeGroup(
-    "vans-old-skool",
-    "Sneakers",
-    "Vans Old Skool",
-    ["vans", "old skool", "old school", "รองเท้าผ้าใบ"],
-    `${ASSET}/3-vans-tiktok.webp`,
-    [2190, 2565, 2590],
-    2448.33,
-    20
-  ),
-  makeGroup(
-    "new-balance-740",
-    "RunShoes",
-    "New Balance 740",
-    ["new balance", "new balance 740", "nb 740", "รองเท้าวิ่ง"],
-    `${ASSET}/4-nb-lazada.webp`,
-    [1949, 4050, 4150],
-    3383,
-    30
-  ),
-  makeGroup(
-    "adidas-ultraboost-light",
-    "RunShoes",
-    "Adidas Ultraboost Light",
-    ["adidas", "ultraboost", "adidas ultraboost", "รองเท้าวิ่ง"],
-    `${ASSET}/6-adidas-lazada.webp`,
-    [3750, 4410, 4500],
-    4220,
-    40
-  ),
-  makeGroup(
-    "crocs-classic-clog",
-    "Sandals",
-    "Crocs Classic Clog",
-    ["crocs", "classic clog", "รองเท้าแตะ"],
-    `${ASSET}/7-crocs-shopee.webp`,
-    [2040, 2040, 2190],
-    2090,
-    50
-  ),
-  makeGroup(
-    "birkenstock-arizona",
-    "Sandals",
-    "Birkenstock Arizona",
-    ["birkenstock", "arizona", "รองเท้าแตะ"],
-    `${ASSET}/8-birken-tiktok.webp`,
-    [3311, 3990, 5190],
-    4163.67,
-    60
-  ),
-  makeGroup(
-    "kito-biocare",
-    "Sandals",
-    "Kito BioCare",
-    ["kito", "กีโต้", "รองเท้าแตะ"],
-    `${ASSET}/9-kito-tiktok.png`,
-    [486, 524, 529],
-    513,
-    70
-  ),
-  makeGroup(
-    "womenager-jane-original",
-    "WomanShoes",
-    "Womenager - Jane Original",
-    ["womenager", "jane original", "รองเท้าผู้หญิง", "คัทชู"],
-    `${ASSET}/10-womanager-shopee.webp`,
-    [1740, 1790, 2541],
-    2023.67,
-    80
-  ),
-  makeGroup(
-    "flynn-ballet-flats",
-    "WomanShoes",
-    "Flynn - Ballet Flats",
-    ["flynn", "ballet flats", "รองเท้าผู้หญิง", "คัทชู"],
-    `${ASSET}/11-flynn-shopee.webp`,
-    [1352, 1440, 1490],
-    1427.33,
-    90
-  )
+  ...seeds.map((seed, index) => createGroup(seed, 10 + index * 3))
 ];
 
 function normalize(value: string) {
@@ -192,7 +186,7 @@ function findGroups(query: string) {
   const normalized = normalize(query);
   if (!normalized) return groups.slice(0, 6);
 
-  const categoryMap: Record<string, ProductCategory> = {
+  const categoryMap: Record<string, Category> = {
     "รองเท้าวิ่ง": "RunShoes",
     "รองเท้าผ้าใบ": "Sneakers",
     "รองเท้าแตะ": "Sandals",
@@ -202,10 +196,11 @@ function findGroups(query: string) {
   const category = categoryMap[normalized];
   if (category) return groups.filter((group) => group.category === category);
 
-  return groups.filter((group) => {
-    const terms = [group.name, ...group.aliases].map(normalize);
-    return terms.some((term) => term.includes(normalized) || normalized.includes(term));
-  });
+  return groups.filter((group) =>
+    [group.name, ...group.aliases]
+      .map(normalize)
+      .some((term) => term.includes(normalized) || normalized.includes(term))
+  );
 }
 
 function setControlledInputValue(input: HTMLInputElement | null, value: string) {
@@ -220,15 +215,15 @@ export function CatalogFlowSafe() {
   const [flowScreen, setFlowScreen] = useState<FlowScreen>(null);
   const [query, setQuery] = useState("");
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
+  const syncFrame = useRef<number | null>(null);
 
   const resultGroups = useMemo(() => findGroups(query), [query]);
   const selectedGroup = groups.find((group) => group.id === selectedGroupId) ?? null;
 
   useEffect(() => {
-    const syncSearchScreen = () => {
-      const nextPortalTarget = document.querySelector(".phone-shell");
-      setPortalTarget((current) => current === nextPortalTarget ? current : nextPortalTarget);
+    setPortalTarget(document.querySelector(".phone-shell"));
 
+    const syncSearchScreen = () => {
       const suggestionButtons = Array.from(
         document.querySelectorAll<HTMLButtonElement>(".search-screen .suggestions button")
       );
@@ -252,7 +247,7 @@ export function CatalogFlowSafe() {
       );
       const recentImages = [
         `${ASSET}/1-nike-shopee.webp`,
-        `${ASSET}/6-adidas-shopee.webp`,
+        `${ASSET}/6-adidas-lazada.webp`,
         `${ASSET}/7-crocs-shopee.webp`
       ];
 
@@ -267,23 +262,41 @@ export function CatalogFlowSafe() {
       });
     };
 
-    syncSearchScreen();
-    const syncTimer = window.setInterval(syncSearchScreen, 250);
+    const scheduleSearchSync = () => {
+      if (syncFrame.current !== null) window.cancelAnimationFrame(syncFrame.current);
+      syncFrame.current = window.requestAnimationFrame(() => {
+        syncFrame.current = window.requestAnimationFrame(() => {
+          syncSearchScreen();
+          syncFrame.current = null;
+        });
+      });
+    };
+
+    const openCatalogResults = (nextQuery: string) => {
+      const cleanQuery = nextQuery.trim() || "รองเท้าวิ่ง";
+      setQuery(cleanQuery);
+      setSelectedGroupId(null);
+      setFlowScreen(findGroups(cleanQuery).length ? "results" : "no-results");
+    };
+
+    const handleInput = (event: Event) => {
+      const target = event.target as HTMLElement;
+      if (target.matches(".home-screen .search-field input")) scheduleSearchSync();
+    };
 
     const handleSubmit = (event: Event) => {
       const form = event.target as HTMLFormElement;
+
+      if (form.matches(".home-screen .search-field")) {
+        scheduleSearchSync();
+        return;
+      }
+
       if (!form.matches(".search-screen .search-field")) return;
 
       event.preventDefault();
       event.stopPropagation();
-
-      const input = form.querySelector<HTMLInputElement>("input");
-      const nextQuery = input?.value.trim() || "รองเท้าวิ่ง";
-      const matches = findGroups(nextQuery);
-
-      setQuery(nextQuery);
-      setSelectedGroupId(null);
-      setFlowScreen(matches.length ? "results" : "no-results");
+      openCatalogResults(form.querySelector<HTMLInputElement>("input")?.value || "");
     };
 
     const handleClick = (event: Event) => {
@@ -301,16 +314,17 @@ export function CatalogFlowSafe() {
         document.querySelector<HTMLInputElement>(".search-screen .search-field input"),
         nextQuery
       );
-      setQuery(nextQuery);
-      setSelectedGroupId(null);
-      setFlowScreen(findGroups(nextQuery).length ? "results" : "no-results");
+      openCatalogResults(nextQuery);
     };
 
+    syncSearchScreen();
+    document.addEventListener("input", handleInput, true);
     document.addEventListener("submit", handleSubmit, true);
     document.addEventListener("click", handleClick, true);
 
     return () => {
-      window.clearInterval(syncTimer);
+      if (syncFrame.current !== null) window.cancelAnimationFrame(syncFrame.current);
+      document.removeEventListener("input", handleInput, true);
       document.removeEventListener("submit", handleSubmit, true);
       document.removeEventListener("click", handleClick, true);
     };
