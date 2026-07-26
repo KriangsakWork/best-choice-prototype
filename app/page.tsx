@@ -1054,12 +1054,15 @@ function TotalSaveScreen({ go }: { go: (screen: Screen) => void }) {
             <div className="total-save-grid" aria-hidden="true">
               {axisLabels.map((value) => <span key={value} />)}
             </div>
-            <div className="total-save-bars">
+            <div className="total-save-bars" key={period}>
               {chart.values.map((value, index) => (
                 <div className="total-save-bar-column" key={chart.labels[index] + "-" + value}>
                   <div
                     className="total-save-bar"
-                    style={{ height: Math.max(8, (value / chartMax) * 100) + "%" }}
+                    style={{
+                      height: Math.max(8, (value / chartMax) * 100) + "%",
+                      animationDelay: index * 55 + "ms"
+                    }}
                     title={chart.labels[index] + " ประหยัด " + value.toLocaleString("en-US") + " บาท"}
                   />
                 </div>
