@@ -720,36 +720,28 @@ img {
   height: 16px;
 }
 
-.real-product-card__platform,
+.real-product-card__platform-badge {
+  flex: 0 0 auto;
+  display: block;
+  width: auto;
+  height: 16px;
+  border-radius: 4px;
+  object-fit: contain;
+}
+
 .real-product-card__shipping {
   height: 16px;
   display: inline-flex;
   align-items: center;
-  gap: 3px;
+  justify-content: center;
   padding: 1px 5px;
   border-radius: 4px;
   color: #fff;
+  background: var(--success);
   font-size: 10px;
   font-weight: 400;
   line-height: 14px;
   white-space: nowrap;
-}
-
-.real-product-card__platform {
-  background: var(--primary);
-}
-
-.real-product-card__platform.is-lazada {
-  background: #0e1472;
-}
-
-.real-product-card__platform img {
-  width: 10px;
-  height: 10px;
-}
-
-.real-product-card__shipping {
-  background: var(--success);
 }
 
 .real-product-card__heart {
