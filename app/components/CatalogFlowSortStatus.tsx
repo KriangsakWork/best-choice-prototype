@@ -289,6 +289,66 @@ function ProductGroupCard({ group, onOpen }: { group: ProductGroup; onOpen: () =
   );
 }
 
+
+function CatalogCompareTags({ offer }: { offer: ProductCardData }) {
+  return (
+    <div className="compare-tags" aria-label={offer.platform + (offer.mall ? " Mall" : "")}>
+      {offer.mall && <span className="compare-tag mall">● MALL</span>}
+      <span className={"compare-tag platform " + offer.platform.toLowerCase()}>{offer.platform}</span>
+      {offer.freeShip && <span className="compare-tag free">ส่งฟรี</span>}
+    </div>
+  );
+}
+
+function CatalogCompareTrend({ price }: { price: number }) {
+  const values = [price + 500, price + 390, price + 420, price + 260, price + 310, price + 120, price + 170, price];
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const points = values.map((value, index) => ({
+    x: 2 + (index / (values.length - 1)) * 101,
+    y: 3 + ((max - value) / Math.max(1, max - min)) * 27
+  }));
+  const path = points.map((point, index) => (index ? "L" : "M") + " " + point.x + " " + point.y).join(" ");
+
+  return (
+    <svg viewBox="0 0 106 34" aria-hidden="true">
+      <path d={path} pathLength="1" />
+      <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r="2.5" />
+    </svg>
+  );
+}
+
+function CatalogCompareUpIcon() {
+  return (
+    <svg viewBox="0 0 14 14" aria-hidden="true">
+      <path d="M2 10.5 5.1 7.4l2.1 2.1L12 4.7V8h1V3H8v1h3.3L7.2 8.1 5.1 6 1.3 9.8z" />
+    </svg>
+  );
+}
+
+function CatalogCompareBuy({
+  offer,
+  onUnavailable
+}: {
+  offer: ProductCardData;
+  onUnavailable: () => void;
+}) {
+  const buy = () => {
+    if (offer.productUrl) {
+      window.open(offer.productUrl, "_blank", "noopener,noreferrer");
+      return;
+    }
+    onUnavailable();
+  };
+
+  return (
+    <button className="compare-buy" type="button" onClick={buy}>
+      <span className="catalog-buy-icon" aria-hidden="true">▣</span>
+      ซื้อเลย
+    </button>
+  );
+}
+
 export function CatalogFlowSortStatus() {
   const [portalTarget, setPortalTarget] = useState<Element | null>(null);
   const [flowScreen, setFlowScreen] = useState<FlowScreen>(null);
@@ -298,6 +358,8 @@ export function CatalogFlowSortStatus() {
   const [freeShipOnly, setFreeShipOnly] = useState(true);
   const [sortMode, setSortMode] = useState<SortMode>("relevance");
   const [sortOpen, setSortOpen] = useState(false);
+  const [favoriteGroupIds, setFavoriteGroupIds] = useState<string[]>(["nike-air-force-1-07"]);
+  const [compareToast, setCompareToast] = useState("");
   const syncFrame = useRef<number | null>(null);
   const sortControlRef = useRef<HTMLDivElement | null>(null);
 
@@ -613,27 +675,117 @@ export function CatalogFlowSortStatus() {
         </>
       )}
 
-      {flowScreen === "compare" && selectedGroup && (
-        <>
-          <header className="catalog-flow-header compare">
-            <button type="button" onClick={() => setFlowScreen("results")} aria-label="ย้อนกลับ">‹</button>
-            <div>
-              <strong>เปรียบเทียบราคา</strong>
-              <small>{selectedGroup.name}</small>
-            </div>
-          </header>
+      {flowScreen === "compare" && selectedGroup && (() => {
+        const offers = [...selectedGroup.offers].sort((a, b) => a.discountPrice - b.discountPrice);
+        const bestOffer = offers[0];
+        const otherOffers = offers.slice(1);
+        const favorite = favoriteGroupIds.includes(selectedGroup.id);
+        const flash = (message: string) => {
+          setCompareToast(message);
+          window.setTimeout(() => setCompareToast(""), 1800);
+        };
 
-          <main className="catalog-offers-list">
-            {selectedGroup.offers.map((offer, index) => (
-              <div className="catalog-offer" key={`${offer.platform}-${offer.id}`}>
-                {index === 0 && <span className="catalog-best-badge">ราคาถูกที่สุด</span>}
-                <ProductCard product={offer} favorite={index !== 1} />
-                <button type="button" className="catalog-offer-action">ดูประวัติราคา</button>
+        return (
+          <section className="catalog-compare-screen">
+            <header className="catalog-compare-header">
+              <button type="button" onClick={() => setFlowScreen("results")} aria-label="ย้อนกลับ">‹</button>
+              <strong>ผลการเปรียบเทียบ</strong>
+            </header>
+
+            <main className="compare-content">
+              <div className="compare-summary-glow">
+                <section className="compare-product-summary">
+                  <img src={bestOffer.imageUrl} alt="" />
+                  <div>
+                    <strong>{selectedGroup.name}</strong>
+                    <span>เปรียบเทียบ {offers.length} ร้านค้า</span>
+                  </div>
+                  <button
+                    className={favorite ? "compare-heart active" : "compare-heart"}
+                    type="button"
+                    aria-label={favorite ? "นำออกจากสินค้าที่สนใจ" : "เพิ่มในสินค้าที่สนใจ"}
+                    aria-pressed={favorite}
+                    onClick={() => setFavoriteGroupIds((current) =>
+                      current.includes(selectedGroup.id)
+                        ? current.filter((id) => id !== selectedGroup.id)
+                        : [...current, selectedGroup.id]
+                    )}
+                  >
+                    ♥
+                  </button>
+                </section>
               </div>
-            ))}
-          </main>
-        </>
-      )}
+
+              <h2 className="compare-section-label">ข้อเสนอที่คุ้มที่สุด</h2>
+              <article className="compare-best-offer">
+                <div className="compare-best-head">
+                  <CatalogCompareTags offer={bestOffer} />
+                  <span className="compare-cheapest">ราคาถูก</span>
+                </div>
+                <div className="compare-best-price">
+                  <strong>฿{bestOffer.discountPrice.toLocaleString("en-US")}</strong>
+                  <del>฿{bestOffer.price.toLocaleString("en-US")}</del>
+                </div>
+                <button
+                  className="compare-history-link"
+                  type="button"
+                  onClick={() => flash("กำลังเปิดประวัติราคา")}
+                >
+                  <CatalogCompareTrend price={bestOffer.discountPrice} />
+                  <span>
+                    <b>
+                      ถูกที่สุด • {bestOffer.freeShip ? "ส่งฟรี • " : ""}
+                      ประหยัด ฿{Math.max(0, bestOffer.price - bestOffer.discountPrice).toLocaleString("en-US")}
+                    </b>
+                    <small>ราคาย้อนหลัง 30 วัน ›</small>
+                  </span>
+                </button>
+                <div className="compare-rating">
+                  ★ {bestOffer.rating} <span>• ขายแล้ว {bestOffer.sold} ชิ้น</span>
+                </div>
+                <CatalogCompareBuy
+                  offer={bestOffer}
+                  onUnavailable={() => flash("ยังไม่มีลิงก์ร้านค้านี้ใน Prototype")}
+                />
+              </article>
+
+              {otherOffers.length > 0 && <h2 className="compare-section-label other">ข้อเสนออื่น</h2>}
+              <div className="compare-other-list">
+                {otherOffers.map((offer) => (
+                  <article className="compare-other-offer" key={offer.id}>
+                    <CatalogCompareTags offer={offer} />
+                    <div className="compare-other-price">฿{offer.discountPrice.toLocaleString("en-US")}</div>
+                    <CatalogCompareBuy
+                      offer={offer}
+                      onUnavailable={() => flash("ยังไม่มีลิงก์ร้านค้านี้ใน Prototype")}
+                    />
+                    <div className="compare-rating">
+                      ★ {offer.rating} <span>• ขายแล้ว {offer.sold} ชิ้น</span>
+                    </div>
+                    <div className="compare-difference">
+                      <CatalogCompareUpIcon />
+                      แพงกว่าดีลคุ้มสุด ฿{(offer.discountPrice - bestOffer.discountPrice).toLocaleString("en-US")}
+                    </div>
+                  </article>
+                ))}
+              </div>
+
+              <small className="compare-updated">อัปเดตราคาล่าสุด 10 นาทีที่แล้ว</small>
+            </main>
+
+            <nav className="catalog-bottom-nav" aria-label="เมนูหลัก">
+              {NAV_ITEMS.map((item, index) => (
+                <button type="button" key={item.label} onClick={() => navigateBase(index)}>
+                  <img src={item.icon} alt="" aria-hidden="true" />
+                  <span>{item.label}</span>
+                </button>
+              ))}
+            </nav>
+
+            {compareToast && <div className="toast" role="status">{compareToast}</div>}
+          </section>
+        );
+      })()}
 
       {flowScreen === "no-results" && (
         <>
