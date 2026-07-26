@@ -1365,11 +1365,12 @@ img {
   white-space: nowrap;
 }
 
-.compare-difference img {
+.compare-difference svg {
   flex: 0 0 14px;
   width: 14px;
   height: 14px;
-  object-fit: contain;
+  overflow: visible;
+  fill: #ec2626;
 }
 
 .compare-updated {
