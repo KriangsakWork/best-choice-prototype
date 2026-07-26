@@ -155,21 +155,21 @@ const homeRecentProducts: ProductCardData[] = [
     ...nikeAirForceOne
   },
   {
-    id: 2,
-    productName: "Nike Air Force 1 '07",
-    platform: "Lazada",
-    price: 4300,
-    discountPrice: 3328,
-    percent: 23,
+    id: 28,
+    productName: "womenager - Jane Original",
+    platform: "Shopee",
+    price: 1790,
+    discountPrice: 1790,
+    percent: 0,
     rating: 5,
-    sold: 22,
+    sold: 47,
     freeShip: true,
     mall: true,
-    imageUrl: `${ASSET}/products/product-pic/1-nike-lazada.webp`,
+    imageUrl: `${ASSET}/products/product-pic/10-womanager-shopee.webp`,
     productUrl: "",
-    averagePrice: 3437.33,
+    averagePrice: 2023.67,
     trendLabel: "ลดจากค่าเฉลี่ย",
-    trendPercent: 3
+    trendPercent: 12
   }
 ];
 
@@ -323,15 +323,15 @@ const products: ProductResult[] = [
 
 const initialHomeFavorites: Record<string, boolean> = {
   "recent-1": true,
-  "recent-2": true,
+  "recent-28": true,
   "recommended-4": true,
-  "recommended-9": true,
+  "recommended-9": false,
   "recommended-11": true,
-  "recommended-17": true,
+  "recommended-17": false,
   "recommended-19": true,
-  "recommended-24": true,
+  "recommended-24": false,
   "recommended-27": true,
-  "recommended-31": true
+  "recommended-31": false
 };
 
 const suggestions = [
