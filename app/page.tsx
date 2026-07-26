@@ -974,6 +974,130 @@ function HistoryScreen({ go }: { go: (screen: Screen) => void }) {
   );
 }
 
+
+type SavingsPeriod = "3 เดือน" | "6 เดือน" | "ปี" | "ทั้งหมด";
+
+const savingsChartData: Record<SavingsPeriod, { labels: string[]; values: number[] }> = {
+  "3 เดือน": { labels: ["เม.ย.", "พ.ค.", "มิ.ย."], values: [1750, 225, 1050] },
+  "6 เดือน": { labels: ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย."], values: [520, 930, 680, 1750, 225, 1050] },
+  "ปี": { labels: ["ก.ค.", "ก.ย.", "พ.ย.", "ม.ค.", "มี.ค.", "พ.ค."], values: [780, 1100, 650, 1320, 890, 1750] },
+  "ทั้งหมด": { labels: ["2566", "2567", "2568", "2569"], values: [2480, 3120, 2600, 2050] }
+};
+
+const savingsEntries = [
+  {
+    name: "Carlyn New Logo Washed Cap Green",
+    image: ASSET + "/search-recent-3.png",
+    saved: 154,
+    price: 615,
+    originalPrice: 769
+  },
+  {
+    name: "Nike Air Force 1 '07",
+    image: nikeAirForceOne.imageUrl,
+    saved: 706,
+    price: 3594,
+    originalPrice: 4300
+  },
+  {
+    name: "womenager - Jane Original",
+    image: homeRecentProducts[1].imageUrl,
+    saved: 234,
+    price: 1790,
+    originalPrice: 2024
+  }
+];
+
+function TotalSaveScreen({ go }: { go: (screen: Screen) => void }) {
+  const [period, setPeriod] = useState<SavingsPeriod>("3 เดือน");
+  const chart = savingsChartData[period];
+  const chartMax = Math.ceil(Math.max(...chart.values) / 500) * 500;
+  const axisLabels = [chartMax, chartMax * .75, chartMax * .5, chartMax * .25, 0];
+
+  return (
+    <section className="screen total-save-screen">
+      <StatusBar />
+      <Header title="คุณประหยัดเงินไปทั้งหมด" onBack={() => go("home")} />
+
+      <main className="total-save-content">
+        <section className="total-save-card" aria-label="ยอดประหยัดรวม">
+          <span>Total Save</span>
+          <AnimatedSavingsTotal />
+          <div className="total-save-change">
+            <span className="total-save-trend-icon" aria-hidden="true">↗</span>
+            <b>฿1,000 จากเดือนก่อน</b>
+          </div>
+        </section>
+
+        <div className="total-save-tabs" role="tablist" aria-label="เลือกช่วงเวลา">
+          {(Object.keys(savingsChartData) as SavingsPeriod[]).map((item) => (
+            <button
+              key={item}
+              className={period === item ? "active" : ""}
+              onClick={() => setPeriod(item)}
+              type="button"
+              role="tab"
+              aria-selected={period === item}
+            >
+              {item}
+            </button>
+          ))}
+        </div>
+
+        <section className="total-save-chart-card" aria-label={"กราฟยอดประหยัด " + period}>
+          <div className="total-save-axis" aria-hidden="true">
+            {axisLabels.map((value) => (
+              <span key={value}>{Math.round(value).toLocaleString("en-US")}</span>
+            ))}
+          </div>
+          <div className="total-save-plot">
+            <div className="total-save-grid" aria-hidden="true">
+              {axisLabels.map((value) => <span key={value} />)}
+            </div>
+            <div className="total-save-bars">
+              {chart.values.map((value, index) => (
+                <div className="total-save-bar-column" key={chart.labels[index] + "-" + value}>
+                  <div
+                    className="total-save-bar"
+                    style={{ height: Math.max(8, (value / chartMax) * 100) + "%" }}
+                    title={chart.labels[index] + " ประหยัด " + value.toLocaleString("en-US") + " บาท"}
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="total-save-months">
+              {chart.labels.map((label) => <span key={label}>{label}</span>)}
+            </div>
+          </div>
+        </section>
+
+        <section className="total-save-summary">
+          <h2>รายการสรุป</h2>
+          <div className="total-save-list">
+            {savingsEntries.map((entry) => (
+              <article className="total-save-list-item" key={entry.name}>
+                <img src={entry.image} alt="" />
+                <div className="total-save-list-copy">
+                  <strong title={entry.name}>{entry.name}</strong>
+                  <div>
+                    <span>ประหยัด ฿{entry.saved.toLocaleString("en-US")}</span>
+                    <p>
+                      <b>฿{entry.price.toLocaleString("en-US")}</b>
+                      <del>฿{entry.originalPrice.toLocaleString("en-US")}</del>
+                    </p>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      </main>
+
+      <BottomNav active="savings" go={go} />
+    </section>
+  );
+}
+
 type ReferenceAction = {
   label: string;
   x: number;
@@ -1097,8 +1221,8 @@ export default function BestChoiceApp() {
           )}
           {screen === "compare" && <CompareScreen go={go} selected={selected} />}
           {screen === "history" && <HistoryScreen go={go} />}
+          {screen === "total-save" && <TotalSaveScreen go={go} />}
           {[
-            "total-save",
             "profile",
             "interest",
             "interest-confirm",
