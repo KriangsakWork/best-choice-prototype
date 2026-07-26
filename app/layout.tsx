@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "@fontsource-variable/inter";
 import "@fontsource-variable/noto-sans-thai";
 import "./globals.css";
+import "./search-animation.css";
 
 export const metadata: Metadata = {
   title: "Best Choice — Smart Price Comparison",
