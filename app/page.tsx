@@ -135,7 +135,7 @@ type ProductResult = {
 const nikeAirForceOne: ProductCardData = {
   id: 1,
   productName: "Nike Air Force 1 '07",
-  platform: "Shopee",
+  platform: "Lazada",
   price: 4300,
   discountPrice: 3594,
   percent: 16,
