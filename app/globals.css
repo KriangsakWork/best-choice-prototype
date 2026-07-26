@@ -1529,19 +1529,40 @@ img {
 }
 
 .total-save-tabs {
+  position: relative;
+  isolation: isolate;
   flex: 0 0 auto;
   height: 40px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   padding: 5px;
+  overflow: hidden;
   border-radius: 12px;
   background: #fbdcd3;
 }
 
+.total-save-tab-indicator {
+  position: absolute;
+  z-index: 0;
+  top: 5px;
+  bottom: 5px;
+  left: 5px;
+  width: calc((100% - 10px) / 4);
+  border-radius: 8px;
+  background: #eb3b0c;
+  box-shadow: 0 3px 8px rgba(183, 46, 9, .18);
+  transform: translateX(calc(var(--savings-tab-index, 0) * 100%));
+  transition: transform .34s cubic-bezier(.22, 1, .36, 1);
+  will-change: transform;
+}
+
 .total-save-tabs button {
+  position: relative;
+  z-index: 1;
   min-width: 0;
   border-radius: 8px;
   color: #312d2a;
+  background: transparent;
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
@@ -1554,7 +1575,7 @@ img {
 
 .total-save-tabs button.active {
   color: #fefcfb;
-  background: #eb3b0c;
+  background: transparent;
 }
 
 .total-save-chart-card {
