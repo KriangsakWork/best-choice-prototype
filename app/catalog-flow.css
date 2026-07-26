@@ -518,3 +518,115 @@
   display: block;
   fill: currentColor;
 }
+
+
+/* Compare polish synced from Figma node 1470:8012. */
+.catalog-compare-screen .compare-summary-glow {
+  animation: none;
+}
+
+.catalog-compare-screen .compare-product-summary {
+  border: 1px solid #e6e8eb;
+  animation: catalog-compare-card-highlight 2.2s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.catalog-compare-screen .compare-heart {
+  font-size: 0;
+}
+
+.catalog-compare-screen .compare-heart img {
+  width: 17.44px;
+  height: 16px;
+  display: block;
+}
+
+.compare-badge-image {
+  flex: 0 0 auto;
+  height: 16px;
+  display: block;
+  object-fit: contain;
+}
+
+.compare-badge-image.mall {
+  width: auto;
+}
+
+.compare-best-deal {
+  position: relative;
+  width: 366px;
+  height: 240px;
+  margin-top: 12px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--primary);
+}
+
+.compare-best-banner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 366px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.compare-best-banner > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 21px;
+  white-space: nowrap;
+}
+
+.compare-best-banner img {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+.compare-best-deal .compare-best-offer {
+  position: absolute;
+  top: 35px;
+  left: 0;
+}
+
+.catalog-compare-screen .compare-difference {
+  right: 10px;
+  left: auto;
+  width: 163px;
+  justify-content: flex-end;
+  gap: 4px;
+  text-align: right;
+  font-size: 11px;
+}
+
+.catalog-compare-screen .compare-difference svg {
+  flex-basis: 12px;
+  width: 12px;
+  height: 12px;
+}
+
+@keyframes catalog-compare-card-highlight {
+  0%,
+  45% {
+    border-color: rgba(235, 59, 12, .98);
+    box-shadow:
+      0 0 0 1px rgba(235, 59, 12, .95),
+      0 0 11px rgba(235, 59, 12, .24);
+  }
+  100% {
+    border-color: #e6e8eb;
+    box-shadow: 0 1px 4px rgba(12, 12, 13, .05);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .catalog-compare-screen .compare-product-summary {
+    animation: none;
+  }
+}
