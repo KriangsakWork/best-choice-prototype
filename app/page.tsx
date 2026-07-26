@@ -1012,6 +1012,7 @@ const savingsEntries = [
 function TotalSaveScreen({ go }: { go: (screen: Screen) => void }) {
   const [period, setPeriod] = useState<SavingsPeriod>("3 เดือน");
   const chart = savingsChartData[period];
+  const periodIndex = (Object.keys(savingsChartData) as SavingsPeriod[]).indexOf(period);
   const chartMax = Math.ceil(Math.max(...chart.values) / 500) * 500;
   const axisLabels = [chartMax, chartMax * .75, chartMax * .5, chartMax * .25, 0];
 
@@ -1030,7 +1031,13 @@ function TotalSaveScreen({ go }: { go: (screen: Screen) => void }) {
           </div>
         </section>
 
-        <div className="total-save-tabs" role="tablist" aria-label="เลือกช่วงเวลา">
+        <div
+          className="total-save-tabs"
+          role="tablist"
+          aria-label="เลือกช่วงเวลา"
+          style={{ "--savings-tab-index": periodIndex } as CSSProperties}
+        >
+          <span className="total-save-tab-indicator" aria-hidden="true" />
           {(Object.keys(savingsChartData) as SavingsPeriod[]).map((item) => (
             <button
               key={item}
