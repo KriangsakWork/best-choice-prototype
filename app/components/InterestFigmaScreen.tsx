@@ -59,7 +59,7 @@ const INITIAL_SAVED_PRODUCTS: ProductCardData[] = [
     sold: 70,
     freeShip: true,
     mall: false,
-    imageUrl: `${ASSET}/1-nike-tiktok.webp`,
+    imageUrl: `${ASSET}/1-nike-lazada.webp`,
     productUrl: "",
     averagePrice: 3437.33,
     trendLabel: "ลดจากค่าเฉลี่ย",
@@ -239,7 +239,6 @@ export function InterestFigmaScreen() {
   const [open, setOpen] = useState(false);
   const [filter, setFilter] = useState<PlatformFilter>("ทั้งหมด");
   const [savedProducts, setSavedProducts] = useState(INITIAL_SAVED_PRODUCTS);
-  const [pendingRemoval, setPendingRemoval] = useState<ProductCardData | null>(null);
   const [removedItem, setRemovedItem] = useState<RemovedItem | null>(null);
   const toastTimer = useRef<number | null>(null);
 
@@ -287,15 +286,12 @@ export function InterestFigmaScreen() {
     });
   };
 
-  const confirmRemoval = () => {
-    if (!pendingRemoval) return;
-
-    const index = savedProducts.findIndex((product) => product.id === pendingRemoval.id);
+  const removeProduct = (product: ProductCardData) => {
+    const index = savedProducts.findIndex((item) => item.id === product.id);
     if (index < 0) return;
 
-    setSavedProducts((current) => current.filter((product) => product.id !== pendingRemoval.id));
-    setRemovedItem({ product: pendingRemoval, index });
-    setPendingRemoval(null);
+    setSavedProducts((current) => current.filter((item) => item.id !== product.id));
+    setRemovedItem({ product, index });
 
     if (toastTimer.current !== null) window.clearTimeout(toastTimer.current);
     toastTimer.current = window.setTimeout(() => setRemovedItem(null), 3500);
@@ -346,7 +342,7 @@ export function InterestFigmaScreen() {
               <ProductCard
                 product={product}
                 favorite
-                onFavoriteToggle={() => setPendingRemoval(product)}
+                onFavoriteToggle={() => removeProduct(product)}
               />
             </div>
           ))}
@@ -374,28 +370,8 @@ export function InterestFigmaScreen() {
         ))}
       </nav>
 
-      {pendingRemoval && (
-        <div className="interest-confirm-layer" role="presentation" onClick={() => setPendingRemoval(null)}>
-          <section
-            className="interest-confirm-sheet"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="interest-remove-title"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="interest-sheet-handle" aria-hidden="true" />
-            <h2 id="interest-remove-title">นำสินค้าออกจากรายการสนใจ?</h2>
-            <p>{pendingRemoval.productName}</p>
-            <div>
-              <button type="button" onClick={() => setPendingRemoval(null)}>ยกเลิก</button>
-              <button type="button" className="danger" onClick={confirmRemoval}>นำออก</button>
-            </div>
-          </section>
-        </div>
-      )}
-
       {removedItem && (
-        <div className="interest-snackbar" role="status">
+        <div className="interest-snackbar" role="status" aria-live="polite">
           <span>นำสินค้าออกแล้ว</span>
           <button type="button" onClick={undoRemoval}>เลิกทำ</button>
         </div>
