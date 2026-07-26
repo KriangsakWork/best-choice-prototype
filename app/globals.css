@@ -487,7 +487,7 @@ img {
   gap: 8px;
 }
 
-.home-grid > button {
+.home-card-action {
   position: relative;
   width: 181px;
   height: 255px;
@@ -496,7 +496,7 @@ img {
   text-align: left;
 }
 
-.home-grid > button:focus-visible {
+.home-card-action:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
@@ -762,11 +762,18 @@ img {
   left: 154.16px;
   width: 17.44px;
   height: 16px;
+  display: grid;
+  place-items: center;
 }
 
 .real-product-card__heart img {
   width: 17.44px;
   height: 16px;
+  transition: transform .14s ease;
+}
+
+.real-product-card__heart:active img {
+  transform: scale(.86);
 }
 
 .real-product-card__info {
