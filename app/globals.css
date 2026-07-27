@@ -1920,10 +1920,12 @@ img[src$="/compare-fire.svg"] {
   box-shadow: 0 4px 4px rgba(0, 0, 0, .1), 0 2px 2px rgba(0, 0, 0, .05);
 }
 
-.ai-card > .sprite-icon {
+.ai-card > .history-ai-icon {
   flex: 0 0 39px;
   width: 39px;
   height: 39px;
+  display: block;
+  object-fit: contain;
 }
 
 .ai-card > div {
@@ -1957,21 +1959,22 @@ img[src$="/compare-fire.svg"] {
 }
 
 .history-buttons {
-  width: 350px;
+  width: 368px;
   height: 44px;
   display: grid;
-  grid-template-columns: 161px 161px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: center;
-  justify-content: space-between;
-  margin: 11px auto 0;
+  gap: 16px;
+  margin: 16px auto 0;
 }
 
 .history-buttons button {
-  height: 35px;
+  width: 100%;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   border-radius: 999px;
   color: #fff;
   background: var(--primary);
@@ -1994,6 +1997,13 @@ img[src$="/compare-fire.svg"] {
 .history-buttons .sprite-icon {
   width: 19px;
   height: 19px;
+}
+
+.history-buttons .history-action-icon {
+  display: block;
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
 }
 
 .toast {
