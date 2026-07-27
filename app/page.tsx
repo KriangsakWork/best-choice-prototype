@@ -1625,10 +1625,12 @@ function SplashScreen() {
   return (
     <section className="screen splash-screen" aria-label="Best Choice">
       <StatusBar />
-      <div className="splash-brand" aria-hidden="true">
-        <img className="splash-logo" src={`${ASSET}/splash-logo.svg`} alt="" />
-        <strong>Best Choice</strong>
-        <span>เปรียบเทียบราคา</span>
+      <div className="splash-brand">
+        <img
+          className="splash-logo"
+          src="/Main-LOGO.png"
+          alt="Best Choice เปรียบเทียบราคา"
+        />
       </div>
     </section>
   );
