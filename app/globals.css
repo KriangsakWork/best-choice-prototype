@@ -33,7 +33,14 @@ body {
   text-rendering: geometricPrecision;
 }
 
-/* Keep the iOS safe-area/status-bar area white when the prototype is opened\n   full-width on a phone, while retaining the neutral presentation backdrop\n   around the centered device mockup on larger screens. */\n@media (max-width: 820px) {\n  body {\n    background: #fff;\n  }\n}\n\nbutton,
+/* Keep the iOS safe-area/status-bar area white when the prototype is opened\n   full-width on a phone, while retaining the neutral presentation backdrop\n   around the centered device mockup on larger screens. */
+@media (max-width: 820px) {
+  body {
+    background: #fff;
+  }
+}
+
+button,
 input {
   font: inherit;
 }
