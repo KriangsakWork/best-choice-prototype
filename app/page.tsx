@@ -984,12 +984,14 @@ function CompareScreen({
   go,
   selected,
   favorite,
-  toggleFavorite
+  toggleFavorite,
+  backTarget
 }: {
   go: (screen: Screen) => void;
   selected: number[];
   favorite: boolean;
   toggleFavorite: () => void;
+  backTarget: Screen;
 }) {
   const [toast, setToast] = useState("");
   const [discountDetailsOpen, setDiscountDetailsOpen] = useState(false);
@@ -1009,7 +1011,7 @@ function CompareScreen({
   return (
     <section className="screen compare-screen">
       <StatusBar />
-      <Header title="ผลการเปรียบเทียบ" onBack={() => go("results")} />
+      <Header title="ผลการเปรียบเทียบ" onBack={() => go(backTarget)} />
 
       <main className="compare-content">
         <section className="compare-product-summary">
@@ -1179,6 +1181,7 @@ function PriceChart({ period }: { period: Period }) {
   const areaPath = `${linePath} L 328 139 L 8 139 Z`;
   const selectedIndex = activeIndex ?? chartPoints.length - 1;
   const selectedPoint = chartPoints[selectedIndex];
+  const headlinePrice = activeIndex === null ? 5800 : selectedPoint.value;
 
   const choosePoint = (event: PointerEvent<SVGSVGElement>) => {
     const svg = svgRef.current;
@@ -1195,7 +1198,7 @@ function PriceChart({ period }: { period: Period }) {
   return (
     <div className="chart-card">
       <div className="chart-head">
-        <strong>฿{selectedPoint.value.toLocaleString()}</strong>
+        <strong>฿{headlinePrice.toLocaleString()}</strong>
         <span>-20%</span>
         <em>{activeIndex === null ? "ถูกสุดในรอบ 90 วัน" : `ราคา ณ จุดที่ ${selectedIndex + 1}`}</em>
       </div>
@@ -1302,7 +1305,7 @@ function HistoryScreen({ go }: { go: (screen: Screen) => void }) {
         </div>
       </main>
       {toast && <div className="toast" role="status">{toast}</div>}
-      <BottomNav active="savings" go={go} />
+      <BottomNav go={go} />
     </section>
   );
 }
@@ -1577,6 +1580,10 @@ const referenceActions: Partial<Record<Screen, ReferenceAction[]>> = {
     { label: "ย้อนกลับ", x: 12, y: 50, width: 48, height: 52, target: "home" }
   ],
   interest: [
+    { label: "เปิดเปรียบเทียบสินค้าชิ้นที่ 1", x: 16, y: 178, width: 181, height: 256, target: "compare" },
+    { label: "เปิดเปรียบเทียบสินค้าชิ้นที่ 2", x: 205, y: 178, width: 181, height: 256, target: "compare" },
+    { label: "เปิดเปรียบเทียบสินค้าชิ้นที่ 3", x: 16, y: 447, width: 181, height: 256, target: "compare" },
+    { label: "เปิดเปรียบเทียบสินค้าชิ้นที่ 4", x: 205, y: 447, width: 181, height: 256, target: "compare" },
     { label: "นำสินค้าชิ้นแรกออก", x: 157, y: 178, width: 40, height: 40, target: "interest-confirm" }
   ],
   "interest-confirm": [
@@ -1584,10 +1591,15 @@ const referenceActions: Partial<Record<Screen, ReferenceAction[]>> = {
     { label: "ยืนยันนำออก", x: 210, y: 780, width: 176, height: 50, target: "interest-removed" }
   ],
   "interest-removed": [
+    { label: "เปิดเปรียบเทียบสินค้าชิ้นที่ 1", x: 16, y: 178, width: 181, height: 256, target: "compare" },
+    { label: "เปิดเปรียบเทียบสินค้าชิ้นที่ 2", x: 205, y: 178, width: 181, height: 256, target: "compare" },
+    { label: "เปิดเปรียบเทียบสินค้าชิ้นที่ 3", x: 16, y: 447, width: 181, height: 256, target: "compare" },
+    { label: "เปิดเปรียบเทียบสินค้าชิ้นที่ 4", x: 205, y: 447, width: 181, height: 256, target: "compare" },
     { label: "เลิกทำ", x: 304, y: 732, width: 82, height: 54, target: "interest" },
     { label: "ดูสถานะรายการสุดท้าย", x: 157, y: 178, width: 40, height: 40, target: "interest-last" }
   ],
   "interest-last": [
+    { label: "เปิดเปรียบเทียบสินค้าชิ้นสุดท้าย", x: 16, y: 178, width: 181, height: 256, target: "compare" },
     { label: "นำสินค้าชิ้นสุดท้ายออก", x: 157, y: 178, width: 40, height: 40, target: "interest-last-confirm" }
   ],
   "interest-last-confirm": [
@@ -1648,6 +1660,7 @@ export default function BestChoiceApp() {
   const [screen, setScreen] = useState<Screen>("home");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<number[]>([]);
+  const [compareBackScreen, setCompareBackScreen] = useState<Screen>("results");
   const [homeFavorites, setHomeFavorites] = useState<Record<string, boolean>>(initialHomeFavorites);
   const prototypeScale = usePrototypeScale();
   const prototypeStyle = {
@@ -1657,7 +1670,23 @@ export default function BestChoiceApp() {
     "--prototype-mobile-offset": `${-MOBILE_STATUS_BAR_CROP * prototypeScale}px`
   } as CSSProperties;
 
-  const go = (next: Screen) => setScreen(next);
+  useEffect(() => {
+    const openHistory = () => setScreen("history");
+    const openSearch = () => setScreen("search");
+    document.addEventListener("best-choice:open-history", openHistory);
+    document.addEventListener("best-choice:start-search", openSearch);
+    return () => {
+      document.removeEventListener("best-choice:open-history", openHistory);
+      document.removeEventListener("best-choice:start-search", openSearch);
+    };
+  }, []);
+
+  const go = (next: Screen) => {
+    if (next === "compare" && screen !== "history") {
+      setCompareBackScreen(screen);
+    }
+    setScreen(next);
+  };
 
   return (
     <main className="prototype-stage" style={prototypeStyle}>
@@ -1692,6 +1721,7 @@ export default function BestChoiceApp() {
               toggleFavorite={() =>
                 setHomeFavorites((current) => ({ ...current, "recent-1": !current["recent-1"] }))
               }
+              backTarget={compareBackScreen}
             />
           )}
           {screen === "history" && <HistoryScreen go={go} />}
@@ -1712,7 +1742,7 @@ export default function BestChoiceApp() {
         <span>FIGMA-MATCHED PROTOTYPE</span>
         <h2>Best Choice</h2>
         <p>ค้นหา เปรียบเทียบ ลากดูกราฟ และทดลองลบสินค้าในรายการสนใจได้ครบทั้ง loop</p>
-        <button onClick={() => { setScreen("home"); setQuery(""); setSelected([]); setHomeFavorites(initialHomeFavorites); }} type="button">เริ่ม Demo ใหม่</button>
+        <button onClick={() => { setScreen("home"); setQuery(""); setSelected([]); setCompareBackScreen("results"); setHomeFavorites(initialHomeFavorites); }} type="button">เริ่ม Demo ใหม่</button>
       </aside>
     </main>
   );
