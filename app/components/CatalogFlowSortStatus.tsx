@@ -9,6 +9,7 @@ import { recentSearches, searchSuggestions } from "../data/catalog";
 type Category = "Sneakers" | "RunShoes" | "Sandals" | "WomanShoes";
 type FlowScreen = "results" | "compare" | "no-results" | null;
 type SortMode = "relevance" | "best-selling" | "price-desc" | "price-asc";
+type CompareOrigin = "results" | "interest";
 
 type ProductGroup = {
   id: string;
@@ -129,6 +130,15 @@ const seeds: GroupSeed[] = [
     image: `${ASSET}/4-nb-lazada.webp`,
     prices: [1949, 4050, 4150],
     average: 3383
+  },
+  {
+    id: "hoka-clifton-one9",
+    category: "RunShoes",
+    name: "HOKA CLIFTON ONE9",
+    aliases: ["hoka", "clifton", "clifton one9", "รองเท้าวิ่ง"],
+    image: `${ASSET}/5-hoka-shopee.webp`,
+    prices: [3294, 3590, 3890],
+    average: 3591.33
   },
   {
     id: "adidas-ultraboost-light",
@@ -364,6 +374,7 @@ function CatalogCompareBuy({
 export function CatalogFlowSortStatus() {
   const [portalTarget, setPortalTarget] = useState<Element | null>(null);
   const [flowScreen, setFlowScreen] = useState<FlowScreen>(null);
+  const [compareOrigin, setCompareOrigin] = useState<CompareOrigin>("results");
   const [query, setQuery] = useState("");
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
   const [mallOnly, setMallOnly] = useState(true);
@@ -414,6 +425,7 @@ export function CatalogFlowSortStatus() {
 
   const openCompare = (group: ProductGroup) => {
     setSelectedGroupId(group.id);
+    setCompareOrigin("results");
     setSortOpen(false);
     setCompareDiscountDetailsOpen(false);
     setFlowScreen("compare");
@@ -542,6 +554,26 @@ export function CatalogFlowSortStatus() {
   }, []);
 
   useEffect(() => {
+    const openCompareFromInterest = (event: Event) => {
+      const productName = (event as CustomEvent<{ productName?: string }>).detail?.productName;
+      if (!productName) return;
+
+      const normalizedName = normalize(productName);
+      const group = groups.find((item) => normalize(item.name) === normalizedName);
+      if (!group) return;
+
+      setSelectedGroupId(group.id);
+      setCompareOrigin("interest");
+      setSortOpen(false);
+      setCompareDiscountDetailsOpen(false);
+      setFlowScreen("compare");
+    };
+
+    document.addEventListener("best-choice:open-compare", openCompareFromInterest);
+    return () => document.removeEventListener("best-choice:open-compare", openCompareFromInterest);
+  }, []);
+
+  useEffect(() => {
     if (!sortOpen) return;
 
     const closeOnOutsidePointer = (event: PointerEvent) => {
@@ -569,6 +601,24 @@ export function CatalogFlowSortStatus() {
   const chooseSort = (mode: SortMode) => {
     setSortMode(mode);
     setSortOpen(false);
+  };
+
+  const closeCompare = () => {
+    if (compareOrigin === "interest") {
+      setFlowScreen(null);
+      window.requestAnimationFrame(() => {
+        document.dispatchEvent(new Event("best-choice:open-interest"));
+      });
+      return;
+    }
+    setFlowScreen("results");
+  };
+
+  const openPriceHistory = () => {
+    setFlowScreen(null);
+    window.requestAnimationFrame(() => {
+      document.dispatchEvent(new Event("best-choice:open-history"));
+    });
   };
 
   if (!portalTarget || !flowScreen) return null;
@@ -703,7 +753,7 @@ export function CatalogFlowSortStatus() {
         return (
           <section className="catalog-compare-screen">
             <header className="catalog-compare-header">
-              <button type="button" onClick={() => setFlowScreen("results")} aria-label="ย้อนกลับ">
+              <button type="button" onClick={closeCompare} aria-label="ย้อนกลับ">
                 <img src="/assets/SVG/arrow_back.svg" alt="" />
               </button>
               <strong>ผลการเปรียบเทียบ</strong>
@@ -777,7 +827,7 @@ export function CatalogFlowSortStatus() {
                     className="compare-best-history"
                     type="button"
                     aria-label={`ดูกราฟราคา ${bestOffer.platform}`}
-                    onClick={() => flash(`กำลังเปิดกราฟราคา ${bestOffer.platform}`)}
+                    onClick={openPriceHistory}
                   >
                     <span className="compare-history-visual">
                       <span className="compare-best-label">
@@ -844,7 +894,7 @@ export function CatalogFlowSortStatus() {
                           className="compare-graph-icon"
                           type="button"
                           aria-label={`ดูกราฟราคา ${offer.platform}`}
-                          onClick={() => flash(`กำลังเปิดกราฟราคา ${offer.platform}`)}
+                          onClick={openPriceHistory}
                         >
                           <img src="/assets/SVG/Nav Bar/HIC03.svg" alt="" />
                         </button>
@@ -880,20 +930,37 @@ export function CatalogFlowSortStatus() {
       })()}
 
       {flowScreen === "no-results" && (
-        <>
-          <header className="catalog-flow-header">
-            <button type="button" onClick={() => setFlowScreen(null)} aria-label="ย้อนกลับ">
-              <img src="/assets/SVG/arrow_back.svg" alt="" />
-            </button>
-            <div><strong>{query}</strong><small>ผลการค้นหา</small></div>
-          </header>
-          <main className="catalog-empty-state">
-            <span aria-hidden="true">⌕</span>
-            <h2>ไม่พบสินค้าที่ค้นหา</h2>
-            <p>ไม่พบผลลัพธ์สำหรับ “{query}”<br />ลองตรวจสอบการสะกดหรือใช้คำที่สั้นลง</p>
-            <button type="button" onClick={() => setFlowScreen(null)}>แก้ไขคำค้นหา</button>
-          </main>
-        </>
+        <section className="catalog-no-results-reference" aria-label="ไม่พบสินค้าที่ค้นหา">
+          <img src="/assets/screens/no-results.png" alt="" aria-hidden="true" />
+          <button
+            className="catalog-no-results-search"
+            type="button"
+            aria-label="แก้ไขคำค้นหา"
+            onClick={() => setFlowScreen(null)}
+          />
+          <button
+            className="catalog-no-results-clear"
+            type="button"
+            aria-label="ล้างตัวกรอง"
+            onClick={() => {
+              setQuery("รองเท้าวิ่ง Nike");
+              setMallOnly(false);
+              setFreeShipOnly(false);
+              setSortMode("relevance");
+              setFlowScreen("results");
+            }}
+          />
+          <div className="catalog-no-results-nav" aria-label="เมนูหลัก">
+            {NAV_ITEMS.map((item, index) => (
+              <button
+                type="button"
+                key={item.label}
+                aria-label={item.label}
+                onClick={() => navigateBase(index)}
+              />
+            ))}
+          </div>
+        </section>
       )}
     </section>,
     portalTarget
