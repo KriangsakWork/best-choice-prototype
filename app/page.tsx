@@ -6,6 +6,7 @@ import { ProductBadges, ProductCard, ProductCardData, ProductMeta } from "./comp
 import { resetFavorites, useFavorites } from "./data/favorite-store";
 
 type Screen =
+  | "splash"
   | "home"
   | "search"
   | "results"
@@ -1619,6 +1620,20 @@ function ProfileScreen({ go }: { go: (screen: Screen) => void }) {
   );
 }
 
+
+function SplashScreen() {
+  return (
+    <section className="screen splash-screen" aria-label="Best Choice">
+      <StatusBar />
+      <div className="splash-brand" aria-hidden="true">
+        <img className="splash-logo" src={`${ASSET}/splash-logo.svg`} alt="" />
+        <strong>Best Choice</strong>
+        <span>เปรียบเทียบราคา</span>
+      </div>
+    </section>
+  );
+}
+
 type ReferenceAction = {
   label: string;
   x: number;
@@ -1710,7 +1725,7 @@ function ReferenceScreen({ screen, go }: { screen: Screen; go: (screen: Screen) 
 }
 
 export default function BestChoiceApp() {
-  const [screen, setScreen] = useState<Screen>("home");
+  const [screen, setScreen] = useState<Screen>("splash");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<number[]>([]);
   const [compareBackScreen, setCompareBackScreen] = useState<Screen>("results");
@@ -1724,6 +1739,12 @@ export default function BestChoiceApp() {
     "--prototype-scaled-height": `${(PROTOTYPE_HEIGHT - MOBILE_STATUS_BAR_CROP) * prototypeScale}px`,
     "--prototype-mobile-offset": `${-MOBILE_STATUS_BAR_CROP * prototypeScale}px`
   } as CSSProperties;
+
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setScreen("home"), 1600);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const openHistory = (event: Event) => {
@@ -1759,6 +1780,7 @@ export default function BestChoiceApp() {
     <main className="prototype-stage" style={prototypeStyle}>
       <div className="phone-viewport">
         <div className="phone-shell">
+          {screen === "splash" && <SplashScreen />}
           {screen === "home" && (
             <HomeScreen
               go={go}
