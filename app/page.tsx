@@ -926,14 +926,22 @@ function CompareTags({ offer }: { offer: CompareOffer }) {
 
   return (
     <div className="compare-tags" aria-label={offer.platform + (offer.mall ? " Mall" : "")}>
+      <img className="compare-platform-badge" src={platformBadge} alt={offer.platform} />
       {offer.mall && (
         <img className="compare-mall-badge" src={`${ASSET}/App/Platform=MALL.jpg`} alt="MALL" />
       )}
-      <img className="compare-platform-badge" src={platformBadge} alt={offer.platform} />
       {offer.freeShip && <span className="compare-tag free">ส่งฟรี</span>}
     </div>
   );
 }
+
+const compareDiscountDetails = [
+  { label: "ส่วนลดร้านค้า", amount: 48 },
+  { label: "ส่วนลดแคมเปญ 8.8", amount: 52 },
+  { label: "โค้ดแคมเปญช็อปต่อเนื่อง", amount: 20 }
+];
+
+const compareDiscountTotal = compareDiscountDetails.reduce((total, item) => total + item.amount, 0);
 
 function CompareMiniTrend({ price }: { price: number }) {
   const values = [price + 500, price + 390, price + 420, price + 260, price + 310, price + 120, price + 170, price];
@@ -1074,27 +1082,43 @@ function CompareScreen({
               </span>
               <b>ดูกราฟ <i aria-hidden="true">›</i></b>
             </button>
+            <div className="compare-discount-details">
+              <div className="compare-discount-heading">
+                <span>ส่วนลดเพิ่มเติมที่ได้รับ</span>
+                <b>รวม ฿{compareDiscountTotal.toLocaleString("en-US")}</b>
+              </div>
+              <div className="compare-discount-list">
+                {compareDiscountDetails.map((detail) => (
+                  <div className="compare-discount-row" key={detail.label}>
+                    <span>{detail.label}</span>
+                    <b>-฿{detail.amount.toLocaleString("en-US")}</b>
+                  </div>
+                ))}
+              </div>
+            </div>
           </article>
 
           {otherOffers.map((offer) => (
             <article className="compare-offer-row" key={offer.id}>
               <div className="compare-row-top">
                 <CompareTags offer={offer} />
-                <button
-                  className="compare-graph-icon"
-                  type="button"
-                  aria-label={`ดูกราฟราคา ${offer.platform}`}
-                  onClick={() => go("history")}
-                >
-                  <img src={`${ASSET}/SVG/Nav Bar/HIC03.svg`} alt="" />
-                </button>
               </div>
               <div className="compare-row-main">
                 <div className="compare-row-price">
                   <strong>฿{offer.price.toLocaleString("en-US")}</strong>
                   <del>฿{offer.originalPrice.toLocaleString("en-US")}</del>
                 </div>
-                <CompareBuyButton offer={offer} onUnavailable={() => flash("ยังไม่มีลิงก์ร้านค้านี้ใน Prototype")} />
+                <div className="compare-row-actions">
+                  <button
+                    className="compare-graph-icon"
+                    type="button"
+                    aria-label={`ดูกราฟราคา ${offer.platform}`}
+                    onClick={() => go("history")}
+                  >
+                    <img src={`${ASSET}/SVG/Nav Bar/HIC03.svg`} alt="" />
+                  </button>
+                  <CompareBuyButton offer={offer} onUnavailable={() => flash("ยังไม่มีลิงก์ร้านค้านี้ใน Prototype")} />
+                </div>
               </div>
               <div className="compare-row-meta">
                 <span>★ {offer.rating} <i>• ขายแล้ว {offer.sold} ชิ้น</i></span>
