@@ -1201,6 +1201,10 @@ function PriceChart({ period }: { period: Period }) {
   const selectedIndex = activeIndex ?? chartPoints.length - 1;
   const selectedPoint = chartPoints[selectedIndex];
   const headlinePrice = activeIndex === null ? 5800 : selectedPoint.value;
+  const priceLabelX = Math.min(286, Math.max(4, selectedPoint.x - 27));
+  const preferredPriceLabelY = selectedPoint.y - 30;
+  const clampedPriceLabelY = Math.min(112, Math.max(54, preferredPriceLabelY));
+  const priceLabelY = clampedPriceLabelY < 88 ? 90 : clampedPriceLabelY;
 
   const choosePoint = (event: PointerEvent<SVGSVGElement>) => {
     const svg = svgRef.current;
@@ -1258,7 +1262,7 @@ function PriceChart({ period }: { period: Period }) {
         <text className="average-price" x="174" y="80" textAnchor="middle">฿6,150</text>
         {activeIndex !== null && <line className="cursor-line" x1={selectedPoint.x} y1="45" x2={selectedPoint.x} y2="139" />}
         <circle className="chart-dot" cx={selectedPoint.x} cy={selectedPoint.y} r="8" />
-        <g className="price-label" transform={`translate(${Math.min(286, Math.max(4, selectedPoint.x - 27))} ${Math.max(8, selectedPoint.y - 30)})`}>
+        <g className="price-label" transform={`translate(${priceLabelX} ${priceLabelY})`}>
           <rect width="55" height="22" rx="11" />
           <text x="27.5" y="15" textAnchor="middle">฿{selectedPoint.value.toLocaleString()}</text>
         </g>
