@@ -301,6 +301,9 @@ function CatalogCompareTags({ offer }: { offer: ProductCardData }) {
 
   return (
     <div className="compare-tags" aria-label={offer.platform + (offer.mall ? " Mall" : "")}>
+      {offer.mall && (
+        <img className="compare-mall-badge" src="/assets/App/Platform=MALL.jpg" alt="MALL" />
+      )}
       <img
         className="compare-platform-badge"
         src={platformBadge.src}
@@ -308,7 +311,6 @@ function CatalogCompareTags({ offer }: { offer: ProductCardData }) {
         width={platformBadge.width}
         height={16}
       />
-      {offer.mall && <span className="compare-tag mall">Mall</span>}
       {offer.freeShip && <span className="compare-tag free">ส่งฟรี</span>}
     </div>
   );
@@ -772,12 +774,32 @@ export function CatalogFlowSortStatus() {
                     <span>★ {bestOffer.rating} <i>• ขายแล้ว {bestOffer.sold} ชิ้น</i></span>
                     <b>ประหยัด ฿{bestSaving.toLocaleString("en-US")}</b>
                   </div>
+                  <button
+                    className="compare-best-history"
+                    type="button"
+                    onClick={() => flash(`กำลังเปิดกราฟราคา ${bestOffer.platform}`)}
+                  >
+                    <CatalogCompareTrend price={bestOffer.discountPrice} />
+                    <span>
+                      <small>แนวโน้มราคา 30 วัน</small>
+                      <strong>ราคาลดลง {bestOffer.trendPercent}%</strong>
+                    </span>
+                    <b>ดูกราฟ <i aria-hidden="true">›</i></b>
+                  </button>
                 </article>
 
                 {otherOffers.map((offer) => (
                   <article className="compare-offer-row" key={offer.id}>
                     <div className="compare-row-top">
                       <CatalogCompareTags offer={offer} />
+                      <button
+                        className="compare-graph-icon"
+                        type="button"
+                        aria-label={`ดูกราฟราคา ${offer.platform}`}
+                        onClick={() => flash(`กำลังเปิดกราฟราคา ${offer.platform}`)}
+                      >
+                        <img src="/assets/SVG/Nav Bar/HIC03.svg" alt="" />
+                      </button>
                     </div>
                     <div className="compare-row-main">
                       <div className="compare-row-price">
@@ -796,19 +818,6 @@ export function CatalogFlowSortStatus() {
                   </article>
                 ))}
               </section>
-
-              <button
-                className="compare-history-card"
-                type="button"
-                onClick={() => flash("กำลังเปิดประวัติราคา")}
-              >
-                <CatalogCompareTrend price={bestOffer.discountPrice} />
-                <span>
-                  <small>แนวโน้มราคา 30 วัน</small>
-                  <strong>ตอนนี้ราคาลดลง {bestOffer.trendPercent}%</strong>
-                </span>
-                <b>ดูประวัติราคา <i aria-hidden="true">›</i></b>
-              </button>
 
               <small className="compare-updated">อัปเดตราคาล่าสุด 10 นาทีที่แล้ว</small>
             </main>
