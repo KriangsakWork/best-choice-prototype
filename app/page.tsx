@@ -926,8 +926,10 @@ function CompareTags({ offer }: { offer: CompareOffer }) {
 
   return (
     <div className="compare-tags" aria-label={offer.platform + (offer.mall ? " Mall" : "")}>
+      {offer.mall && (
+        <img className="compare-mall-badge" src={`${ASSET}/App/Platform=MALL.jpg`} alt="MALL" />
+      )}
       <img className="compare-platform-badge" src={platformBadge} alt={offer.platform} />
-      {offer.mall && <span className="compare-tag mall">Mall</span>}
       {offer.freeShip && <span className="compare-tag free">ส่งฟรี</span>}
     </div>
   );
@@ -1064,12 +1066,28 @@ function CompareScreen({
               <span>★ {bestOffer.rating} <i>• ขายแล้ว {bestOffer.sold} ชิ้น</i></span>
               <b>ประหยัด ฿{bestSaving.toLocaleString("en-US")}</b>
             </div>
+            <button className="compare-best-history" type="button" onClick={() => go("history")}>
+              <CompareMiniTrend price={bestOffer.price} />
+              <span>
+                <small>แนวโน้มราคา 30 วัน</small>
+                <strong>ราคาลดลง 20%</strong>
+              </span>
+              <b>ดูกราฟ <i aria-hidden="true">›</i></b>
+            </button>
           </article>
 
           {otherOffers.map((offer) => (
             <article className="compare-offer-row" key={offer.id}>
               <div className="compare-row-top">
                 <CompareTags offer={offer} />
+                <button
+                  className="compare-graph-icon"
+                  type="button"
+                  aria-label={`ดูกราฟราคา ${offer.platform}`}
+                  onClick={() => go("history")}
+                >
+                  <img src={`${ASSET}/SVG/Nav Bar/HIC03.svg`} alt="" />
+                </button>
               </div>
               <div className="compare-row-main">
                 <div className="compare-row-price">
@@ -1085,15 +1103,6 @@ function CompareScreen({
             </article>
           ))}
         </section>
-
-        <button className="compare-history-card" type="button" onClick={() => go("history")}>
-          <CompareMiniTrend price={bestOffer.price} />
-          <span>
-            <small>แนวโน้มราคา 30 วัน</small>
-            <strong>ตอนนี้ราคาลดลง 20%</strong>
-          </span>
-          <b>ดูประวัติราคา <i aria-hidden="true">›</i></b>
-        </button>
 
         <small className="compare-updated">อัปเดตราคาล่าสุด 10 นาทีที่แล้ว</small>
       </main>
