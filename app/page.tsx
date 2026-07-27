@@ -4,6 +4,7 @@ import { CSSProperties, FormEvent, PointerEvent, useEffect, useMemo, useRef, use
 import { PlatformBadge } from "./components/PlatformBadge";
 import { ProductBadges, ProductCard, ProductCardData, ProductMeta } from "./components/ProductCard";
 import { resetFavorites, useFavorites } from "./data/favorite-store";
+import logoAsset from "../Main-LOGO.png";
 
 type Screen =
   | "splash"
@@ -1628,7 +1629,7 @@ function SplashScreen() {
       <div className="splash-brand">
         <img
           className="splash-logo"
-          src="/Main-LOGO.png"
+          src={logoAsset.src}
           alt="Best Choice เปรียบเทียบราคา"
         />
       </div>
