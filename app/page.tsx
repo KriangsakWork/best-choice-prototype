@@ -1356,7 +1356,7 @@ function HistoryScreen({
             }}
             type="button"
           >
-            <Icon name="heart" /> รายการโปรด
+            <img className="history-favorite-icon" src={favorite ? `${ASSET}/SVG/Like/Property 1=Like.svg` : `${ASSET}/SVG/Like/Property 1=Normal.svg`} alt="" aria-hidden="true" /> รายการโปรด
           </button>
           <button onClick={buyProduct} type="button">
             <img className="history-action-icon" src={`${ASSET}/SVG/Buy BT.svg`} alt="" aria-hidden="true" /> ซื้อเลย
