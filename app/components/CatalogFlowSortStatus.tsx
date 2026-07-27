@@ -611,6 +611,19 @@ export function CatalogFlowSortStatus() {
   }, []);
 
   useEffect(() => {
+    const reopenCompareFromHistory = () => {
+      if (!selectedGroupId) return;
+
+      setSortOpen(false);
+      setCompareDiscountDetailsOpen(false);
+      setFlowScreen("compare");
+    };
+
+    document.addEventListener("best-choice:reopen-compare", reopenCompareFromHistory);
+    return () => document.removeEventListener("best-choice:reopen-compare", reopenCompareFromHistory);
+  }, [selectedGroupId]);
+
+  useEffect(() => {
     if (!sortOpen) return;
 
     const closeOnOutsidePointer = (event: PointerEvent) => {
