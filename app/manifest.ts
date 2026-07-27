@@ -4,24 +4,22 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Best Choice — Smart Price Comparison",
     short_name: "Best Choice",
-    description: "ค้นหา เปรียบเทียบ และติดตามราคาสินค้าใน Prototype ที่สร้างจาก Figma",
+    description: "ค้นหา เปรียบเทียบ และติดตามราคาสินค้าจากหลายแพลตฟอร์ม",
     start_url: "/",
-    scope: "/",
     display: "standalone",
-    orientation: "portrait",
     background_color: "#fefcfb",
-    theme_color: "#eb3b0c",
+    theme_color: "#fefcfb",
     icons: [
       {
-        src: "/icon.svg",
-        sizes: "any",
-        type: "image/svg+xml",
+        src: "/icon.png",
+        sizes: "1200x1200",
+        type: "image/png",
         purpose: "any"
       },
       {
-        src: "/icon.svg",
-        sizes: "any",
-        type: "image/svg+xml",
+        src: "/icon.png",
+        sizes: "1200x1200",
+        type: "image/png",
         purpose: "maskable"
       }
     ]
