@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { PlatformBadge } from "./PlatformBadge";
 import { ProductCard, ProductCardData } from "./ProductCard";
 import { recentSearches, searchSuggestions } from "../data/catalog";
 
@@ -290,27 +291,11 @@ function ProductGroupCard({ group, onOpen }: { group: ProductGroup; onOpen: () =
 }
 
 
-const catalogPlatformBadges: Record<ProductCardData["platform"], { src: string; width: number; label: string }> = {
-  Lazada: { src: "/assets/App/Platform=Lazada.jpg", width: 58, label: "Lazada" },
-  Shopee: { src: "/assets/App/Platform=Shopee.jpg", width: 59, label: "Shopee" },
-  TikTok: { src: "/assets/App/Platform=TikTok Shop.jpg", width: 54, label: "TikTok Shop" }
-};
-
 function CatalogCompareTags({ offer }: { offer: ProductCardData }) {
-  const platformBadge = catalogPlatformBadges[offer.platform];
-
   return (
     <div className="compare-tags" aria-label={offer.platform + (offer.mall ? " Mall" : "")}>
-      <img
-        className="compare-platform-badge"
-        src={platformBadge.src}
-        alt={platformBadge.label}
-        width={platformBadge.width}
-        height={16}
-      />
-      {offer.mall && (
-        <img className="compare-mall-badge" src="/assets/App/Platform=MALL.jpg" alt="MALL" />
-      )}
+      <PlatformBadge platform={offer.platform} />
+      {offer.mall && <PlatformBadge platform="MALL" />}
       {offer.freeShip && <span className="compare-tag free">ส่งฟรี</span>}
     </div>
   );
