@@ -7,19 +7,19 @@ const platformBadgeVisuals: Record<
   { src: string; label: string; width: number; height: number }
 > = {
   Lazada: {
-    src: "/assets/App/Platform=Lazada.jpg",
+    src: "/assets/Large logo/Lazada.png",
     label: "Lazada",
     width: 56,
     height: 20
   },
   Shopee: {
-    src: "/assets/App/Platform=Shopee.jpg",
+    src: "/assets/Large logo/Shopee.png",
     label: "Shopee",
     width: 57,
     height: 20
   },
   TikTok: {
-    src: "/assets/App/Platform=TikTok Shop.jpg",
+    src: "/assets/Large logo/TikTok Shop.png",
     label: "TikTok",
     width: 52,
     height: 20
