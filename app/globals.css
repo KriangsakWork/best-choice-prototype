@@ -1226,18 +1226,24 @@ img[src$="/compare-fire.svg"] {
   gap: 4px;
 }
 
-.compare-platform-badge {
-  width: auto;
-  height: 20px;
-  border-radius: 3px;
-  object-fit: contain;
+.platform-badge-crop {
+  position: relative;
+  width: var(--platform-badge-width);
+  height: var(--platform-badge-height);
+  display: inline-block;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border-radius: 4px;
 }
 
-.compare-mall-badge {
+.platform-badge-crop > img {
+  position: absolute;
+  top: 0;
+  left: 50%;
   width: auto;
-  height: 16px;
-  border-radius: 3px;
-  object-fit: contain;
+  max-width: none;
+  height: 100%;
+  transform: translateX(-50%);
 }
 
 .compare-tag {
