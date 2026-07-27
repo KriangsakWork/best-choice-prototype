@@ -466,6 +466,7 @@ const chartData: Record<Period, number[]> = {
   "3 เดือน": [7350, 7100, 6900, 6650, 6500, 6280, 6120, 5950]
 };
 
+// Retry deployment with the latest chart headline behavior.
 const chartHeadlinePrice: Record<Period, number> = {
   "7 วัน": 5800,
   "30 วัน": 5950,
