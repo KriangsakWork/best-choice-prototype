@@ -2,7 +2,7 @@
 
 import { CSSProperties, FormEvent, PointerEvent, useEffect, useMemo, useRef, useState } from "react";
 import { PlatformBadge } from "./components/PlatformBadge";
-import { ProductCard, ProductCardData } from "./components/ProductCard";
+import { ProductBadges, ProductCard, ProductCardData, ProductMeta } from "./components/ProductCard";
 import { resetFavorites, useFavorites } from "./data/favorite-store";
 
 type Screen =
@@ -1296,16 +1296,8 @@ function HistoryScreen({ go, product }: { go: (screen: Screen) => void; product:
           <img className="history-product-image" src={product.imageUrl} alt={product.productName} />
           <div className="history-product-copy">
             <h2>{product.productName}</h2>
-            <div className="history-product-badges">
-              {product.mall && <PlatformBadge platform="MALL" />}
-              <PlatformBadge platform={product.platform} />
-              {product.freeShip && <span className="history-free-ship">ส่งฟรี</span>}
-            </div>
-            <div className="history-product-meta">
-              <span>★ {product.rating}</span>
-              <i aria-hidden="true" />
-              <span>ขายแล้ว {product.sold} ชิ้น</span>
-            </div>
+            <ProductBadges product={product} showMall className="history-product-badges" />
+            <ProductMeta product={product} className="history-product-meta" />
           </div>
           <div className="history-product-price">
             <strong>฿5,800</strong>
