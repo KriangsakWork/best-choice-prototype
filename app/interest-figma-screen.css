@@ -106,6 +106,21 @@
   height: 255px;
 }
 
+.interest-product-item {
+  cursor: pointer;
+  border-radius: 8px;
+  outline: none;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.interest-product-item:active {
+  transform: scale(.985);
+}
+
+.interest-product-item:focus-visible {
+  box-shadow: 0 0 0 3px rgba(235, 59, 12, .28);
+}
+
 .interest-product-item .real-product-card {
   flex: none;
 }
@@ -250,6 +265,49 @@
   color: #ffb09c;
   font-size: 13px;
   font-weight: 500;
+}
+
+.interest-empty-reference {
+  position: absolute;
+  z-index: 170;
+  inset: 0;
+  background: #fff;
+}
+
+.interest-empty-reference > img {
+  position: absolute;
+  inset: 0;
+  width: 402px;
+  height: 874px;
+  max-width: none;
+  pointer-events: none;
+  user-select: none;
+}
+
+.interest-empty-start {
+  position: absolute;
+  z-index: 2;
+  top: 450px;
+  left: 91px;
+  width: 220px;
+  height: 50px;
+  border-radius: 999px;
+}
+
+.interest-empty-nav {
+  position: absolute;
+  z-index: 2;
+  bottom: 0;
+  left: 0;
+  width: 402px;
+  height: 76px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.interest-empty-nav button {
+  width: 100%;
+  height: 76px;
 }
 
 @keyframes interest-screen-in {
