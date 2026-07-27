@@ -3,6 +3,7 @@
 import { CSSProperties, FormEvent, PointerEvent, useEffect, useMemo, useRef, useState } from "react";
 import { PlatformBadge } from "./components/PlatformBadge";
 import { ProductCard, ProductCardData } from "./components/ProductCard";
+import { resetFavorites, useFavorites } from "./data/favorite-store";
 
 type Screen =
   | "home"
@@ -348,6 +349,26 @@ type CompareOffer = {
   productUrl: string;
 };
 
+function compareOfferToProductData(offer: CompareOffer): ProductCardData {
+  return {
+    id: offer.id,
+    productName: offer.productName,
+    platform: offer.platform,
+    price: offer.originalPrice,
+    discountPrice: offer.price,
+    percent: Math.round((offer.originalPrice - offer.price) / offer.originalPrice * 100),
+    rating: offer.rating,
+    sold: offer.sold,
+    freeShip: offer.freeShip,
+    mall: offer.mall,
+    imageUrl: offer.productImage,
+    productUrl: offer.productUrl,
+    averagePrice: 6150,
+    trendLabel: "ลดจากค่าเฉลี่ย",
+    trendPercent: 20
+  };
+}
+
 const compareOfferById: Record<number, CompareOffer> = {
   1: {
     id: 1,
@@ -427,19 +448,6 @@ const compareOfferById: Record<number, CompareOffer> = {
     productImage: nikeAirForceOne.imageUrl,
     productUrl: ""
   }
-};
-
-const initialHomeFavorites: Record<string, boolean> = {
-  "recent-1": true,
-  "recent-28": true,
-  "recommended-4": true,
-  "recommended-9": false,
-  "recommended-11": false,
-  "recommended-17": true,
-  "recommended-19": true,
-  "recommended-24": true,
-  "recommended-27": false,
-  "recommended-31": false
 };
 
 const suggestions = [
@@ -676,17 +684,14 @@ function Header({ title, onBack }: { title: string; onBack: () => void }) {
 function HomeScreen({
   go,
   query,
-  setQuery,
-  homeFavorites,
-  toggleHomeFavorite
+  setQuery
 }: {
   go: (screen: Screen) => void;
   query: string;
   setQuery: (value: string) => void;
-  homeFavorites: Record<string, boolean>;
-  toggleHomeFavorite: (key: string) => void;
 }) {
   const [searchFocused, setSearchFocused] = useState(false);
+  const favorites = useFavorites();
 
   const openResultsWithKeyboard = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "Enter" || event.key === " ") {
@@ -710,8 +715,8 @@ function HomeScreen({
       >
         <ProductCard
           product={product}
-          favorite={homeFavorites[favoriteKey]}
-          onFavoriteToggle={() => toggleHomeFavorite(favoriteKey)}
+          favorite={favorites.isFavorite(product)}
+          onFavoriteToggle={() => favorites.toggleFavorite(product)}
         />
       </div>
     );
@@ -844,6 +849,7 @@ function ResultsScreen({
 }) {
   const [filters, setFilters] = useState(["ส่งฟรี"]);
   const [sortLow, setSortLow] = useState(false);
+  const favorites = useFavorites();
   const visibleProducts = useMemo(
     () => sortLow ? [...products].sort((a, b) => a.price - b.price) : products,
     [sortLow]
@@ -889,20 +895,30 @@ function ResultsScreen({
         {visibleProducts.map((product) => {
           const isSelected = selected.includes(product.id);
           return (
-            <button
+            <div
               className={isSelected ? "product-card selected" : "product-card"}
               key={product.id}
               onClick={() => toggleProduct(product.id)}
-              type="button"
+              onKeyDown={(event) => {
+                if (event.key !== "Enter" && event.key !== " ") return;
+                event.preventDefault();
+                toggleProduct(product.id);
+              }}
+              role="button"
+              tabIndex={0}
               aria-pressed={isSelected}
             >
               {product.data ? (
-                <ProductCard product={product.data} />
+                <ProductCard
+                  product={product.data}
+                  favorite={favorites.isFavorite(product.data)}
+                  onFavoriteToggle={() => favorites.toggleFavorite(product.data!)}
+                />
               ) : (
                 <img src={product.image} alt={`สินค้าราคา ${product.price.toLocaleString()} บาท`} />
               )}
               {isSelected && <span className="selected-ring" />}
-            </button>
+            </div>
           );
         })}
       </main>
@@ -983,23 +999,24 @@ function CompareBuyButton({ offer, onUnavailable }: { offer: CompareOffer; onUna
 function CompareScreen({
   go,
   selected,
-  favorite,
-  toggleFavorite,
-  backTarget
+  backTarget,
+  openHistory
 }: {
   go: (screen: Screen) => void;
   selected: number[];
-  favorite: boolean;
-  toggleFavorite: () => void;
   backTarget: Screen;
+  openHistory: (product: ProductCardData) => void;
 }) {
   const [toast, setToast] = useState("");
   const [discountDetailsOpen, setDiscountDetailsOpen] = useState(false);
+  const favorites = useFavorites();
   const effectiveIds = selected.length >= 2 ? selected.slice(0, 3) : [1, 2, 3];
   const offers = effectiveIds.map((id) => compareOfferById[id]).filter(Boolean).sort((a, b) => a.price - b.price);
   const bestOffer = offers[0];
   const otherOffers = offers.slice(1);
   const bestSaving = bestOffer ? Math.max(0, bestOffer.originalPrice - bestOffer.price) : 0;
+  const bestProduct = bestOffer ? compareOfferToProductData(bestOffer) : null;
+  const favorite = bestProduct ? favorites.isFavorite(bestProduct) : false;
 
   const flash = (message: string) => {
     setToast(message);
@@ -1025,7 +1042,7 @@ function CompareScreen({
             type="button"
             aria-label={favorite ? "เลิกติดตามราคา" : "ติดตามราคา"}
             aria-pressed={favorite}
-            onClick={toggleFavorite}
+            onClick={() => bestProduct && favorites.toggleFavorite(bestProduct)}
           >
             <img
               src={favorite ? `${ASSET}/SVG/Like/Property 1=Like.svg` : `${ASSET}/SVG/Like/Property 1=Normal.svg`}
@@ -1074,7 +1091,7 @@ function CompareScreen({
               className="compare-best-history"
               type="button"
               aria-label={`ดูกราฟราคา ${bestOffer.platform}`}
-              onClick={() => go("history")}
+              onClick={() => openHistory(compareOfferToProductData(bestOffer))}
             >
               <span className="compare-history-visual">
                 <span className="compare-best-label">
@@ -1141,7 +1158,7 @@ function CompareScreen({
                     className="compare-graph-icon"
                     type="button"
                     aria-label={`ดูกราฟราคา ${offer.platform}`}
-                    onClick={() => go("history")}
+                    onClick={() => openHistory(compareOfferToProductData(offer))}
                   >
                     <img src={`${ASSET}/SVG/Nav Bar/HIC03.svg`} alt="" />
                   </button>
@@ -1249,14 +1266,25 @@ function PriceChart({ period }: { period: Period }) {
   );
 }
 
-function HistoryScreen({ go }: { go: (screen: Screen) => void }) {
+function HistoryScreen({ go, product }: { go: (screen: Screen) => void; product: ProductCardData }) {
   const [period, setPeriod] = useState<Period>("7 วัน");
-  const [favorite, setFavorite] = useState(false);
   const [toast, setToast] = useState("");
+  const favorites = useFavorites();
+  const favorite = favorites.isFavorite(product);
+  const periods = Object.keys(chartData) as Period[];
+  const periodIndex = periods.indexOf(period);
 
   const flash = (message: string) => {
     setToast(message);
     window.setTimeout(() => setToast(""), 1800);
+  };
+
+  const buyProduct = () => {
+    if (product.productUrl) {
+      window.open(product.productUrl, "_blank", "noopener,noreferrer");
+      return;
+    }
+    flash("ยังไม่มีลิงก์ร้านค้านี้ใน Prototype");
   };
 
   return (
@@ -1264,9 +1292,34 @@ function HistoryScreen({ go }: { go: (screen: Screen) => void }) {
       <StatusBar />
       <Header title="ประวัติราคาล่าสุด" onBack={() => go("compare")} />
       <main className="history-content">
-        <img className="history-product" src={`${ASSET}/history-product.png`} alt="รองเท้ากีฬา Nike ราคา 5,800 บาท" />
-        <div className="period-tabs" role="tablist" aria-label="ช่วงเวลา">
-          {(Object.keys(chartData) as Period[]).map((item) => (
+        <section className="history-product-summary" aria-label={`ประวัติราคา ${product.productName}`}>
+          <img className="history-product-image" src={product.imageUrl} alt={product.productName} />
+          <div className="history-product-copy">
+            <h2>{product.productName}</h2>
+            <div className="history-product-badges">
+              {product.mall && <PlatformBadge platform="MALL" />}
+              <PlatformBadge platform={product.platform} />
+              {product.freeShip && <span className="history-free-ship">ส่งฟรี</span>}
+            </div>
+            <div className="history-product-meta">
+              <span>★ {product.rating}</span>
+              <i aria-hidden="true" />
+              <span>ขายแล้ว {product.sold} ชิ้น</span>
+            </div>
+          </div>
+          <div className="history-product-price">
+            <strong>฿5,800</strong>
+            <del>฿6,500</del>
+          </div>
+        </section>
+        <div
+          className="period-tabs"
+          role="tablist"
+          aria-label="ช่วงเวลา"
+          style={{ "--period-index": periodIndex } as CSSProperties}
+        >
+          <span className="period-tabs-indicator" aria-hidden="true" />
+          {periods.map((item) => (
             <button
               key={item}
               className={period === item ? "active" : ""}
@@ -1292,14 +1345,14 @@ function HistoryScreen({ go }: { go: (screen: Screen) => void }) {
           <button
             className={favorite ? "favorite active" : "favorite"}
             onClick={() => {
-              setFavorite(!favorite);
+              favorites.toggleFavorite(product);
               flash(favorite ? "นำออกจากรายการโปรดแล้ว" : "บันทึกในรายการโปรดแล้ว");
             }}
             type="button"
           >
             <Icon name="heart" /> รายการโปรด
           </button>
-          <button onClick={() => flash("กำลังเปิดร้านค้าที่ราคาดีที่สุด")} type="button">
+          <button onClick={buyProduct} type="button">
             <Icon name="bag" /> ซื้อเลย
           </button>
         </div>
@@ -1661,7 +1714,7 @@ export default function BestChoiceApp() {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<number[]>([]);
   const [compareBackScreen, setCompareBackScreen] = useState<Screen>("results");
-  const [homeFavorites, setHomeFavorites] = useState<Record<string, boolean>>(initialHomeFavorites);
+  const [historyProduct, setHistoryProduct] = useState<ProductCardData>(nikeAirForceOne);
   const prototypeScale = usePrototypeScale();
   const prototypeStyle = {
     "--prototype-scale": prototypeScale,
@@ -1671,7 +1724,11 @@ export default function BestChoiceApp() {
   } as CSSProperties;
 
   useEffect(() => {
-    const openHistory = () => setScreen("history");
+    const openHistory = (event: Event) => {
+      const product = (event as CustomEvent<{ product?: ProductCardData }>).detail?.product;
+      if (product) setHistoryProduct(product);
+      setScreen("history");
+    };
     const openSearch = () => setScreen("search");
     document.addEventListener("best-choice:open-history", openHistory);
     document.addEventListener("best-choice:start-search", openSearch);
@@ -1697,10 +1754,6 @@ export default function BestChoiceApp() {
               go={go}
               query={query}
               setQuery={setQuery}
-              homeFavorites={homeFavorites}
-              toggleHomeFavorite={(key) =>
-                setHomeFavorites((current) => ({ ...current, [key]: !current[key] }))
-              }
             />
           )}
           {screen === "search" && <SearchScreen go={go} query={query} setQuery={setQuery} />}
@@ -1717,14 +1770,14 @@ export default function BestChoiceApp() {
             <CompareScreen
               go={go}
               selected={selected}
-              favorite={Boolean(homeFavorites["recent-1"])}
-              toggleFavorite={() =>
-                setHomeFavorites((current) => ({ ...current, "recent-1": !current["recent-1"] }))
-              }
               backTarget={compareBackScreen}
+              openHistory={(product) => {
+                setHistoryProduct(product);
+                go("history");
+              }}
             />
           )}
-          {screen === "history" && <HistoryScreen go={go} />}
+          {screen === "history" && <HistoryScreen go={go} product={historyProduct} />}
           {screen === "total-save" && <TotalSaveScreen go={go} />}
           {screen === "profile" && <ProfileScreen go={go} />}
           {[
@@ -1742,7 +1795,7 @@ export default function BestChoiceApp() {
         <span>FIGMA-MATCHED PROTOTYPE</span>
         <h2>Best Choice</h2>
         <p>ค้นหา เปรียบเทียบ ลากดูกราฟ และทดลองลบสินค้าในรายการสนใจได้ครบทั้ง loop</p>
-        <button onClick={() => { setScreen("home"); setQuery(""); setSelected([]); setCompareBackScreen("results"); setHomeFavorites(initialHomeFavorites); }} type="button">เริ่ม Demo ใหม่</button>
+        <button onClick={() => { setScreen("home"); setQuery(""); setSelected([]); setCompareBackScreen("results"); setHistoryProduct(nikeAirForceOne); resetFavorites(); }} type="button">เริ่ม Demo ใหม่</button>
       </aside>
     </main>
   );
