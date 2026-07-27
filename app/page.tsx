@@ -1266,7 +1266,15 @@ function PriceChart({ period }: { period: Period }) {
   );
 }
 
-function HistoryScreen({ go, product }: { go: (screen: Screen) => void; product: ProductCardData }) {
+function HistoryScreen({
+  go,
+  onBack,
+  product
+}: {
+  go: (screen: Screen) => void;
+  onBack: () => void;
+  product: ProductCardData;
+}) {
   const [period, setPeriod] = useState<Period>("7 วัน");
   const [toast, setToast] = useState("");
   const favorites = useFavorites();
@@ -1290,7 +1298,7 @@ function HistoryScreen({ go, product }: { go: (screen: Screen) => void; product:
   return (
     <section className="screen history-screen">
       <StatusBar />
-      <Header title="ประวัติราคาล่าสุด" onBack={() => go("compare")} />
+      <Header title="ประวัติราคาล่าสุด" onBack={onBack} />
       <main className="history-content">
         <section className="history-product-summary" aria-label={`ประวัติราคา ${product.productName}`}>
           <img className="history-product-image" src={product.imageUrl} alt={product.productName} />
@@ -1707,6 +1715,8 @@ export default function BestChoiceApp() {
   const [selected, setSelected] = useState<number[]>([]);
   const [compareBackScreen, setCompareBackScreen] = useState<Screen>("results");
   const [historyProduct, setHistoryProduct] = useState<ProductCardData>(nikeAirForceOne);
+  const [historyOrigin, setHistoryOrigin] = useState<"catalog" | "base">("base");
+  const [historyReturnScreen, setHistoryReturnScreen] = useState<Screen>("search");
   const prototypeScale = usePrototypeScale();
   const prototypeStyle = {
     "--prototype-scale": prototypeScale,
@@ -1719,6 +1729,12 @@ export default function BestChoiceApp() {
     const openHistory = (event: Event) => {
       const product = (event as CustomEvent<{ product?: ProductCardData }>).detail?.product;
       if (product) setHistoryProduct(product);
+      setHistoryOrigin("catalog");
+      setHistoryReturnScreen(
+        screen === "results" || screen === "compare" || screen === "history"
+          ? "search"
+          : screen
+      );
       setScreen("history");
     };
     const openSearch = () => setScreen("search");
@@ -1728,12 +1744,14 @@ export default function BestChoiceApp() {
       document.removeEventListener("best-choice:open-history", openHistory);
       document.removeEventListener("best-choice:start-search", openSearch);
     };
-  }, []);
+  }, [screen]);
 
   const go = (next: Screen) => {
-    if (next === "compare" && screen !== "history") {
-      setCompareBackScreen(screen);
+    if (next === "results" || next === "compare") {
+      setScreen("search");
+      return;
     }
+
     setScreen(next);
   };
 
@@ -1765,11 +1783,28 @@ export default function BestChoiceApp() {
               backTarget={compareBackScreen}
               openHistory={(product) => {
                 setHistoryProduct(product);
+                setHistoryOrigin("base");
                 go("history");
               }}
             />
           )}
-          {screen === "history" && <HistoryScreen go={go} product={historyProduct} />}
+          {screen === "history" && (
+            <HistoryScreen
+              go={go}
+              product={historyProduct}
+              onBack={() => {
+                if (historyOrigin === "catalog") {
+                  setScreen(historyReturnScreen);
+                  window.requestAnimationFrame(() => {
+                    document.dispatchEvent(new Event("best-choice:reopen-compare"));
+                  });
+                  return;
+                }
+
+                setScreen("search");
+              }}
+            />
+          )}
           {screen === "total-save" && <TotalSaveScreen go={go} />}
           {screen === "profile" && <ProfileScreen go={go} />}
           {[
@@ -1787,7 +1822,7 @@ export default function BestChoiceApp() {
         <span>FIGMA-MATCHED PROTOTYPE</span>
         <h2>Best Choice</h2>
         <p>ค้นหา เปรียบเทียบ ลากดูกราฟ และทดลองลบสินค้าในรายการสนใจได้ครบทั้ง loop</p>
-        <button onClick={() => { setScreen("home"); setQuery(""); setSelected([]); setCompareBackScreen("results"); setHistoryProduct(nikeAirForceOne); resetFavorites(); }} type="button">เริ่ม Demo ใหม่</button>
+        <button onClick={() => { setScreen("home"); setQuery(""); setSelected([]); setCompareBackScreen("results"); setHistoryProduct(nikeAirForceOne); setHistoryOrigin("base"); setHistoryReturnScreen("search"); resetFavorites(); }} type="button">เริ่ม Demo ใหม่</button>
       </aside>
     </main>
   );
