@@ -1639,13 +1639,117 @@ img[src$="/compare-fire.svg"] {
   bottom: calc(77px + max(0px, calc(env(safe-area-inset-bottom, 0px) - 22px)));
 }
 
-.history-product {
+.history-product-summary {
   width: 368px;
-  height: auto;
-  border-radius: 13px;
+  height: 130px;
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 14px;
+  padding: 20px 16px;
+  border: 1px solid #f1eeec;
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: 0 2px 2px rgba(0, 0, 0, .08);
+}
+
+.history-product-image {
+  width: 76px;
+  height: 76px;
+  margin-top: 1px;
+  border-radius: 12px;
+  background: #eef1f3;
+  object-fit: cover;
+}
+
+.history-product-copy {
+  min-width: 0;
+  padding-top: 2px;
+}
+
+.history-product-copy h2 {
+  display: -webkit-box;
+  max-height: 48px;
+  margin: 0 0 5px;
+  overflow: hidden;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 23px;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.history-product-badges {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 20px;
+}
+
+.history-product-badges .platform-badge-crop {
+  transform: scale(.76);
+  transform-origin: left center;
+  margin-right: -12px;
+}
+
+.history-free-ship {
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 5px;
+  border-radius: 4px;
+  color: #fff;
+  background: var(--success);
+  font-size: 9px;
+  line-height: 14px;
+  white-space: nowrap;
+}
+
+.history-product-meta {
+  height: 18px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #978f89;
+  font-size: 10px;
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+.history-product-meta span:first-child {
+  color: #b59a68;
+}
+
+.history-product-meta i {
+  width: 1px;
+  height: 11px;
+  background: #d9d5d2;
+}
+
+.history-product-price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding-top: 2px;
+  white-space: nowrap;
+}
+
+.history-product-price strong {
+  color: var(--primary);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 30px;
+}
+
+.history-product-price del {
+  color: #b8b2ae;
+  font-size: 12px;
+  line-height: 18px;
 }
 
 .period-tabs {
+  position: relative;
   width: 368px;
   height: 40px;
   display: grid;
@@ -1658,16 +1762,33 @@ img[src$="/compare-fire.svg"] {
 }
 
 .period-tabs button {
+  position: relative;
+  z-index: 1;
   border-radius: 8px;
   color: var(--text);
+  background: transparent;
   font-size: 17px;
   font-weight: 400;
   line-height: 26px;
+  transition: color .24s ease;
 }
 
 .period-tabs button.active {
   color: var(--surface);
+  background: transparent;
+}
+
+.period-tabs-indicator {
+  position: absolute;
+  z-index: 0;
+  top: 5px;
+  left: 5px;
+  width: calc((100% - 10px) / 4);
+  height: 30px;
+  border-radius: 8px;
   background: var(--primary);
+  transform: translateX(calc(var(--period-index, 0) * 100%));
+  transition: transform .28s cubic-bezier(.2, .8, .2, 1);
 }
 
 .chart-card {
