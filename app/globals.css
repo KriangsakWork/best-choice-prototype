@@ -2792,26 +2792,9 @@ img[src$="/compare-fire.svg"] {
 }
 
 .splash-logo {
-  width: 180px;
-  height: 154px;
-  object-fit: fill;
-}
-
-.splash-brand strong {
-  margin-top: 0;
-  font-size: 32px;
-  font-weight: 760;
-  letter-spacing: -1.6px;
-  line-height: 40px;
-}
-
-.splash-brand span {
-  margin-top: -1px;
-  font-family: "Noto Sans Thai Variable", sans-serif;
-  font-size: 22px;
-  font-weight: 600;
-  letter-spacing: -.6px;
-  line-height: 33px;
+  width: 300px;
+  height: 300px;
+  object-fit: contain;
 }
 
 @keyframes splash-brand-in {
