@@ -114,7 +114,8 @@ const realIconAssets: Record<string, string> = {
   camera: `${ASSET}/SVG/Search Bar/icon/Icon Cam.svg`,
   mic: `${ASSET}/SVG/Search Bar/icon/Icon Mic.svg`,
   close: `${ASSET}/SVG/Search Bar/icon/Icon Close.svg`,
-  sort: `${ASSET}/SVG/Search Bar/icon/Filter.svg`
+  sort: `${ASSET}/SVG/Search Bar/icon/Filter.svg`,
+  back: `${ASSET}/SVG/arrow_back.svg`
 };
 
 const navIconAssets: Record<string, { default: string; active: string }> = {
@@ -918,14 +919,30 @@ function ResultsScreen({
 }
 
 function CompareTags({ offer }: { offer: CompareOffer }) {
+  const platformBadge = {
+    Shopee: `${ASSET}/App/Platform=Shopee.jpg`,
+    Lazada: `${ASSET}/App/Platform=Lazada.jpg`,
+    TikTok: `${ASSET}/App/Platform=TikTok Shop.jpg`
+  }[offer.platform];
+
   return (
     <div className="compare-tags" aria-label={offer.platform + (offer.mall ? " Mall" : "")}>
-      {offer.mall && <span className="compare-tag mall">● MALL</span>}
-      <span className={"compare-tag platform " + offer.platform.toLowerCase()}>{offer.platform}</span>
+      <img className="compare-platform-badge" src={platformBadge} alt={offer.platform} />
+      {offer.mall && (
+        <img className="compare-mall-badge" src={`${ASSET}/App/Platform=MALL.jpg`} alt="MALL" />
+      )}
       {offer.freeShip && <span className="compare-tag free">ส่งฟรี</span>}
     </div>
   );
 }
+
+const compareDiscountDetails = [
+  { label: "ส่วนลดร้านค้า", amount: 48 },
+  { label: "ส่วนลดแคมเปญ 8.8", amount: 52 },
+  { label: "โค้ดแคมเปญช็อปต่อเนื่อง", amount: 20 }
+];
+
+const compareDiscountTotal = compareDiscountDetails.reduce((total, item) => total + item.amount, 0);
 
 function CompareMiniTrend({ price }: { price: number }) {
   const values = [price + 500, price + 390, price + 420, price + 260, price + 310, price + 120, price + 170, price];
@@ -964,8 +981,8 @@ function CompareBuyButton({ offer, onUnavailable }: { offer: CompareOffer; onUna
 
   return (
     <button className="compare-buy" type="button" onClick={buy}>
-      <Icon name="bag" />
-      ซื้อเลย
+      ดูร้านค้า
+      <span aria-hidden="true">›</span>
     </button>
   );
 }
@@ -982,10 +999,12 @@ function CompareScreen({
   toggleFavorite: () => void;
 }) {
   const [toast, setToast] = useState("");
+  const [discountDetailsOpen, setDiscountDetailsOpen] = useState(false);
   const effectiveIds = selected.length >= 2 ? selected.slice(0, 3) : [1, 2, 3];
   const offers = effectiveIds.map((id) => compareOfferById[id]).filter(Boolean).sort((a, b) => a.price - b.price);
   const bestOffer = offers[0];
   const otherOffers = offers.slice(1);
+  const bestSaving = bestOffer ? Math.max(0, bestOffer.originalPrice - bestOffer.price) : 0;
 
   const flash = (message: string) => {
     setToast(message);
@@ -1000,61 +1019,145 @@ function CompareScreen({
       <Header title="ผลการเปรียบเทียบ" onBack={() => go("results")} />
 
       <main className="compare-content">
-        <div className="compare-summary-glow">
-          <section className="compare-product-summary">
-            <img src={bestOffer.productImage} alt="" />
-            <div>
-              <strong>{bestOffer.productName}</strong>
-              <span>เปรียบเทียบ {offers.length} ร้านค้า</span>
-            </div>
-            <button
-              className={favorite ? "compare-heart active" : "compare-heart"}
-              type="button"
-              aria-label={favorite ? "นำออกจากสินค้าที่สนใจ" : "เพิ่มในสินค้าที่สนใจ"}
-              aria-pressed={favorite}
-              onClick={toggleFavorite}
-            >
-              ♥
-            </button>
-          </section>
+        <section className="compare-product-summary">
+          <img src={bestOffer.productImage} alt="" />
+          <div className="compare-summary-copy">
+            <span>สินค้าที่กำลังเปรียบเทียบ</span>
+            <strong>{bestOffer.productName}</strong>
+          </div>
+          <button
+            className={favorite ? "compare-track active" : "compare-track"}
+            type="button"
+            aria-label={favorite ? "เลิกติดตามราคา" : "ติดตามราคา"}
+            aria-pressed={favorite}
+            onClick={toggleFavorite}
+          >
+            <img
+              src={favorite ? `${ASSET}/SVG/Like/Property 1=Like.svg` : `${ASSET}/SVG/Like/Property 1=Normal.svg`}
+              alt=""
+            />
+            {favorite ? "กำลังติดตาม" : "ติดตามราคา"}
+          </button>
+          <div className="compare-summary-stats" aria-label={`เปรียบเทียบ ${offers.length} แพลตฟอร์ม ราคาต่ำสุด ${bestOffer.price.toLocaleString("en-US")} บาท`}>
+            <span>
+              <small>ราคาต่ำสุด</small>
+              <b>฿{bestOffer.price.toLocaleString("en-US")}</b>
+            </span>
+            <span>
+              <small>ประหยัดได้</small>
+              <b>฿{bestSaving.toLocaleString("en-US")}</b>
+            </span>
+            <span>
+              <small>แพลตฟอร์มที่เทียบ</small>
+              <b>{offers.length} แห่ง</b>
+            </span>
+          </div>
+        </section>
+
+        <div className="compare-list-heading">
+          <h2>ราคาจากแต่ละแพลตฟอร์ม</h2>
+          <span>เรียงจากราคาต่ำสุด</span>
         </div>
 
-        <h2 className="compare-section-label">ข้อเสนอที่คุ้มที่สุด</h2>
-        <article className="compare-best-offer">
-          <div className="compare-best-head">
-            <CompareTags offer={bestOffer} />
-            <span className="compare-cheapest">ราคาถูก</span>
-          </div>
-          <div className="compare-best-price">
-            <strong>฿{bestOffer.price.toLocaleString("en-US")}</strong>
-            <del>฿{bestOffer.originalPrice.toLocaleString("en-US")}</del>
-          </div>
-          <button className="compare-history-link" type="button" onClick={() => go("history")}>
-            <CompareMiniTrend price={bestOffer.price} />
-            <span>
-              <b>ถูกที่สุด • {bestOffer.freeShip ? "ส่งฟรี • " : ""}ประหยัด ฿{(bestOffer.originalPrice - bestOffer.price).toLocaleString("en-US")}</b>
-              <small>ราคาย้อนหลัง 30 วัน ›</small>
-            </span>
-          </button>
-          <div className="compare-rating">★ {bestOffer.rating} <span>• ขายแล้ว {bestOffer.sold} ชิ้น</span></div>
-          <CompareBuyButton offer={bestOffer} onUnavailable={() => flash("ยังไม่มีลิงก์ร้านค้านี้ใน Prototype")} />
-        </article>
+        <section className="compare-offer-board" aria-label="ราคาจากแต่ละแพลตฟอร์ม">
+          <article className={discountDetailsOpen ? "compare-offer-row best expanded" : "compare-offer-row best"}>
+            <div className="compare-row-top">
+              <CompareTags offer={bestOffer} />
+              <span className="compare-best-label">
+                คุ้มที่สุด
+                <img src={`${ASSET}/SVG/compare-fire.svg`} alt="" />
+              </span>
+            </div>
+            <div className="compare-row-main">
+              <div className="compare-row-price">
+                <strong>฿{bestOffer.price.toLocaleString("en-US")}</strong>
+                <del>฿{bestOffer.originalPrice.toLocaleString("en-US")}</del>
+              </div>
+              <CompareBuyButton offer={bestOffer} onUnavailable={() => flash("ยังไม่มีลิงก์ร้านค้านี้ใน Prototype")} />
+            </div>
+            <div className="compare-row-meta">
+              <span>★ {bestOffer.rating} <i>• ขายแล้ว {bestOffer.sold} ชิ้น</i></span>
+              <b>ประหยัด ฿{bestSaving.toLocaleString("en-US")}</b>
+            </div>
+            <button
+              className="compare-best-history"
+              type="button"
+              aria-label={`ดูกราฟราคา ${bestOffer.platform}`}
+              onClick={() => go("history")}
+            >
+              <CompareMiniTrend price={bestOffer.price} />
+              <span>
+                <small>แนวโน้มราคา 30 วัน</small>
+                <strong>ราคาลดลง 20%</strong>
+              </span>
+              <b aria-hidden="true">
+                <img src={`${ASSET}/SVG/arrow_forward.svg`} alt="" />
+              </b>
+            </button>
+            <button
+              className="compare-discount-toggle"
+              type="button"
+              aria-expanded={discountDetailsOpen}
+              onClick={() => setDiscountDetailsOpen((current) => !current)}
+            >
+              <span>รายละเอียดส่วนลด</span>
+              <b>
+                {discountDetailsOpen ? "ซ่อนรายละเอียด" : "ดูรายละเอียด"}
+                <img src={`${ASSET}/SVG/arrow_drop.svg`} alt="" />
+              </b>
+            </button>
+            <div
+              className={discountDetailsOpen ? "compare-discount-panel open" : "compare-discount-panel"}
+              aria-hidden={!discountDetailsOpen}
+            >
+              <div className="compare-discount-panel-inner">
+                <div className="compare-discount-details">
+                  <div className="compare-discount-heading">
+                    <span>ส่วนลดเพิ่มเติมที่ได้รับ</span>
+                    <b>รวม ฿{compareDiscountTotal.toLocaleString("en-US")}</b>
+                  </div>
+                  <div className="compare-discount-list">
+                    {compareDiscountDetails.map((detail) => (
+                      <div className="compare-discount-row" key={detail.label}>
+                        <span>{detail.label}</span>
+                        <b>-฿{detail.amount.toLocaleString("en-US")}</b>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
 
-        {otherOffers.length > 0 && <h2 className="compare-section-label other">ข้อเสนออื่น</h2>}
-        <div className="compare-other-list">
           {otherOffers.map((offer) => (
-            <article className="compare-other-offer" key={offer.id}>
-              <CompareTags offer={offer} />
-              <div className="compare-other-price">฿{offer.price.toLocaleString("en-US")}</div>
-              <CompareBuyButton offer={offer} onUnavailable={() => flash("ยังไม่มีลิงก์ร้านค้านี้ใน Prototype")} />
-              <div className="compare-rating">★ {offer.rating} <span>• ขายแล้ว {offer.sold} ชิ้น</span></div>
-              <div className="compare-difference">
-                <CompareUpIcon />
-                แพงกว่าดีลคุ้มสุด ฿{(offer.price - bestOffer.price).toLocaleString("en-US")}
+            <article className="compare-offer-row" key={offer.id}>
+              <div className="compare-row-top">
+                <CompareTags offer={offer} />
+              </div>
+              <div className="compare-row-main">
+                <div className="compare-row-price">
+                  <strong>฿{offer.price.toLocaleString("en-US")}</strong>
+                  <del>฿{offer.originalPrice.toLocaleString("en-US")}</del>
+                </div>
+                <div className="compare-row-actions">
+                  <button
+                    className="compare-graph-icon"
+                    type="button"
+                    aria-label={`ดูกราฟราคา ${offer.platform}`}
+                    onClick={() => go("history")}
+                  >
+                    <img src={`${ASSET}/SVG/Nav Bar/HIC03.svg`} alt="" />
+                  </button>
+                  <CompareBuyButton offer={offer} onUnavailable={() => flash("ยังไม่มีลิงก์ร้านค้านี้ใน Prototype")} />
+                </div>
+              </div>
+              <div className="compare-row-meta">
+                <span>★ {offer.rating} <i>• ขายแล้ว {offer.sold} ชิ้น</i></span>
+                <b className="higher">+฿{(offer.price - bestOffer.price).toLocaleString("en-US")}</b>
               </div>
             </article>
           ))}
-        </div>
+        </section>
 
         <small className="compare-updated">อัปเดตราคาล่าสุด 10 นาทีที่แล้ว</small>
       </main>
