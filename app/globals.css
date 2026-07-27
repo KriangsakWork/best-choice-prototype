@@ -1191,14 +1191,14 @@ img[src$="/compare-fire.svg"] {
 }
 
 .compare-offer-row.best {
-  height: 208px;
+  height: 220px;
   padding-top: 11px;
   background: linear-gradient(90deg, #fff5f0 0%, #fffaf8 54%, #fff 100%);
   transition: height .34s cubic-bezier(.22, 1, .36, 1);
 }
 
 .compare-offer-row.best.expanded {
-  height: 292px;
+  height: 304px;
 }
 
 .compare-offer-row.best::before {
@@ -1381,25 +1381,34 @@ img[src$="/compare-fire.svg"] {
 
 .compare-best-history {
   width: 340px;
-  height: 43px;
+  height: 57px;
   display: grid;
   grid-template-columns: 82px 1fr auto;
   align-items: center;
   margin-top: 4px;
-  padding: 4px 0;
+  padding: 0;
   border-top: 1px solid rgba(235, 59, 12, .12);
   color: var(--text);
   background: transparent;
   text-align: left;
 }
 
-.compare-best-history > svg {
+.compare-history-visual {
+  width: 72px;
+  height: 54px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.compare-history-visual > svg {
   width: 72px;
   height: 32px;
   overflow: visible;
 }
 
-.compare-best-history > svg path {
+.compare-history-visual > svg path {
   fill: none;
   stroke: var(--primary);
   stroke-width: 2.2;
@@ -1410,7 +1419,7 @@ img[src$="/compare-fire.svg"] {
   animation: compare-trend-draw .72s .2s cubic-bezier(.22, 1, .36, 1) forwards;
 }
 
-.compare-best-history > svg circle {
+.compare-history-visual > svg circle {
   fill: var(--primary);
   opacity: 0;
   animation: compare-trend-dot .22s .82s ease-out forwards;
