@@ -50,6 +50,13 @@ img {
   display: block;
 }
 
+img[src$="/arrow_back.svg"],
+img[src$="/arrow_drop.svg"],
+img[src$="/arrow_forward.svg"],
+img[src$="/compare-fire.svg"] {
+  filter: brightness(0) saturate(100%) invert(29%) sepia(98%) saturate(3435%) hue-rotate(357deg) brightness(96%) contrast(92%);
+}
+
 .prototype-stage {
   min-height: 100dvh;
   display: grid;
