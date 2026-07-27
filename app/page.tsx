@@ -998,6 +998,7 @@ function CompareScreen({
   toggleFavorite: () => void;
 }) {
   const [toast, setToast] = useState("");
+  const [discountDetailsOpen, setDiscountDetailsOpen] = useState(false);
   const effectiveIds = selected.length >= 2 ? selected.slice(0, 3) : [1, 2, 3];
   const offers = effectiveIds.map((id) => compareOfferById[id]).filter(Boolean).sort((a, b) => a.price - b.price);
   const bestOffer = offers[0];
@@ -1058,7 +1059,7 @@ function CompareScreen({
         </div>
 
         <section className="compare-offer-board" aria-label="ราคาจากแต่ละแพลตฟอร์ม">
-          <article className="compare-offer-row best">
+          <article className={discountDetailsOpen ? "compare-offer-row best expanded" : "compare-offer-row best"}>
             <div className="compare-row-top">
               <CompareTags offer={bestOffer} />
               <span className="compare-best-label">คุ้มที่สุด</span>
@@ -1082,18 +1083,37 @@ function CompareScreen({
               </span>
               <b>ดูกราฟ <i aria-hidden="true">›</i></b>
             </button>
-            <div className="compare-discount-details">
-              <div className="compare-discount-heading">
-                <span>ส่วนลดเพิ่มเติมที่ได้รับ</span>
-                <b>รวม ฿{compareDiscountTotal.toLocaleString("en-US")}</b>
-              </div>
-              <div className="compare-discount-list">
-                {compareDiscountDetails.map((detail) => (
-                  <div className="compare-discount-row" key={detail.label}>
-                    <span>{detail.label}</span>
-                    <b>-฿{detail.amount.toLocaleString("en-US")}</b>
+            <button
+              className="compare-discount-toggle"
+              type="button"
+              aria-expanded={discountDetailsOpen}
+              onClick={() => setDiscountDetailsOpen((current) => !current)}
+            >
+              <span>รายละเอียดส่วนลด</span>
+              <b>
+                {discountDetailsOpen ? "ซ่อนรายละเอียด" : "ดูรายละเอียด"}
+                <i aria-hidden="true">⌄</i>
+              </b>
+            </button>
+            <div
+              className={discountDetailsOpen ? "compare-discount-panel open" : "compare-discount-panel"}
+              aria-hidden={!discountDetailsOpen}
+            >
+              <div className="compare-discount-panel-inner">
+                <div className="compare-discount-details">
+                  <div className="compare-discount-heading">
+                    <span>ส่วนลดเพิ่มเติมที่ได้รับ</span>
+                    <b>รวม ฿{compareDiscountTotal.toLocaleString("en-US")}</b>
                   </div>
-                ))}
+                  <div className="compare-discount-list">
+                    {compareDiscountDetails.map((detail) => (
+                      <div className="compare-discount-row" key={detail.label}>
+                        <span>{detail.label}</span>
+                        <b>-฿{detail.amount.toLocaleString("en-US")}</b>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </article>
