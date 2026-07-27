@@ -1063,10 +1063,6 @@ function CompareScreen({
           <article className={discountDetailsOpen ? "compare-offer-row best expanded" : "compare-offer-row best"}>
             <div className="compare-row-top">
               <CompareTags offer={bestOffer} />
-              <span className="compare-best-label">
-                คุ้มที่สุด
-                <img src={`${ASSET}/SVG/compare-fire.svg`} alt="" />
-              </span>
             </div>
             <div className="compare-row-main">
               <div className="compare-row-price">
@@ -1085,7 +1081,13 @@ function CompareScreen({
               aria-label={`ดูกราฟราคา ${bestOffer.platform}`}
               onClick={() => go("history")}
             >
-              <CompareMiniTrend price={bestOffer.price} />
+              <span className="compare-history-visual">
+                <span className="compare-best-label">
+                  คุ้มที่สุด
+                  <img src={`${ASSET}/SVG/compare-fire.svg`} alt="" />
+                </span>
+                <CompareMiniTrend price={bestOffer.price} />
+              </span>
               <span>
                 <small>แนวโน้มราคา 30 วัน</small>
                 <strong>ราคาลดลง 20%</strong>

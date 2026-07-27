@@ -773,10 +773,6 @@ export function CatalogFlowSortStatus() {
                 <article className={compareDiscountDetailsOpen ? "compare-offer-row best expanded" : "compare-offer-row best"}>
                   <div className="compare-row-top">
                     <CatalogCompareTags offer={bestOffer} />
-                    <span className="compare-best-label">
-                      คุ้มที่สุด
-                      <img src="/assets/SVG/compare-fire.svg" alt="" />
-                    </span>
                   </div>
                   <div className="compare-row-main">
                     <div className="compare-row-price">
@@ -798,7 +794,13 @@ export function CatalogFlowSortStatus() {
                     aria-label={`ดูกราฟราคา ${bestOffer.platform}`}
                     onClick={() => flash(`กำลังเปิดกราฟราคา ${bestOffer.platform}`)}
                   >
-                    <CatalogCompareTrend price={bestOffer.discountPrice} />
+                    <span className="compare-history-visual">
+                      <span className="compare-best-label">
+                        คุ้มที่สุด
+                        <img src="/assets/SVG/compare-fire.svg" alt="" />
+                      </span>
+                      <CatalogCompareTrend price={bestOffer.discountPrice} />
+                    </span>
                     <span>
                       <small>แนวโน้มราคา 30 วัน</small>
                       <strong>ราคาลดลง {bestOffer.trendPercent}%</strong>
