@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ProductCard, ProductCardData } from "./ProductCard";
+import { DEMO_PRODUCTS } from "../data/demo-products";
+import { productFavoriteKey, useFavorites } from "../data/favorite-store";
 
 type PlatformFilter = "ทั้งหมด" | ProductCardData["platform"];
 
@@ -238,9 +240,13 @@ export function InterestFigmaScreen() {
   const [portalTarget, setPortalTarget] = useState<Element | null>(null);
   const [open, setOpen] = useState(false);
   const [filter, setFilter] = useState<PlatformFilter>("ทั้งหมด");
-  const [savedProducts, setSavedProducts] = useState(INITIAL_SAVED_PRODUCTS);
   const [removedItem, setRemovedItem] = useState<RemovedItem | null>(null);
   const toastTimer = useRef<number | null>(null);
+  const favorites = useFavorites();
+  const savedProducts = useMemo(
+    () => DEMO_PRODUCTS.filter((product) => favorites.keys.has(productFavoriteKey(product))),
+    [favorites.keys]
+  );
 
   const visibleProducts = useMemo(
     () => filter === "ทั้งหมด" ? savedProducts : savedProducts.filter((product) => product.platform === filter),
@@ -296,7 +302,7 @@ export function InterestFigmaScreen() {
     const index = savedProducts.findIndex((item) => item.id === product.id);
     if (index < 0) return;
 
-    setSavedProducts((current) => current.filter((item) => item.id !== product.id));
+    favorites.setFavorite(product, false);
     setRemovedItem({ product, index });
 
     if (toastTimer.current !== null) window.clearTimeout(toastTimer.current);
@@ -306,12 +312,7 @@ export function InterestFigmaScreen() {
   const undoRemoval = () => {
     if (!removedItem) return;
 
-    setSavedProducts((current) => {
-      if (current.some((product) => product.id === removedItem.product.id)) return current;
-      const next = [...current];
-      next.splice(Math.min(removedItem.index, next.length), 0, removedItem.product);
-      return next;
-    });
+    favorites.setFavorite(removedItem.product, true);
     setRemovedItem(null);
     if (toastTimer.current !== null) window.clearTimeout(toastTimer.current);
   };
@@ -320,7 +321,7 @@ export function InterestFigmaScreen() {
     setOpen(false);
     window.requestAnimationFrame(() => {
       document.dispatchEvent(new CustomEvent("best-choice:open-compare", {
-        detail: { productName: product.productName }
+        detail: { product }
       }));
     });
   };
