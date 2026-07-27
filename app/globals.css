@@ -1174,7 +1174,7 @@ img {
 
 .compare-offer-row {
   position: relative;
-  height: 104px;
+  height: 112px;
   padding: 10px 12px 8px 14px;
   background: #fff;
 }
@@ -1184,7 +1184,7 @@ img {
 }
 
 .compare-offer-row.best {
-  height: 154px;
+  height: 244px;
   padding-top: 11px;
   background: linear-gradient(90deg, #fff5f0 0%, #fffaf8 54%, #fff 100%);
 }
@@ -1266,7 +1266,7 @@ img {
 }
 
 .compare-row-main {
-  height: 38px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1296,7 +1296,7 @@ img {
 
 .compare-buy {
   width: 112px;
-  height: 34px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1347,6 +1347,12 @@ img {
 
 .compare-row-meta > b.higher {
   color: var(--error);
+}
+
+.compare-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .compare-best-history {
@@ -1419,28 +1425,86 @@ img {
   font-weight: 300;
 }
 
+.compare-discount-details {
+  width: 340px;
+  margin-top: 6px;
+  padding: 8px 10px 7px;
+  border: 1px solid rgba(235, 59, 12, .1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .82);
+}
+
+.compare-discount-heading,
+.compare-discount-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.compare-discount-heading {
+  color: var(--text);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 15px;
+}
+
+.compare-discount-heading b {
+  color: var(--success);
+  font-weight: 600;
+}
+
+.compare-discount-list {
+  margin-top: 3px;
+}
+
+.compare-discount-row {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 17px;
+}
+
+.compare-discount-row b {
+  color: var(--text);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
 .compare-graph-icon {
-  width: 28px;
-  height: 28px;
+  position: relative;
+  width: 44px;
+  height: 44px;
   display: grid;
   place-items: center;
-  margin-top: -5px;
-  margin-right: -4px;
+  border-radius: 50%;
+  transition: transform .16s ease;
+}
+
+.compare-graph-icon::before {
+  content: "";
+  position: absolute;
+  width: 34px;
+  height: 34px;
   border: 1px solid rgba(230, 232, 235, .9);
   border-radius: 50%;
   background: #fff;
-  transition: border-color .16s ease, transform .16s ease;
+  transition: border-color .16s ease;
 }
 
 .compare-graph-icon img {
-  width: 16px;
-  height: 16px;
+  position: relative;
+  z-index: 1;
+  width: 18px;
+  height: 18px;
   opacity: .72;
 }
 
 .compare-graph-icon:active {
-  border-color: rgba(235, 59, 12, .4);
   transform: scale(.92);
+}
+
+.compare-graph-icon:active::before {
+  border-color: rgba(235, 59, 12, .4);
 }
 
 .compare-updated {
