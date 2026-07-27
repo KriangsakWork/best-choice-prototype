@@ -466,6 +466,13 @@ const chartData: Record<Period, number[]> = {
   "3 เดือน": [7350, 7100, 6900, 6650, 6500, 6280, 6120, 5950]
 };
 
+const chartHeadlinePrice: Record<Period, number> = {
+  "7 วัน": 5800,
+  "30 วัน": 5950,
+  "2 เดือน": 6150,
+  "3 เดือน": 6500
+};
+
 function Icon({ name, className = "" }: { name: string; className?: string }) {
   const asset = realIconAssets[name];
 
@@ -1201,15 +1208,7 @@ function PriceChart({ period }: { period: Period }) {
   const areaPath = `${linePath} L 328 139 L 8 139 Z`;
   const selectedIndex = activeIndex ?? chartPoints.length - 1;
   const selectedPoint = chartPoints[selectedIndex];
-  const headlinePrice = activeIndex === null ? 5800 : selectedPoint.value;
-  const priceLabelWidth = 55;
-  const priceLabelHeight = 22;
-  const priceLabelX = Math.min(344 - priceLabelWidth - 4, Math.max(4, selectedPoint.x - priceLabelWidth / 2));
-  const labelAboveY = selectedPoint.y - priceLabelHeight - 10;
-  const labelBelowY = selectedPoint.y + 10;
-  const priceLabelY = labelAboveY >= 4
-    ? labelAboveY
-    : Math.min(150 - priceLabelHeight - 4, labelBelowY);
+  const headlinePrice = chartHeadlinePrice[period];
 
   const choosePoint = (event: PointerEvent<SVGSVGElement>) => {
     const svg = svgRef.current;
@@ -1267,12 +1266,6 @@ function PriceChart({ period }: { period: Period }) {
         <text className="average-price" x="174" y="80" textAnchor="middle">฿6,150</text>
         {activeIndex !== null && <line className="cursor-line" x1={selectedPoint.x} y1="45" x2={selectedPoint.x} y2="139" />}
         <circle className="chart-dot" cx={selectedPoint.x} cy={selectedPoint.y} r="8" />
-        {activeIndex !== null && (
-          <g className="price-label" transform={`translate(${priceLabelX} ${priceLabelY})`}>
-            <rect width={priceLabelWidth} height={priceLabelHeight} rx="11" />
-            <text x={priceLabelWidth / 2} y="15" textAnchor="middle">฿{selectedPoint.value.toLocaleString()}</text>
-          </g>
-        )}
       </svg>
       <div className="month-labels"><span>เม.ย.</span><span>พ.ค.</span><span>มิ.ย.</span><span>ก.ค.</span></div>
     </div>
