@@ -1670,7 +1670,7 @@ img[src$="/compare-fire.svg"] {
 .history-product-copy h2 {
   display: -webkit-box;
   max-height: 48px;
-  margin: 0 0 5px;
+  margin: 0 0 8px;
   overflow: hidden;
   color: var(--text);
   font-size: 16px;
@@ -1683,9 +1683,9 @@ img[src$="/compare-fire.svg"] {
 .history-product-badges {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 5px;
   height: 16px;
-  margin-bottom: 2px;
+  margin-bottom: 6px;
 }
 
 .history-product-badges .real-product-card__platform-badge {
