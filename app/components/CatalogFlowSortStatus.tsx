@@ -795,6 +795,7 @@ export function CatalogFlowSortStatus() {
                   <button
                     className="compare-best-history"
                     type="button"
+                    aria-label={`ดูกราฟราคา ${bestOffer.platform}`}
                     onClick={() => flash(`กำลังเปิดกราฟราคา ${bestOffer.platform}`)}
                   >
                     <CatalogCompareTrend price={bestOffer.discountPrice} />
@@ -802,8 +803,7 @@ export function CatalogFlowSortStatus() {
                       <small>แนวโน้มราคา 30 วัน</small>
                       <strong>ราคาลดลง {bestOffer.trendPercent}%</strong>
                     </span>
-                    <b>
-                      ดูกราฟ
+                    <b aria-hidden="true">
                       <img src="/assets/SVG/arrow_forward.svg" alt="" />
                     </b>
                   </button>
