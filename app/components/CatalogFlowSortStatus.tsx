@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { PlatformBadge } from "./PlatformBadge";
 import { ProductCard, ProductCardData } from "./ProductCard";
 import { recentSearches, searchSuggestions } from "../data/catalog";
+import { useFavorites } from "../data/favorite-store";
 
 type Category = "Sneakers" | "RunShoes" | "Sandals" | "WomanShoes";
 type FlowScreen = "results" | "compare" | "no-results" | null;
@@ -193,6 +194,24 @@ const seeds: GroupSeed[] = [
     image: `${ASSET}/11-flynn-shopee.webp`,
     prices: [1352, 1440, 1490],
     average: 1427.33
+  },
+  {
+    id: "labotte-mary-jane",
+    category: "WomanShoes",
+    name: "Labotte Mary Jane",
+    aliases: ["labotte", "mary jane", "รองเท้าผู้หญิง", "คัทชู"],
+    image: `${ASSET}/10-womanager-shopee.webp`,
+    prices: [1490, 1690, 1860],
+    average: 1680
+  },
+  {
+    id: "classic-mary-jane",
+    category: "WomanShoes",
+    name: "Classic Mary Jane",
+    aliases: ["classic mary jane", "mary jane", "รองเท้าผู้หญิง", "คัทชู"],
+    image: `${ASSET}/11-flynn-shopee.webp`,
+    prices: [1490, 1690, 1790],
+    average: 1590
   }
 ];
 
@@ -279,15 +298,26 @@ function sortGroups(items: ProductGroup[], mode: SortMode) {
 
 function ProductGroupCard({ group, onOpen }: { group: ProductGroup; onOpen: () => void }) {
   const range = getPriceRange(group);
+  const favorites = useFavorites();
 
   return (
-    <button
-      type="button"
+    <div
       className="catalog-result-card"
       onClick={onOpen}
+      onKeyDown={(event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        onOpen();
+      }}
+      role="button"
+      tabIndex={0}
       aria-label={`เปรียบเทียบราคา ${group.name} จาก ${group.offers.length} แพลตฟอร์ม`}
     >
-      <ProductCard product={group.representative} favorite />
+      <ProductCard
+        product={group.representative}
+        favorite={favorites.isFavorite(group.representative)}
+        onFavoriteToggle={() => favorites.toggleFavorite(group.representative)}
+      />
       <span className="catalog-result-summary">
         <span className="catalog-platform-count">
           ดูราคาจาก <b>{group.offers.length}</b> แพลตฟอร์ม <span aria-hidden="true">›</span>
@@ -296,7 +326,7 @@ function ProductGroupCard({ group, onOpen }: { group: ProductGroup; onOpen: () =
           ฿{range.min.toLocaleString("th-TH")}–฿{range.max.toLocaleString("th-TH")}
         </span>
       </span>
-    </button>
+    </div>
   );
 }
 
@@ -377,15 +407,16 @@ export function CatalogFlowSortStatus() {
   const [compareOrigin, setCompareOrigin] = useState<CompareOrigin>("results");
   const [query, setQuery] = useState("");
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
+  const [selectedOffer, setSelectedOffer] = useState<ProductCardData | null>(null);
   const [mallOnly, setMallOnly] = useState(true);
   const [freeShipOnly, setFreeShipOnly] = useState(true);
   const [sortMode, setSortMode] = useState<SortMode>("relevance");
   const [sortOpen, setSortOpen] = useState(false);
-  const [favoriteGroupIds, setFavoriteGroupIds] = useState<string[]>(["nike-air-force-1-07"]);
   const [compareToast, setCompareToast] = useState("");
   const [compareDiscountDetailsOpen, setCompareDiscountDetailsOpen] = useState(false);
   const syncFrame = useRef<number | null>(null);
   const sortControlRef = useRef<HTMLDivElement | null>(null);
+  const favorites = useFavorites();
 
   const exactGroups = useMemo(() => findGroups(query), [query]);
 
@@ -419,12 +450,14 @@ export function CatalogFlowSortStatus() {
     const cleanQuery = nextQuery.trim() || "รองเท้าวิ่ง";
     setQuery(cleanQuery);
     setSelectedGroupId(null);
+    setSelectedOffer(null);
     setSortOpen(false);
     setFlowScreen(findGroups(cleanQuery).length ? "results" : "no-results");
   };
 
-  const openCompare = (group: ProductGroup) => {
+  const openCompare = (group: ProductGroup, offer: ProductCardData = group.representative) => {
     setSelectedGroupId(group.id);
+    setSelectedOffer(offer);
     setCompareOrigin("results");
     setSortOpen(false);
     setCompareDiscountDetailsOpen(false);
@@ -533,6 +566,7 @@ export function CatalogFlowSortStatus() {
 
       const homeCard = target.closest<HTMLElement>(".home-card-action");
       if (!homeCard) return;
+      if (target.closest(".real-product-card__heart")) return;
 
       event.preventDefault();
       event.stopPropagation();
@@ -555,7 +589,9 @@ export function CatalogFlowSortStatus() {
 
   useEffect(() => {
     const openCompareFromInterest = (event: Event) => {
-      const productName = (event as CustomEvent<{ productName?: string }>).detail?.productName;
+      const detail = (event as CustomEvent<{ product?: ProductCardData; productName?: string }>).detail;
+      const product = detail?.product;
+      const productName = product?.productName ?? detail?.productName;
       if (!productName) return;
 
       const normalizedName = normalize(productName);
@@ -563,6 +599,7 @@ export function CatalogFlowSortStatus() {
       if (!group) return;
 
       setSelectedGroupId(group.id);
+      setSelectedOffer(product ?? group.representative);
       setCompareOrigin("interest");
       setSortOpen(false);
       setCompareDiscountDetailsOpen(false);
@@ -614,10 +651,12 @@ export function CatalogFlowSortStatus() {
     setFlowScreen("results");
   };
 
-  const openPriceHistory = () => {
+  const openPriceHistory = (offer: ProductCardData) => {
     setFlowScreen(null);
     window.requestAnimationFrame(() => {
-      document.dispatchEvent(new Event("best-choice:open-history"));
+      document.dispatchEvent(new CustomEvent("best-choice:open-history", {
+        detail: { product: offer }
+      }));
     });
   };
 
@@ -743,7 +782,8 @@ export function CatalogFlowSortStatus() {
         const offers = [...selectedGroup.offers].sort((a, b) => a.discountPrice - b.discountPrice);
         const bestOffer = offers[0];
         const otherOffers = offers.slice(1);
-        const favorite = favoriteGroupIds.includes(selectedGroup.id);
+        const trackedOffer = selectedOffer ?? bestOffer;
+        const favorite = favorites.isFavorite(trackedOffer);
         const bestSaving = Math.max(0, bestOffer.price - bestOffer.discountPrice);
         const flash = (message: string) => {
           setCompareToast(message);
@@ -771,11 +811,7 @@ export function CatalogFlowSortStatus() {
                   type="button"
                   aria-label={favorite ? "ยกเลิกติดตามราคา" : "ติดตามราคา"}
                   aria-pressed={favorite}
-                  onClick={() => setFavoriteGroupIds((current) =>
-                    current.includes(selectedGroup.id)
-                      ? current.filter((id) => id !== selectedGroup.id)
-                      : [...current, selectedGroup.id]
-                  )}
+                  onClick={() => favorites.toggleFavorite(trackedOffer)}
                 >
                   <img
                     src={favorite ? "/assets/SVG/Like/Property 1=Like.svg" : "/assets/SVG/Like/Property 1=Normal.svg"}
@@ -827,7 +863,7 @@ export function CatalogFlowSortStatus() {
                     className="compare-best-history"
                     type="button"
                     aria-label={`ดูกราฟราคา ${bestOffer.platform}`}
-                    onClick={openPriceHistory}
+                    onClick={() => openPriceHistory(bestOffer)}
                   >
                     <span className="compare-history-visual">
                       <span className="compare-best-label">
@@ -894,7 +930,7 @@ export function CatalogFlowSortStatus() {
                           className="compare-graph-icon"
                           type="button"
                           aria-label={`ดูกราฟราคา ${offer.platform}`}
-                          onClick={openPriceHistory}
+                          onClick={() => openPriceHistory(offer)}
                         >
                           <img src="/assets/SVG/Nav Bar/HIC03.svg" alt="" />
                         </button>
