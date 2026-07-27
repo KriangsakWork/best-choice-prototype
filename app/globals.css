@@ -1406,11 +1406,12 @@ img[src$="/compare-fire.svg"] {
   flex-direction: column;
   align-items: flex-start;
   gap: 2px;
+  padding-top: 8px;
 }
 
 .compare-history-visual > svg {
   width: 72px;
-  height: 32px;
+  height: 24px;
   overflow: visible;
 }
 
