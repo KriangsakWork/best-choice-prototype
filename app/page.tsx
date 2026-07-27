@@ -1079,14 +1079,18 @@ function CompareScreen({
               <span>★ {bestOffer.rating} <i>• ขายแล้ว {bestOffer.sold} ชิ้น</i></span>
               <b>ประหยัด ฿{bestSaving.toLocaleString("en-US")}</b>
             </div>
-            <button className="compare-best-history" type="button" onClick={() => go("history")}>
+            <button
+              className="compare-best-history"
+              type="button"
+              aria-label={`ดูกราฟราคา ${bestOffer.platform}`}
+              onClick={() => go("history")}
+            >
               <CompareMiniTrend price={bestOffer.price} />
               <span>
                 <small>แนวโน้มราคา 30 วัน</small>
                 <strong>ราคาลดลง 20%</strong>
               </span>
-              <b>
-                ดูกราฟ
+              <b aria-hidden="true">
                 <img src={`${ASSET}/SVG/arrow_forward.svg`} alt="" />
               </b>
             </button>
