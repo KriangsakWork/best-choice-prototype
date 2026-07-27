@@ -1028,7 +1028,7 @@ function CompareScreen({
             />
             {favorite ? "กำลังติดตาม" : "ติดตามราคา"}
           </button>
-          <div className="compare-summary-stats" aria-label={`เปรียบเทียบ ${offers.length} ร้านค้า ราคาต่ำสุด ${bestOffer.price.toLocaleString("en-US")} บาท`}>
+          <div className="compare-summary-stats" aria-label={`เปรียบเทียบ ${offers.length} แพลตฟอร์ม ราคาต่ำสุด ${bestOffer.price.toLocaleString("en-US")} บาท`}>
             <span>
               <small>ราคาต่ำสุด</small>
               <b>฿{bestOffer.price.toLocaleString("en-US")}</b>
@@ -1038,18 +1038,18 @@ function CompareScreen({
               <b>฿{bestSaving.toLocaleString("en-US")}</b>
             </span>
             <span>
-              <small>ร้านค้าที่เทียบ</small>
-              <b>{offers.length} ร้าน</b>
+              <small>แพลตฟอร์มที่เทียบ</small>
+              <b>{offers.length} แห่ง</b>
             </span>
           </div>
         </section>
 
         <div className="compare-list-heading">
-          <h2>ราคาแต่ละร้าน</h2>
+          <h2>ราคาจากแต่ละแพลตฟอร์ม</h2>
           <span>เรียงจากราคาต่ำสุด</span>
         </div>
 
-        <section className="compare-offer-board" aria-label="ราคาแต่ละร้าน">
+        <section className="compare-offer-board" aria-label="ราคาจากแต่ละแพลตฟอร์ม">
           <article className="compare-offer-row best">
             <div className="compare-row-top">
               <CompareTags offer={bestOffer} />
