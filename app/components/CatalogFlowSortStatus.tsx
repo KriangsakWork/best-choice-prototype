@@ -301,9 +301,6 @@ function CatalogCompareTags({ offer }: { offer: ProductCardData }) {
 
   return (
     <div className="compare-tags" aria-label={offer.platform + (offer.mall ? " Mall" : "")}>
-      {offer.mall && (
-        <img className="compare-mall-badge" src="/assets/App/Platform=MALL.jpg" alt="MALL" />
-      )}
       <img
         className="compare-platform-badge"
         src={platformBadge.src}
@@ -311,10 +308,24 @@ function CatalogCompareTags({ offer }: { offer: ProductCardData }) {
         width={platformBadge.width}
         height={16}
       />
+      {offer.mall && (
+        <img className="compare-mall-badge" src="/assets/App/Platform=MALL.jpg" alt="MALL" />
+      )}
       {offer.freeShip && <span className="compare-tag free">ส่งฟรี</span>}
     </div>
   );
 }
+
+const catalogCompareDiscountDetails = [
+  { label: "ส่วนลดร้านค้า", amount: 48 },
+  { label: "ส่วนลดแคมเปญ 8.8", amount: 52 },
+  { label: "โค้ดแคมเปญช็อปต่อเนื่อง", amount: 20 }
+];
+
+const catalogCompareDiscountTotal = catalogCompareDiscountDetails.reduce(
+  (total, item) => total + item.amount,
+  0
+);
 
 function CatalogCompareTrend({ price }: { price: number }) {
   const values = [price + 500, price + 390, price + 420, price + 260, price + 310, price + 120, price + 170, price];
@@ -786,30 +797,46 @@ export function CatalogFlowSortStatus() {
                     </span>
                     <b>ดูกราฟ <i aria-hidden="true">›</i></b>
                   </button>
+                  <div className="compare-discount-details">
+                    <div className="compare-discount-heading">
+                      <span>ส่วนลดเพิ่มเติมที่ได้รับ</span>
+                      <b>รวม ฿{catalogCompareDiscountTotal.toLocaleString("en-US")}</b>
+                    </div>
+                    <div className="compare-discount-list">
+                      {catalogCompareDiscountDetails.map((detail) => (
+                        <div className="compare-discount-row" key={detail.label}>
+                          <span>{detail.label}</span>
+                          <b>-฿{detail.amount.toLocaleString("en-US")}</b>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </article>
 
                 {otherOffers.map((offer) => (
                   <article className="compare-offer-row" key={offer.id}>
                     <div className="compare-row-top">
                       <CatalogCompareTags offer={offer} />
-                      <button
-                        className="compare-graph-icon"
-                        type="button"
-                        aria-label={`ดูกราฟราคา ${offer.platform}`}
-                        onClick={() => flash(`กำลังเปิดกราฟราคา ${offer.platform}`)}
-                      >
-                        <img src="/assets/SVG/Nav Bar/HIC03.svg" alt="" />
-                      </button>
                     </div>
                     <div className="compare-row-main">
                       <div className="compare-row-price">
                         <strong>฿{offer.discountPrice.toLocaleString("en-US")}</strong>
                         <del>฿{offer.price.toLocaleString("en-US")}</del>
                       </div>
-                      <CatalogCompareBuy
-                        offer={offer}
-                        onUnavailable={() => flash("ยังไม่มีลิงก์ร้านค้านี้ใน Prototype")}
-                      />
+                      <div className="compare-row-actions">
+                        <button
+                          className="compare-graph-icon"
+                          type="button"
+                          aria-label={`ดูกราฟราคา ${offer.platform}`}
+                          onClick={() => flash(`กำลังเปิดกราฟราคา ${offer.platform}`)}
+                        >
+                          <img src="/assets/SVG/Nav Bar/HIC03.svg" alt="" />
+                        </button>
+                        <CatalogCompareBuy
+                          offer={offer}
+                          onUnavailable={() => flash("ยังไม่มีลิงก์ร้านค้านี้ใน Prototype")}
+                        />
+                      </div>
                     </div>
                     <div className="compare-row-meta">
                       <span>★ {offer.rating} <i>• ขายแล้ว {offer.sold} ชิ้น</i></span>
