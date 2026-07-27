@@ -314,6 +314,11 @@
   background: #f7eee9;
 }
 
+.catalog-flow-header > button img {
+  width: 24px;
+  height: 24px;
+}
+
 .catalog-flow-header > div {
   min-width: 0;
   display: flex;
@@ -484,6 +489,11 @@
   font-size: 36px;
   font-weight: 300;
   line-height: 1;
+}
+
+.catalog-compare-header > button img {
+  width: 24px;
+  height: 24px;
 }
 
 .catalog-compare-header > strong {
