@@ -41,6 +41,66 @@ const platformBadges: Record<ProductCardData["platform"], { src: string; width: 
   }
 };
 
+export function ProductBadges({
+  product,
+  showMall = false,
+  className = ""
+}: {
+  product: ProductCardData;
+  showMall?: boolean;
+  className?: string;
+}) {
+  const platformBadge = platformBadges[product.platform];
+
+  return (
+    <div
+      className={className}
+      aria-label={`จำหน่ายโดย ${product.platform}${product.mall ? " Mall" : ""}${product.freeShip ? " ส่งฟรี" : ""}`}
+    >
+      {showMall && product.mall && (
+        <img
+          className="real-product-card__platform-badge"
+          src="/assets/App/Platform=MALL.jpg"
+          alt="MALL"
+          width={46}
+          height={16}
+        />
+      )}
+      <img
+        className="real-product-card__platform-badge"
+        src={platformBadge.src}
+        alt={platformBadge.label}
+        width={platformBadge.width}
+        height={16}
+      />
+      {product.freeShip && <span className="real-product-card__shipping">ส่งฟรี</span>}
+    </div>
+  );
+}
+
+export function ProductMeta({
+  product,
+  className = ""
+}: {
+  product: ProductCardData;
+  className?: string;
+}) {
+  return (
+    <div className={`real-product-card__meta ${className}`.trim()}>
+      <span className="real-product-card__rating">
+        <img src="/assets/product-card/star.svg" alt="" width={12} height={12} aria-hidden="true" />
+        {product.rating}
+      </span>
+      <span className="real-product-card__separator" aria-hidden="true">|</span>
+      <span className="real-product-card__sales">
+        <span>ขายแล้ว</span>
+        <span>{product.sold}</span>
+        <span>ชิ้น</span>
+      </span>
+    </div>
+  );
+}
+
 export function ProductCard({
   product,
   favorite = true,
@@ -51,7 +111,6 @@ export function ProductCard({
   onFavoriteToggle?: () => void;
 }) {
   const trendIsLower = product.trendLabel.includes("ลด");
-  const platformBadge = platformBadges[product.platform];
 
   return (
     <article className="real-product-card" aria-label={`${product.productName} ราคา ${formatPrice(product.discountPrice)} บาท`}>
@@ -66,16 +125,7 @@ export function ProductCard({
         />
       </div>
 
-      <div className="real-product-card__badges" aria-label={`จำหน่ายโดย ${product.platform}${product.freeShip ? " ส่งฟรี" : ""}`}>
-        <img
-          className="real-product-card__platform-badge"
-          src={platformBadge.src}
-          alt={platformBadge.label}
-          width={platformBadge.width}
-          height={16}
-        />
-        {product.freeShip && <span className="real-product-card__shipping">ส่งฟรี</span>}
-      </div>
+      <ProductBadges product={product} className="real-product-card__badges" />
 
       {onFavoriteToggle ? (
         <button
@@ -116,18 +166,7 @@ export function ProductCard({
             <b>{product.trendPercent}%</b>
           </div>
 
-          <div className="real-product-card__meta">
-            <span className="real-product-card__rating">
-              <img src="/assets/product-card/star.svg" alt="" width={12} height={12} aria-hidden="true" />
-              {product.rating}
-            </span>
-            <span className="real-product-card__separator" aria-hidden="true">|</span>
-            <span className="real-product-card__sales">
-              <span>ขายแล้ว</span>
-              <span>{product.sold}</span>
-              <span>ชิ้น</span>
-            </span>
-          </div>
+          <ProductMeta product={product} />
         </div>
       </div>
     </article>
