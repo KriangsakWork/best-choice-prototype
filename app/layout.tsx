@@ -19,6 +19,11 @@ export const metadata: Metadata = {
   description: "Interactive price-comparison prototype recreated from Figma.",
   applicationName: "Best Choice",
   manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [{ url: "/icon.png", sizes: "1200x1200", type: "image/png" }],
+    shortcut: "/icon.png",
+    apple: [{ url: "/apple-icon.png", sizes: "1200x1200", type: "image/png" }]
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
