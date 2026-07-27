@@ -245,11 +245,11 @@ function findGroups(query: string) {
   const category = categoryMap[normalized];
   if (category) return groups.filter((group) => group.category === category);
 
-  return groups.filter((group) =>
-    [group.name, ...group.aliases]
-      .map(normalize)
-      .some((term) => term.includes(normalized) || normalized.includes(term))
-  );
+  const terms = [normalized, ...normalized.split(" ").filter((term) => term.length > 1)];
+  return groups.filter((group) => {
+    const aliases = [group.name, ...group.aliases].map(normalize);
+    return terms.some((term) => aliases.some((alias) => alias.includes(term) || term.includes(alias)));
+  });
 }
 
 function setControlledInputValue(input: HTMLInputElement | null, value: string) {
