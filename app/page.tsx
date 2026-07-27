@@ -1340,7 +1340,7 @@ function HistoryScreen({
         </div>
         <PriceChart key={period} period={period} />
         <div className="ai-card">
-          <img className="history-ai-icon" src={`${ASSET}/SVG/AI.png`} alt="" />
+          <img className="history-ai-icon" src={`${ASSET}/SVG/AI.png`} alt="" aria-hidden="true" />
           <div>
             <strong>ราคาดีที่สุดในรอบ 90 วัน!✨</strong>
             <span />
@@ -1359,7 +1359,7 @@ function HistoryScreen({
             <Icon name="heart" /> รายการโปรด
           </button>
           <button onClick={buyProduct} type="button">
-            <img className="history-action-icon" src={`${ASSET}/SVG/Buy BT.svg`} alt="" /> ซื้อเลย
+            <img className="history-action-icon" src={`${ASSET}/SVG/Buy BT.svg`} alt="" aria-hidden="true" /> ซื้อเลย
           </button>
         </div>
       </main>
