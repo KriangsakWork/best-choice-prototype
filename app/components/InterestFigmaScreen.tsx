@@ -271,6 +271,12 @@ export function InterestFigmaScreen() {
     return () => document.removeEventListener("click", openFromNavigation, true);
   }, []);
 
+  useEffect(() => {
+    const reopenInterest = () => setOpen(true);
+    document.addEventListener("best-choice:open-interest", reopenInterest);
+    return () => document.removeEventListener("best-choice:open-interest", reopenInterest);
+  }, []);
+
   useEffect(() => () => {
     if (toastTimer.current !== null) window.clearTimeout(toastTimer.current);
   }, []);
@@ -310,6 +316,22 @@ export function InterestFigmaScreen() {
     if (toastTimer.current !== null) window.clearTimeout(toastTimer.current);
   };
 
+  const openProductComparison = (product: ProductCardData) => {
+    setOpen(false);
+    window.requestAnimationFrame(() => {
+      document.dispatchEvent(new CustomEvent("best-choice:open-compare", {
+        detail: { productName: product.productName }
+      }));
+    });
+  };
+
+  const startSearching = () => {
+    setOpen(false);
+    window.requestAnimationFrame(() => {
+      document.dispatchEvent(new Event("best-choice:start-search"));
+    });
+  };
+
   if (!portalTarget || !open) return null;
 
   return createPortal(
@@ -338,7 +360,19 @@ export function InterestFigmaScreen() {
       {visibleProducts.length > 0 ? (
         <main className="interest-products-scroll">
           {visibleProducts.map((product) => (
-            <div className="interest-product-item" key={product.id}>
+            <div
+              className="interest-product-item"
+              key={product.id}
+              role="button"
+              tabIndex={0}
+              aria-label={`เปรียบเทียบราคา ${product.productName}`}
+              onClick={() => openProductComparison(product)}
+              onKeyDown={(event) => {
+                if (event.key !== "Enter" && event.key !== " ") return;
+                event.preventDefault();
+                openProductComparison(product);
+              }}
+            >
               <ProductCard
                 product={product}
                 favorite
@@ -369,6 +403,29 @@ export function InterestFigmaScreen() {
           </button>
         ))}
       </nav>
+
+      {savedProducts.length === 0 && (
+        <div className="interest-empty-reference" aria-label="ยังไม่มีสินค้าที่สนใจ">
+          <img src="/assets/screens/interest-empty.png" alt="" aria-hidden="true" />
+          <button
+            className="interest-empty-start"
+            type="button"
+            onClick={startSearching}
+          >
+            <span className="sr-only">เริ่มค้นหาสินค้า</span>
+          </button>
+          <div className="interest-empty-nav" aria-label="เมนูหลัก">
+            {NAV_ITEMS.map((item, index) => (
+              <button
+                type="button"
+                key={item.label}
+                aria-label={item.label}
+                onClick={() => navigateTo(index)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
 
       {removedItem && (
         <div className="interest-snackbar" role="status" aria-live="polite">
