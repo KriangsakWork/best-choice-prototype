@@ -718,7 +718,9 @@ export function CatalogFlowSortStatus() {
         return (
           <section className="catalog-compare-screen">
             <header className="catalog-compare-header">
-              <button type="button" onClick={() => setFlowScreen("results")} aria-label="ย้อนกลับ">‹</button>
+              <button type="button" onClick={() => setFlowScreen("results")} aria-label="ย้อนกลับ">
+                <img src="/assets/SVG/arrow_back.svg" alt="" />
+              </button>
               <strong>ผลการเปรียบเทียบ</strong>
             </header>
 
@@ -771,7 +773,10 @@ export function CatalogFlowSortStatus() {
                 <article className={compareDiscountDetailsOpen ? "compare-offer-row best expanded" : "compare-offer-row best"}>
                   <div className="compare-row-top">
                     <CatalogCompareTags offer={bestOffer} />
-                    <span className="compare-best-label">คุ้มที่สุด</span>
+                    <span className="compare-best-label">
+                      คุ้มที่สุด
+                      <img src="/assets/SVG/compare-fire.svg" alt="" />
+                    </span>
                   </div>
                   <div className="compare-row-main">
                     <div className="compare-row-price">
@@ -797,7 +802,10 @@ export function CatalogFlowSortStatus() {
                       <small>แนวโน้มราคา 30 วัน</small>
                       <strong>ราคาลดลง {bestOffer.trendPercent}%</strong>
                     </span>
-                    <b>ดูกราฟ <i aria-hidden="true">›</i></b>
+                    <b>
+                      ดูกราฟ
+                      <img src="/assets/SVG/arrow_forward.svg" alt="" />
+                    </b>
                   </button>
                   <button
                     className="compare-discount-toggle"
@@ -808,7 +816,7 @@ export function CatalogFlowSortStatus() {
                     <span>รายละเอียดส่วนลด</span>
                     <b>
                       {compareDiscountDetailsOpen ? "ซ่อนรายละเอียด" : "ดูรายละเอียด"}
-                      <i aria-hidden="true">⌄</i>
+                      <img src="/assets/SVG/arrow_drop.svg" alt="" />
                     </b>
                   </button>
                   <div
@@ -887,7 +895,9 @@ export function CatalogFlowSortStatus() {
       {flowScreen === "no-results" && (
         <>
           <header className="catalog-flow-header">
-            <button type="button" onClick={() => setFlowScreen(null)} aria-label="ย้อนกลับ">‹</button>
+            <button type="button" onClick={() => setFlowScreen(null)} aria-label="ย้อนกลับ">
+              <img src="/assets/SVG/arrow_back.svg" alt="" />
+            </button>
             <div><strong>{query}</strong><small>ผลการค้นหา</small></div>
           </header>
           <main className="catalog-empty-state">
