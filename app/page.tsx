@@ -1,6 +1,7 @@
 "use client";
 
 import { CSSProperties, FormEvent, PointerEvent, useEffect, useMemo, useRef, useState } from "react";
+import { PlatformBadge } from "./components/PlatformBadge";
 import { ProductCard, ProductCardData } from "./components/ProductCard";
 
 type Screen =
@@ -919,18 +920,10 @@ function ResultsScreen({
 }
 
 function CompareTags({ offer }: { offer: CompareOffer }) {
-  const platformBadge = {
-    Shopee: `${ASSET}/App/Platform=Shopee.jpg`,
-    Lazada: `${ASSET}/App/Platform=Lazada.jpg`,
-    TikTok: `${ASSET}/App/Platform=TikTok Shop.jpg`
-  }[offer.platform];
-
   return (
     <div className="compare-tags" aria-label={offer.platform + (offer.mall ? " Mall" : "")}>
-      <img className="compare-platform-badge" src={platformBadge} alt={offer.platform} />
-      {offer.mall && (
-        <img className="compare-mall-badge" src={`${ASSET}/App/Platform=MALL.jpg`} alt="MALL" />
-      )}
+      <PlatformBadge platform={offer.platform} />
+      {offer.mall && <PlatformBadge platform="MALL" />}
       {offer.freeShip && <span className="compare-tag free">ส่งฟรี</span>}
     </div>
   );
