@@ -1184,6 +1184,7 @@ function CompareScreen({
   );
 }
 
+// Keep the selected-price label tied to active chart interactions.
 function PriceChart({ period }: { period: Period }) {
   const data = chartData[period];
   const min = Math.min(...data);
