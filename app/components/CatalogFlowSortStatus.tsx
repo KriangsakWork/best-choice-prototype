@@ -387,6 +387,7 @@ export function CatalogFlowSortStatus() {
   const [sortOpen, setSortOpen] = useState(false);
   const [favoriteGroupIds, setFavoriteGroupIds] = useState<string[]>(["nike-air-force-1-07"]);
   const [compareToast, setCompareToast] = useState("");
+  const [compareDiscountDetailsOpen, setCompareDiscountDetailsOpen] = useState(false);
   const syncFrame = useRef<number | null>(null);
   const sortControlRef = useRef<HTMLDivElement | null>(null);
 
@@ -429,6 +430,7 @@ export function CatalogFlowSortStatus() {
   const openCompare = (group: ProductGroup) => {
     setSelectedGroupId(group.id);
     setSortOpen(false);
+    setCompareDiscountDetailsOpen(false);
     setFlowScreen("compare");
   };
 
@@ -766,7 +768,7 @@ export function CatalogFlowSortStatus() {
               </div>
 
               <section className="compare-offer-board" aria-label="ราคาจากแต่ละแพลตฟอร์ม">
-                <article className="compare-offer-row best">
+                <article className={compareDiscountDetailsOpen ? "compare-offer-row best expanded" : "compare-offer-row best"}>
                   <div className="compare-row-top">
                     <CatalogCompareTags offer={bestOffer} />
                     <span className="compare-best-label">คุ้มที่สุด</span>
@@ -797,18 +799,37 @@ export function CatalogFlowSortStatus() {
                     </span>
                     <b>ดูกราฟ <i aria-hidden="true">›</i></b>
                   </button>
-                  <div className="compare-discount-details">
-                    <div className="compare-discount-heading">
-                      <span>ส่วนลดเพิ่มเติมที่ได้รับ</span>
-                      <b>รวม ฿{catalogCompareDiscountTotal.toLocaleString("en-US")}</b>
-                    </div>
-                    <div className="compare-discount-list">
-                      {catalogCompareDiscountDetails.map((detail) => (
-                        <div className="compare-discount-row" key={detail.label}>
-                          <span>{detail.label}</span>
-                          <b>-฿{detail.amount.toLocaleString("en-US")}</b>
+                  <button
+                    className="compare-discount-toggle"
+                    type="button"
+                    aria-expanded={compareDiscountDetailsOpen}
+                    onClick={() => setCompareDiscountDetailsOpen((current) => !current)}
+                  >
+                    <span>รายละเอียดส่วนลด</span>
+                    <b>
+                      {compareDiscountDetailsOpen ? "ซ่อนรายละเอียด" : "ดูรายละเอียด"}
+                      <i aria-hidden="true">⌄</i>
+                    </b>
+                  </button>
+                  <div
+                    className={compareDiscountDetailsOpen ? "compare-discount-panel open" : "compare-discount-panel"}
+                    aria-hidden={!compareDiscountDetailsOpen}
+                  >
+                    <div className="compare-discount-panel-inner">
+                      <div className="compare-discount-details">
+                        <div className="compare-discount-heading">
+                          <span>ส่วนลดเพิ่มเติมที่ได้รับ</span>
+                          <b>รวม ฿{catalogCompareDiscountTotal.toLocaleString("en-US")}</b>
                         </div>
-                      ))}
+                        <div className="compare-discount-list">
+                          {catalogCompareDiscountDetails.map((detail) => (
+                            <div className="compare-discount-row" key={detail.label}>
+                              <span>{detail.label}</span>
+                              <b>-฿{detail.amount.toLocaleString("en-US")}</b>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </article>
