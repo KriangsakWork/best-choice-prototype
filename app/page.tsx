@@ -114,7 +114,8 @@ const realIconAssets: Record<string, string> = {
   camera: `${ASSET}/SVG/Search Bar/icon/Icon Cam.svg`,
   mic: `${ASSET}/SVG/Search Bar/icon/Icon Mic.svg`,
   close: `${ASSET}/SVG/Search Bar/icon/Icon Close.svg`,
-  sort: `${ASSET}/SVG/Search Bar/icon/Filter.svg`
+  sort: `${ASSET}/SVG/Search Bar/icon/Filter.svg`,
+  back: `${ASSET}/SVG/arrow_back.svg`
 };
 
 const navIconAssets: Record<string, { default: string; active: string }> = {
@@ -1062,7 +1063,10 @@ function CompareScreen({
           <article className={discountDetailsOpen ? "compare-offer-row best expanded" : "compare-offer-row best"}>
             <div className="compare-row-top">
               <CompareTags offer={bestOffer} />
-              <span className="compare-best-label">คุ้มที่สุด</span>
+              <span className="compare-best-label">
+                คุ้มที่สุด
+                <img src={`${ASSET}/SVG/compare-fire.svg`} alt="" />
+              </span>
             </div>
             <div className="compare-row-main">
               <div className="compare-row-price">
@@ -1081,7 +1085,10 @@ function CompareScreen({
                 <small>แนวโน้มราคา 30 วัน</small>
                 <strong>ราคาลดลง 20%</strong>
               </span>
-              <b>ดูกราฟ <i aria-hidden="true">›</i></b>
+              <b>
+                ดูกราฟ
+                <img src={`${ASSET}/SVG/arrow_forward.svg`} alt="" />
+              </b>
             </button>
             <button
               className="compare-discount-toggle"
@@ -1092,7 +1099,7 @@ function CompareScreen({
               <span>รายละเอียดส่วนลด</span>
               <b>
                 {discountDetailsOpen ? "ซ่อนรายละเอียด" : "ดูรายละเอียด"}
-                <i aria-hidden="true">⌄</i>
+                <img src={`${ASSET}/SVG/arrow_drop.svg`} alt="" />
               </b>
             </button>
             <div
