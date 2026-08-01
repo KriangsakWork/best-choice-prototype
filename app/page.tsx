@@ -325,6 +325,40 @@ const homeRecommendedProducts: ProductCardData[] = [
     averagePrice: 1427.33,
     trendLabel: "ลดจากค่าเฉลี่ย",
     trendPercent: 5
+  },
+  {
+    id: 14,
+    productName: "HOKA CLIFTON ONE9",
+    platform: "TikTok",
+    price: 5990,
+    discountPrice: 2793,
+    percent: 53,
+    rating: 4.2,
+    sold: 18,
+    freeShip: true,
+    mall: false,
+    imageUrl: `${ASSET}/result-5.png`,
+    productUrl: "",
+    averagePrice: 3026.67,
+    trendLabel: "ลดจากค่าเฉลี่ย",
+    trendPercent: 8
+  },
+  {
+    id: 35,
+    productName: "Labotte.bkk - The Rookie",
+    platform: "Shopee",
+    price: 1690,
+    discountPrice: 1519,
+    percent: 10,
+    rating: 4.8,
+    sold: 32,
+    freeShip: true,
+    mall: false,
+    imageUrl: `${ASSET}/result-6.png`,
+    productUrl: "",
+    averagePrice: 1487.67,
+    trendLabel: "เพิ่มจากค่าเฉลี่ย",
+    trendPercent: 2
   }
 ];
 
