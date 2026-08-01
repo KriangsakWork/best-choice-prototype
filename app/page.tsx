@@ -1654,7 +1654,7 @@ function InterestEmptyScreen({ go }: { go: (screen: Screen) => void }) {
         <div className="interest-empty-illustration__background">
           <img
             className="interest-empty-illustration__heart"
-            src={\`\${ASSET}/SVG/Like/Property 1=Like.svg\`}
+            src={`${ASSET}/SVG/Like/Property 1=Like.svg`}
             alt=""
           />
         </div>
