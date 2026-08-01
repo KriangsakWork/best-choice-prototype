@@ -385,6 +385,53 @@ type CompareOffer = {
   productUrl: string;
 };
 
+const productUrlByKey: Record<string, string> = {
+  "nikeairforce107|Shopee": "https://shopee.co.th/product/1676687866/56408537514",
+  "nikeairforce107|Lazada": "https://www.lazada.co.th/products/pdp-i16106542551-s126914129880.html",
+  "nikeairforce107|TikTok": "https://vt.tiktok.com/ZS9MEAdLRKL3w-mZLJy/",
+  "conversechucktaylor|Shopee": "https://shopee.co.th/search?keyword=Converse%20Chuck%20Taylor",
+  "conversechucktaylor|Lazada": "https://www.lazada.co.th/products/pdp-i16096804530-s126814426909.html",
+  "conversechucktaylor|TikTok": "https://vt.tiktok.com/ZS9MEP85MRvTD-My8Pf/",
+  "vansoldskool|Shopee": "https://shopee.co.th/search?keyword=Vans%20Old%20Skool",
+  "vansoldskool|Lazada": "https://www.lazada.co.th/products/pdp-i2328548110-s7873986440.html",
+  "vansoldskool|TikTok": "https://vt.tiktok.com/ZS9ME5qxWMTjb-QiyCS/",
+  "newbalance740|Shopee": "https://shopee.co.th/NEW-BALANCE-740-%E0%B8%A3%E0%B8%AD%E0%B8%87%E0%B9%80%E0%B8%97%E0%B9%89%E0%B8%B2%E0%B8%A5%E0%B8%B3%E0%B8%A5%E0%B8%AD%E0%B8%87%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B8%AB%E0%B8%8D%E0%B8%B4%E0%B8%87-i.295338991.52412795912",
+  "newbalance740|Lazada": "https://www.lazada.co.th/products/authentic-new-balance-nb-740-black-u740bm2-sneakers-i16106881076-s126924904221.html",
+  "newbalance740|TikTok": "https://www.tiktok.com/view/product/1736524162440266949",
+  "hokacliftonone9|Shopee": "https://shopee.co.th/search?keyword=HOKA%20CLIFTON%20ONE9",
+  "hokacliftonone9|Lazada": "https://www.lazada.co.th/products/pdp-i5963228282-s25613775480.html",
+  "hokacliftonone9|TikTok": "https://vt.tiktok.com/ZS9MEmcfmGcxr-rMU3c/",
+  "adidasultraboostlight|Shopee": "https://shopee.co.th/adidas-%E0%B8%A7%E0%B8%B4%E0%B9%88%E0%B8%87-%E0%B8%A3%E0%B8%AD%E0%B8%87%E0%B9%80%E0%B8%97%E0%B9%89%E0%B8%B2-Ultraboost-Light-%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B8%AB%E0%B8%8D%E0%B8%B4%E0%B8%87-i.217077552.29356820353",
+  "adidasultraboostlight|Lazada": "https://www.lazada.co.th/products/pdp-i5276577093-s22439527940.html",
+  "adidasultraboostlight|TikTok": "https://vt.tiktok.com/ZS9MEHs2xSQLU-QpXHo/",
+  "crocsclassicclog|Shopee": "https://shopee.co.th/CROCS-Classic-Clog-i.295338991.24903381653",
+  "crocsclassicclog|Lazada": "https://www.lazada.co.th/products/pdp-i5031090015-s21271454906.html",
+  "crocsclassicclog|TikTok": "https://vt.tiktok.com/ZS9MExYEsKCpv-PDkfo/",
+  "birkenstockarizona|Shopee": "https://shopee.co.th/BIRKENSTOCK-Arizona-BF-Black-i.241098047.3232243174",
+  "birkenstockarizona|Lazada": "https://www.lazada.co.th/products/birkenstock-arizona-birko-flor-soft-footbed-bf-sfb-black-i4893158604-s20607623120.html",
+  "birkenstockarizona|TikTok": "https://vt.tiktok.com/ZS9MEQSbgQMQL-gE17o/",
+  "kitobiocare|Shopee": "https://shopee.co.th/Kito-BioCare-BC3-i.34539611.47507754810",
+  "kitobiocare|Lazada": "https://www.lazada.co.th/products/pdp-i16110630870-s126961340188.html",
+  "kitobiocare|TikTok": "https://vt.tiktok.com/ZS9MEX1nGb8pf-ON4nL/",
+  "womenagerjaneoriginal|Shopee": "https://shopee.co.th/womenager-Jane-Original-i.1258482371.51450158383",
+  "womenagerjaneoriginal|Lazada": "https://www.lazada.co.th/products/womenager-jane-classic-black-leather-i4437413798-s17845714417.html",
+  "womenagerjaneoriginal|TikTok": "https://vt.tiktok.com/ZS9MEXbspFngS-Q68ZX/",
+  "flynnballetflats|Shopee": "https://shopee.co.th/Flynn-Ballet-Flats-Room-Service-Collection-i.1605904.19079072019",
+  "flynnballetflats|Lazada": "https://www.lazada.co.th/products/pdp-i4215601986-s16608659654.html",
+  "flynnballetflats|TikTok": "https://www.tiktok.com/view/product/1729560312589486476",
+  "labottebkktherookie|Shopee": "https://shopee.co.th/The-Rookie-Labotte-bkk-i.105436413.43660704638",
+  "labottebkktherookie|Lazada": "https://www.lazada.co.th/products/pdp-i5819783497-s24842971125.html",
+  "labottebkktherookie|TikTok": "https://vt.tiktok.com/ZS9MEqRfaceds-8gGiX/"
+};
+
+function normalizeProductUrlName(name: string) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, "");
+}
+
+function getProductUrl(productName: string, platform: CompareOffer["platform"]) {
+  return productUrlByKey[`${normalizeProductUrlName(productName)}|${platform}`] || "";
+}
+
 function compareOfferToProductData(offer: CompareOffer): ProductCardData {
   return {
     id: offer.id,
@@ -398,7 +445,7 @@ function compareOfferToProductData(offer: CompareOffer): ProductCardData {
     freeShip: offer.freeShip,
     mall: offer.mall,
     imageUrl: offer.productImage,
-    productUrl: offer.productUrl,
+    productUrl: offer.productUrl || getProductUrl(offer.productName, offer.platform),
     averagePrice: priceHistoryData[`${normalizeHistoryName(offer.productName)}|${offer.platform}`]?.average ?? 6150,
     trendLabel: "ลดจากค่าเฉลี่ย",
     trendPercent: 20
@@ -1090,8 +1137,9 @@ function CompareUpIcon() {
 
 function CompareBuyButton({ offer, onUnavailable }: { offer: CompareOffer; onUnavailable: () => void }) {
   const buy = () => {
-    if (offer.productUrl) {
-      window.open(offer.productUrl, "_blank", "noopener,noreferrer");
+    const productUrl = offer.productUrl || getProductUrl(offer.productName, offer.platform);
+    if (productUrl) {
+      window.open(productUrl, "_blank", "noopener,noreferrer");
       return;
     }
     onUnavailable();
@@ -1398,8 +1446,9 @@ function HistoryScreen({
   };
 
   const buyProduct = () => {
-    if (product.productUrl) {
-      window.open(product.productUrl, "_blank", "noopener,noreferrer");
+    const productUrl = product.productUrl || getProductUrl(product.productName, product.platform);
+    if (productUrl) {
+      window.open(productUrl, "_blank", "noopener,noreferrer");
       return;
     }
     flash("ยังไม่มีลิงก์ร้านค้านี้ใน Prototype");
