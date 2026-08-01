@@ -352,8 +352,25 @@ const catalogCompareDiscountTotal = catalogCompareDiscountDetails.reduce(
   0
 );
 
-function CatalogCompareTrend({ price }: { price: number }) {
-  const values = [price + 500, price + 390, price + 420, price + 260, price + 310, price + 120, price + 170, price];
+function CatalogCompareTrend({ offer }: { offer: ProductCardData }) {
+  const currentPrice = offer.discountPrice;
+  const referencePrice = offer.averagePrice;
+  const priceChange = currentPrice - referencePrice;
+
+  // The mini chart follows the actual comparison fields:
+  // averagePrice is the reference and discountPrice is the latest price.
+  // Intermediate points preserve the small ups and downs without using
+  // one hardcoded price series for every product.
+  const values = [
+    referencePrice,
+    referencePrice + priceChange * 0.18,
+    referencePrice - priceChange * 0.08,
+    referencePrice + priceChange * 0.12,
+    referencePrice - priceChange * 0.16,
+    currentPrice - priceChange * 0.14,
+    currentPrice - priceChange * 0.05,
+    currentPrice
+  ];
   const min = Math.min(...values);
   const max = Math.max(...values);
   const points = values.map((value, index) => ({
@@ -883,7 +900,7 @@ export function CatalogFlowSortStatus() {
                         คุ้มที่สุด
                         <img src="/assets/SVG/compare-fire.svg" alt="" />
                       </span>
-                      <CatalogCompareTrend price={bestOffer.discountPrice} />
+                      <CatalogCompareTrend offer={bestOffer} />
                     </span>
                     <span>
                       <small>แนวโน้มราคา 30 วัน</small>
