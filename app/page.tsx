@@ -1642,6 +1642,42 @@ function SplashScreen() {
   );
 }
 
+
+function InterestEmptyScreen({ go }: { go: (screen: Screen) => void }) {
+  return (
+    <section className="screen interest-empty-screen">
+      <StatusBar />
+
+      <h1 className="interest-empty-title">สินค้าที่สนใจ</h1>
+
+      <div className="interest-empty-illustration" aria-hidden="true">
+        <div className="interest-empty-illustration__background">
+          <img
+            className="interest-empty-illustration__heart"
+            src={\`\${ASSET}/SVG/Like/Property 1=Like.svg\`}
+            alt=""
+          />
+        </div>
+      </div>
+
+      <p className="interest-empty-heading">ยังไม่มีสินค้าที่สนใจ</p>
+      <p className="interest-empty-description">
+        กดหัวใจบนสินค้าที่ชอบเพื่อเก็บไว้เปรียบเทียบภายหลัง
+      </p>
+
+      <button
+        className="interest-empty-start"
+        type="button"
+        onClick={() => go("search")}
+      >
+        เริ่มค้นหาสินค้า
+      </button>
+
+      <BottomNav active="interest" go={go} />
+    </section>
+  );
+}
+
 type ReferenceAction = {
   label: string;
   x: number;
@@ -1837,11 +1873,11 @@ export default function BestChoiceApp() {
           )}
           {screen === "total-save" && <TotalSaveScreen go={go} />}
           {screen === "profile" && <ProfileScreen go={go} />}
+          {screen === "interest-empty" && <InterestEmptyScreen go={go} />}
           {[
             "interest",
             "interest-confirm",
             "interest-removed",
-            "interest-empty",
             "no-results",
             "interest-last",
             "interest-last-confirm"
