@@ -2041,9 +2041,9 @@ export default function BestChoiceApp() {
         </div>
       </div>
       <aside className="demo-note">
-        <span>FIGMA-MATCHED PROTOTYPE</span>
-        <h2>Best Choice</h2>
-        <p>ค้นหา เปรียบเทียบ ลากดูกราฟ และทดลองลบสินค้าในรายการสนใจได้ครบทั้ง loop</p>
+        <span>INTERACTIVE PROTOTYPE</span>
+        <h2>Smart Price Tracker</h2>
+        <p>ทดลองใช้งาน Flow การค้นหาสินค้า เปรียบเทียบราคา วิเคราะห์แนวโน้มผ่านกราฟ และจัดการ Wishlist ได้เสมือนแอปจริง</p>
         <button onClick={() => { setScreen("home"); setQuery(""); setSelected([]); setCompareBackScreen("results"); setHistoryProduct(nikeAirForceOne); setHistoryOrigin("base"); setHistoryReturnScreen("search"); resetFavorites(); }} type="button">เริ่ม Demo ใหม่</button>
       </aside>
     </main>
