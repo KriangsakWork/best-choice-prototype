@@ -1641,8 +1641,8 @@ img[src$="/compare-fire.svg"] {
 .history-content {
   position: absolute;
   top: 103px;
-  left: 17px;
-  right: 17px;
+  left: 16px;
+  right: 16px;
   bottom: calc(77px + max(0px, calc(env(safe-area-inset-bottom, 0px) - 22px)));
   display: flex;
   flex-direction: column;
@@ -1657,14 +1657,13 @@ img[src$="/compare-fire.svg"] {
 
 .history-product-summary {
   flex: 0 0 auto;
-  width: 368px;
+  width: 370px;
   min-height: 96px;
   display: grid;
   grid-template-columns: 64px minmax(0, 1fr) auto;
   align-items: start;
   gap: 10px;
   padding: 10px 12px;
-  border: 1px solid #f1eeec;
   border-radius: 20px;
   background: var(--surface);
   box-shadow: 0 2px 5px rgba(107, 51, 33, .08);
@@ -1738,13 +1737,13 @@ img[src$="/compare-fire.svg"] {
 
 .history-price-card {
   flex: 0 0 auto;
-  width: 368px;
+  width: 370px;
   height: 343px;
   overflow: hidden;
   border: 1px solid #e8e0dc;
   border-radius: 20px;
   background: var(--surface);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, .1), 0 1px 2px rgba(0, 0, 0, .1);
+  box-shadow: 0 1.072px 3.216px rgba(0, 0, 0, .1), 0 1.072px 2.144px rgba(0, 0, 0, .1);
 }
 
 .history-price-head {
@@ -1793,8 +1792,10 @@ img[src$="/compare-fire.svg"] {
 }
 
 .history-cheapest-badge {
+  min-width: 115px;
+  justify-content: center;
   padding: 5px 10px;
-  border: 1px solid #e8e0dc;
+  border: 1.072px solid #e8e0dc;
   border-radius: 999px;
   color: #1f1f1e;
   background: #fefcfb;
@@ -1898,12 +1899,12 @@ img[src$="/compare-fire.svg"] {
 }
 
 .history-summary-strip {
-  height: 64px;
+  height: 56px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: center;
   border-top: 1px solid #efe7e3;
-  padding: 10px 16px 8px;
+  padding: 7px 16px;
 }
 
 .history-summary-strip > div {
@@ -1911,14 +1912,25 @@ img[src$="/compare-fire.svg"] {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
-  border-right: 1px solid #efe7e3;
+  gap: 2px;
+  position: relative;
   line-height: 16px;
   text-align: center;
 }
 
-.history-summary-strip > div:last-child {
-  border-right: 0;
+.history-summary-strip > div::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -1px;
+  width: 1px;
+  height: 26px;
+  background: #efe7e3;
+  transform: translateY(-50%);
+}
+
+.history-summary-strip > div:last-child::after {
+  display: none;
 }
 
 .history-summary-strip span {
@@ -1940,9 +1952,9 @@ img[src$="/compare-fire.svg"] {
 
 .history-price-card .period-tabs {
   width: auto;
-  height: 40px;
-  margin: 0 16px 8px;
-  padding: 5px;
+  height: 38px;
+  margin: 0 16px 14px;
+  padding: 3px;
 }
 
 .period-tabs {
@@ -1960,9 +1972,9 @@ img[src$="/compare-fire.svg"] {
   border-radius: 8px;
   color: var(--text);
   background: transparent;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 21px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 19.5px;
   transition: color .24s ease;
 }
 
@@ -1974,10 +1986,10 @@ img[src$="/compare-fire.svg"] {
 .period-tabs-indicator {
   position: absolute;
   z-index: 0;
-  top: 5px;
-  left: 5px;
-  width: calc((100% - 10px) / 4);
-  height: 30px;
+  top: 3px;
+  left: 3px;
+  width: calc((100% - 6px) / 4);
+  height: 32px;
   border-radius: 8px;
   background: var(--primary);
   transform: translateX(calc(var(--period-index, 0) * 100%));
@@ -1985,16 +1997,15 @@ img[src$="/compare-fire.svg"] {
 }
 
 .history-insight {
-  width: 368px;
-  height: 112px;
+  width: 370px;
+  height: 112.56px;
   display: flex;
-  gap: 14px;
+  gap: 12px;
   margin: 0;
-  padding: 14px 16px;
+  padding: 16px;
   overflow: hidden;
   border-radius: 20px;
-  background: linear-gradient(180deg, #d4c8c2 0, var(--surface) 43%);
-  box-shadow: 0 4px 4px rgba(0, 0, 0, .1), 0 2px 2px rgba(0, 0, 0, .05);
+  background: linear-gradient(180deg, #d4c8c2 0%, #fefcfb 42.8%);
 }
 
 .history-insight > .history-ai-icon {
@@ -2013,9 +2024,9 @@ img[src$="/compare-fire.svg"] {
 .history-insight strong {
   display: block;
   color: var(--text);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
-  line-height: 24px;
+  line-height: 22.5px;
   white-space: nowrap;
 }
 
@@ -2023,63 +2034,86 @@ img[src$="/compare-fire.svg"] {
   display: block;
   width: 100%;
   height: 1px;
-  margin: 4px 0 5px;
+  margin: 0;
   background: #aaa;
 }
 
 .history-insight p {
   margin: 0;
   color: var(--text);
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 400;
   line-height: 18px;
 }
 
+.history-action-bar {
+  flex: 0 0 auto;
+  width: 402px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 -16px;
+  padding: 12px 16px;
+  overflow: hidden;
+  background: #fefcfb;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, .08);
+}
+
 .history-buttons {
-  width: 368px;
-  height: 48px;
+  width: 357px;
+  height: 46px;
   display: grid;
-  grid-template-columns: 142px 204px;
+  grid-template-columns: 142px 203px;
   align-items: center;
   gap: 12px;
-  margin: 0 0 12px;
+  margin: 0;
 }
 
 .history-buttons button {
   width: 100%;
-  height: 48px;
+  height: 46px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 8.576px;
+  border: 0;
   border-radius: 999px;
   color: #fff;
   background: var(--primary);
-  font-size: 16px;
+  font-size: 16.08px;
   font-weight: 500;
-  line-height: 24px;
-  box-shadow: 0 2px 5px rgba(235, 59, 12, .16);
+  line-height: 24.12px;
+  box-shadow: none;
 }
 
 .history-buttons button.favorite {
-  border: 1px solid var(--primary);
-  color: var(--text);
-  background: #fff;
+  gap: 10.72px;
+  border: 1.072px solid var(--primary);
+  color: #312d2a;
+  background: #fbdcd3;
   box-shadow: none;
 }
 
 .history-buttons button.favorite.active {
   color: var(--primary);
-  background: var(--primary-soft);
+  background: #fbdcd3;
 }
 
 .history-buttons .history-action-icon,
 .history-buttons .history-favorite-icon {
   display: block;
-  flex: 0 0 20px;
-  width: 20px;
-  height: 20px;
+  flex: 0 0 19.296px;
+  width: 19.296px;
+  height: 19.296px;
   object-fit: contain;
+}
+
+.history-screen .bottom-nav {
+  bottom: -1px;
+  height: 81.472px;
+  background: #fefcfb;
+  box-shadow: 0 2.144px 8.576px rgba(0, 0, 0, .15);
 }
 
 .toast {
