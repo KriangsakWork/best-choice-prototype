@@ -1560,7 +1560,8 @@ function HistoryScreen({
           </div>
         </div>
 
-        <div className="history-buttons">
+        <div className="history-action-bar">
+          <div className="history-buttons">
           <button
             className={favorite ? "favorite active" : "favorite"}
             onClick={() => {
@@ -1574,6 +1575,7 @@ function HistoryScreen({
           <button onClick={buyProduct} type="button">
             <img className="history-action-icon" src={ASSET + "/SVG/Buy BT.svg"} alt="" aria-hidden="true" /> ซื้อเลย
           </button>
+          </div>
         </div>
       </main>
       {toast && <div className="toast" role="status">{toast}</div>}
