@@ -2019,11 +2019,6 @@ export default function BestChoiceApp() {
   }, [screen]);
 
   const go = (next: Screen) => {
-    if (next === "results" || next === "compare") {
-      setScreen("search");
-      return;
-    }
-
     setScreen(next);
   };
 
