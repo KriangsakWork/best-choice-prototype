@@ -2874,3 +2874,241 @@ img[src$="/compare-fire.svg"] {
   outline: 3px solid rgba(235, 59, 12, .35);
   outline-offset: 3px;
 }
+
+
+/* Best seller */
+.home-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.home-section-heading h2 {
+  margin: 0;
+}
+
+.home-section-heading button {
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+.best-seller-screen {
+  color: #fff;
+  background: linear-gradient(180deg, #f1512f 0%, #ff9a83 57%, #fbdcd3 83%, #fefcfb 100%);
+}
+
+.best-seller-screen .status-bar {
+  background: transparent;
+}
+
+.best-seller-screen .status-bar > img {
+  filter: none;
+}
+
+.best-seller-back {
+  position: absolute;
+  z-index: 42;
+  top: 50px;
+  left: 16px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+}
+
+.best-seller-back .asset-icon {
+  width: 32px;
+  height: 32px;
+}
+
+.best-seller-back .asset-icon img {
+  filter: brightness(0) invert(1);
+}
+
+.best-seller-title {
+  position: absolute;
+  z-index: 10;
+  top: 88px;
+  left: 0;
+  width: 100%;
+  margin: 0;
+  color: #fff;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 42px;
+  text-align: center;
+}
+
+.best-seller-tabs {
+  position: absolute;
+  z-index: 10;
+  top: 132px;
+  left: 16px;
+  width: 370px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.best-seller-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.best-seller-tabs button {
+  flex: 0 0 auto;
+  height: 48px;
+  padding: 0 20px;
+  border-radius: 999px;
+  color: #312d2a;
+  background: #fff;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.best-seller-tabs button.active {
+  color: #fff;
+  background: #e9420e;
+}
+
+.best-seller-list {
+  position: absolute;
+  z-index: 8;
+  top: 202px;
+  right: 16px;
+  bottom: 77px;
+  left: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+  padding-bottom: 22px;
+  scrollbar-width: none;
+}
+
+.best-seller-list::-webkit-scrollbar {
+  display: none;
+}
+
+.best-seller-card {
+  flex: 0 0 184px;
+  width: 370px;
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr) 108px;
+  gap: 14px;
+  align-items: center;
+  padding: 12px 14px;
+  overflow: hidden;
+  border-radius: 20px;
+  color: #0f0d0c;
+  background: #fff;
+  box-shadow: 0 2px 5px rgba(107, 51, 33, .08);
+  text-align: left;
+}
+
+.best-seller-card:active {
+  transform: scale(.99);
+}
+
+.best-seller-card-image {
+  width: 112px;
+  height: 112px;
+  border-radius: 14px;
+  object-fit: cover;
+  background: #eef0f1;
+}
+
+.best-seller-card-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.best-seller-card-tags {
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.best-seller-score {
+  flex: 0 0 auto;
+  padding: 4px 8px;
+  border-radius: 999px;
+  color: #fff;
+  background: var(--primary);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 14px;
+}
+
+.best-seller-card-tags .platform-badge-crop {
+  flex: 0 0 auto;
+  width: auto;
+  height: 22px;
+}
+
+.best-seller-card-copy > strong {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #0f0d0c;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 24px;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.best-seller-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #978f89;
+  font-size: 12px;
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+.best-seller-rating {
+  padding: 2px 5px;
+  color: #978f89;
+  background: #fdf8ed;
+}
+
+.best-seller-separator {
+  color: #978f89;
+}
+
+.best-seller-card-price {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.best-seller-card-price strong {
+  overflow: hidden;
+  max-width: 108px;
+  color: var(--primary);
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 32px;
+  text-overflow: ellipsis;
+}
+
+.best-seller-card-price del {
+  color: #b6b0ac;
+  font-size: 14px;
+  line-height: 21px;
+}
