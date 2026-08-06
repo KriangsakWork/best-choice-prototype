@@ -107,11 +107,9 @@ body {
   border-radius: 999px;
   color: #fff;
   background: var(--primary);
-  box-shadow: 0 8px 18px rgba(235, 59, 12, .22);
   font-size: 15px;
   font-weight: 600;
   line-height: 23px;
-  transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
 }
 
 .demo-note button::after {
@@ -121,15 +119,8 @@ body {
   line-height: 1;
 }
 
-.demo-note button:hover {
-  background: #c92f08;
-  box-shadow: 0 10px 22px rgba(235, 59, 12, .28);
-  transform: translateY(-2px);
-}
-
 .demo-note button:active {
-  box-shadow: 0 4px 10px rgba(235, 59, 12, .18);
-  transform: translateY(0) scale(.98);
+  transform: scale(.98);
 }
 
 .demo-note button:focus-visible {
@@ -3043,7 +3034,6 @@ img[src$="/compare-fire.svg"] {
   font-size: 16px;
   font-weight: 500;
   line-height: 24px;
-  transition: transform .18s ease, background .18s ease;
 }
 
 .interest-empty-start:active {
