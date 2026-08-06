@@ -25,6 +25,7 @@ type Screen =
 type Period = "7 วัน" | "30 วัน" | "2 เดือน" | "3 เดือน";
 
 const ASSET = "/assets";
+const FIGMA_CARD_PRODUCT_IMAGE = "https://www.figma.com/api/mcp/asset/8c1e93e2-32b0-4655-9661-0c12501a7498.png";
 const SCREENSHOT = `${ASSET}/screens`;
 const COMPARE_UP_PATH = "M 0.12493379885236716 5.9561254139706055 C 0.03928101676383822 5.8723198587761605 -0.0023299528911366724 5.775923769625623 0.00010060280919057689 5.666937654151906 C 0.0025311585095178263 5.557951538678188 0.04428816867549995 5.462868236909857 0.12537150358748023 5.38168767930816 L 3.0319758045999308 2.4488331737975857 C 3.2209758107810487 2.2566248289739357 3.454746591546436 2.1605212685031527 3.7332882720658502 2.1605212685031527 C 4.011732737406743 2.1605212685031527 4.248030904197436 2.2566248289739357 4.442183690349486 2.4488331737975857 L 5.905767298665333 3.9223333523795536 C 5.93940618776724 3.955972241712397 5.9805315113728215 3.97279200799556 6.029142622771663 3.97279200799556 C 6.077753734170504 3.97279200799556 6.120725461211271 3.955972241712397 6.158058794821213 3.9223333523795536 L 9.309080273791277 0.8160836836578436 L 7.976893090182617 0.8160836836578436 C 7.863629194677753 0.8160836836578436 7.767086852280934 0.7766115324029321 7.687267405090118 0.6976670838617243 C 7.6073507357669055 0.6188198574535811 7.5673928287686385 0.5227154068867368 7.5673928287686385 0.4093542884712298 C 7.5673928287686385 0.2960903921887875 7.6073507357669055 0.19954893922524863 7.687267405090118 0.11972949148645798 C 7.767086852280934 0.03991004374766734 7.863629194677753 0 7.976893090182617 0 L 10.185101240007295 0 C 10.322476245208318 0 10.439579917740783 0.048319483579686864 10.536413252008877 0.14495837424643035 C 10.633149364144574 0.24159726491317385 10.681517601013184 0.359673340380987 10.681517601013184 0.49918723345253846 L 10.681517601013184 2.707395843485006 C 10.681517601013184 2.820659739767448 10.641413433152982 2.9167641903342925 10.561205097432577 2.9957086388755005 C 10.480899539579775 3.0745558652836436 10.384990097201412 3.1139792629175753 10.273476207033573 3.1139792629175753 C 10.161962316865734 3.1139792629175753 10.06610073801196 3.075479513794074 9.985892402291555 2.998479507914161 C 9.905586844438753 2.921479502034248 9.86543481305396 2.826298699977834 9.86543481305396 2.712937581562327 L 9.86543481305396 1.3836667885526286 L 6.734538405890518 4.5145627721622255 C 6.545052296001289 4.70492388950377 6.310746539691263 4.800104253466029 6.031621540285216 4.800104253466029 C 5.7523992978851455 4.800104253466029 5.518531009878467 4.70492388950377 5.330017121313212 4.5145627721622255 L 3.8655589936231936 3.0528750584090605 C 3.8319201045212874 3.0192361690762173 3.788899178811848 3.002416847841085 3.7364964007725736 3.002416847841085 C 3.6841908448656966 3.002416847841085 3.641218895300916 3.0192361690762173 3.6075800061990098 3.0528750584090605 L 0.7043297818308232 5.951604616075534 C 0.6198436653310618 6.034243505673203 0.5228158172594187 6.075562953948975 0.413246369739527 6.075562953948975 C 0.30367692221963527 6.075562953948975 0.20757268788270428 6.035750417443267 0.12493379885236716 5.9561254139706055 Z";
 const TRENDING_UP_ICON = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAARpJREFUeAHd0y1vwkAcBvDn4FbKmJmYQe3FDbdkbmLJXtTkxr7BzL4EX2LT6Ba3zEAJBgVY0ChCgIACroVSerxcaDkIhCoe1f7T/PL8ry0Z9zoOAkgIASUwiO7zsMP6ABt4h+opiBrbHRoV/8H+0mtzepNA9Cu1z2rb34kUsnIarKzmmZ08vOEslYby/C6FqAwxDV3cK69JcT2ulmAZmXmD8wtMem15Iz9i5nXRbFQpgOm/83Z3j4i8JOWNVhHl6QMg7sy955jdrLttygJRP79h18oeiPAv249EFuuY/KxWGi6RZWwXD13fgkRjIMzIOEPtZw0R6y0wP+IPnXRbGxEefhY0foVw4h7bMlvNbtQRjl/ikJDj/fsDg6aoAnbaNoJXUgAAAABJRU5ErkJggg==";
@@ -150,20 +151,20 @@ type ProductResult = {
 
 const nikeAirForceOne: ProductCardData = {
   id: 1,
-  productName: "Nike Air Force 1 '07",
-  platform: "Shopee",
-  price: 4300,
-  discountPrice: 3594,
-  percent: 16,
-  rating: 4.7,
-  sold: 56,
+  productName: "รองเท้ากีฬา Nike สำหรับใส่วิ่งในหน้าฝน",
+  platform: "Lazada",
+  price: 6500,
+  discountPrice: 5100,
+  percent: 22,
+  rating: 4.9,
+  sold: "120K",
   freeShip: true,
   mall: true,
-  imageUrl: `${ASSET}/products/product-pic/1-nike-shopee.webp`,
-  productUrl: "https://shopee.co.th/product/1676687866/56408537514",
-  averagePrice: 3437.33,
-  trendLabel: "เพิ่มจากค่าเฉลี่ย",
-  trendPercent: 5
+  imageUrl: FIGMA_CARD_PRODUCT_IMAGE,
+  productUrl: "https://www.lazada.co.th/catalog/?q=Nike%20running%20shoes",
+  averagePrice: 5230,
+  trendLabel: "ลดจากค่าเฉลี่ย",
+  trendPercent: 3
 };
 
 const homeRecentProducts: ProductCardData[] = [
@@ -386,6 +387,9 @@ type CompareOffer = {
 };
 
 const productUrlByKey: Record<string, string> = {
+  "nike|Shopee": "https://shopee.co.th/search?keyword=Nike%20running%20shoes",
+  "nike|Lazada": "https://www.lazada.co.th/catalog/?q=Nike%20running%20shoes",
+  "nike|TikTok": "https://www.tiktok.com/search?q=Nike%20running%20shoes",
   "nikeairforce107|Shopee": "https://shopee.co.th/product/1676687866/56408537514",
   "nikeairforce107|Lazada": "https://www.lazada.co.th/products/pdp-i16106542551-s126914129880.html",
   "nikeairforce107|TikTok": "https://vt.tiktok.com/ZS9MEAdLRKL3w-mZLJy/",
@@ -454,82 +458,28 @@ function compareOfferToProductData(offer: CompareOffer): ProductCardData {
 
 const compareOfferById: Record<number, CompareOffer> = {
   1: {
-    id: 1,
-    platform: "Shopee",
-    price: nikeAirForceOne.discountPrice,
-    originalPrice: nikeAirForceOne.price,
-    rating: nikeAirForceOne.rating,
-    sold: String(nikeAirForceOne.sold),
-    freeShip: nikeAirForceOne.freeShip,
-    mall: nikeAirForceOne.mall,
-    productName: nikeAirForceOne.productName,
-    productImage: nikeAirForceOne.imageUrl,
-    productUrl: nikeAirForceOne.productUrl
+    id: 1, platform: "Shopee", price: 5250, originalPrice: 6500, rating: 4.8, sold: "82K",
+    freeShip: true, mall: true, productName: nikeAirForceOne.productName, productImage: nikeAirForceOne.imageUrl, productUrl: ""
   },
   2: {
-    id: 2,
-    platform: "Lazada",
-    price: 3328,
-    originalPrice: 4300,
-    rating: 4.9,
-    sold: "22",
-    freeShip: true,
-    mall: true,
-    productName: nikeAirForceOne.productName,
-    productImage: nikeAirForceOne.imageUrl,
-    productUrl: ""
+    id: 2, platform: "Lazada", price: 5100, originalPrice: 6500, rating: 4.9, sold: "120K",
+    freeShip: true, mall: true, productName: nikeAirForceOne.productName, productImage: nikeAirForceOne.imageUrl, productUrl: nikeAirForceOne.productUrl
   },
   3: {
-    id: 3,
-    platform: "TikTok",
-    price: 3390,
-    originalPrice: 5290,
-    rating: 4.3,
-    sold: "70",
-    freeShip: true,
-    mall: true,
-    productName: nikeAirForceOne.productName,
-    productImage: nikeAirForceOne.imageUrl,
-    productUrl: ""
+    id: 3, platform: "TikTok", price: 5490, originalPrice: 6500, rating: 4.6, sold: "38K",
+    freeShip: true, mall: true, productName: nikeAirForceOne.productName, productImage: nikeAirForceOne.imageUrl, productUrl: ""
   },
   4: {
-    id: 4,
-    platform: "Shopee",
-    price: 3750,
-    originalPrice: 4390,
-    rating: 4.6,
-    sold: "120K",
-    freeShip: true,
-    mall: true,
-    productName: nikeAirForceOne.productName,
-    productImage: nikeAirForceOne.imageUrl,
-    productUrl: ""
+    id: 4, platform: "Shopee", price: 5250, originalPrice: 6500, rating: 4.8, sold: "82K",
+    freeShip: true, mall: true, productName: nikeAirForceOne.productName, productImage: nikeAirForceOne.imageUrl, productUrl: ""
   },
   5: {
-    id: 5,
-    platform: "Lazada",
-    price: 2890,
-    originalPrice: 3590,
-    rating: 4.4,
-    sold: "86K",
-    freeShip: true,
-    mall: true,
-    productName: nikeAirForceOne.productName,
-    productImage: nikeAirForceOne.imageUrl,
-    productUrl: ""
+    id: 5, platform: "Lazada", price: 5100, originalPrice: 6500, rating: 4.9, sold: "120K",
+    freeShip: true, mall: true, productName: nikeAirForceOne.productName, productImage: nikeAirForceOne.imageUrl, productUrl: nikeAirForceOne.productUrl
   },
   6: {
-    id: 6,
-    platform: "TikTok",
-    price: 4100,
-    originalPrice: 4590,
-    rating: 2.0,
-    sold: "42K",
-    freeShip: false,
-    mall: false,
-    productName: nikeAirForceOne.productName,
-    productImage: nikeAirForceOne.imageUrl,
-    productUrl: ""
+    id: 6, platform: "TikTok", price: 5490, originalPrice: 6500, rating: 4.6, sold: "38K",
+    freeShip: true, mall: true, productName: nikeAirForceOne.productName, productImage: nikeAirForceOne.imageUrl, productUrl: ""
   }
 };
 
