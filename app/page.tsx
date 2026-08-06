@@ -1406,6 +1406,7 @@ function HistoryPriceCard({
       <div className="history-plot">
         <div className="history-plot-bg" />
         <svg
+          key={period}
           ref={svgRef}
           className="history-chart"
           viewBox="0 0 344 140"
@@ -1500,7 +1501,7 @@ function HistoryScreen({
   onBack: () => void;
   product: ProductCardData;
 }) {
-  const [period, setPeriod] = useState<Period>("3 เดือน");
+  const [period, setPeriod] = useState<Period>("7 วัน");
   const [toast, setToast] = useState("");
   const favorites = useFavorites();
   const favorite = favorites.isFavorite(product);
