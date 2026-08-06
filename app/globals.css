@@ -1259,6 +1259,8 @@ img[src$="/compare-fire.svg"] {
 }
 
 .merged-compare-content {
+  position: absolute;
+  z-index: 6;
   top: 402px;
   right: 0;
   bottom: 77px;
