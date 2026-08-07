@@ -12,6 +12,7 @@ type Screen =
   | "search"
   | "results"
   | "compare"
+  | "best-seller"
   | "history"
   | "total-save"
   | "profile"
@@ -362,6 +363,15 @@ const homeRecommendedProducts: ProductCardData[] = [
   }
 ];
 
+const bestSellerProducts: Array<{ product: ProductCardData; score: string }> = [
+  { product: nikeAirForceOne, score: "3.1" },
+  { product: homeRecommendedProducts[0], score: "3.6" },
+  { product: homeRecommendedProducts[1], score: "3.8" },
+  { product: homeRecommendedProducts[2], score: "2.7" },
+  { product: homeRecommendedProducts[3], score: "3.2" },
+  { product: homeRecommendedProducts[4], score: "3.8" }
+];
+
 const products: ProductResult[] = [
   { id: 1, price: nikeAirForceOne.discountPrice, data: nikeAirForceOne },
   { id: 2, image: `${ASSET}/result-2.png`, price: 3594 },
@@ -386,6 +396,9 @@ type CompareOffer = {
 };
 
 const productUrlByKey: Record<string, string> = {
+  "nike|Shopee": "https://shopee.co.th/search?keyword=Nike%20running%20shoes",
+  "nike|Lazada": "https://www.lazada.co.th/catalog/?q=Nike%20running%20shoes",
+  "nike|TikTok": "https://www.tiktok.com/search?q=Nike%20running%20shoes",
   "nikeairforce107|Shopee": "https://shopee.co.th/product/1676687866/56408537514",
   "nikeairforce107|Lazada": "https://www.lazada.co.th/products/pdp-i16106542551-s126914129880.html",
   "nikeairforce107|TikTok": "https://vt.tiktok.com/ZS9MEAdLRKL3w-mZLJy/",
@@ -454,82 +467,28 @@ function compareOfferToProductData(offer: CompareOffer): ProductCardData {
 
 const compareOfferById: Record<number, CompareOffer> = {
   1: {
-    id: 1,
-    platform: "Shopee",
-    price: nikeAirForceOne.discountPrice,
-    originalPrice: nikeAirForceOne.price,
-    rating: nikeAirForceOne.rating,
-    sold: String(nikeAirForceOne.sold),
-    freeShip: nikeAirForceOne.freeShip,
-    mall: nikeAirForceOne.mall,
-    productName: nikeAirForceOne.productName,
-    productImage: nikeAirForceOne.imageUrl,
-    productUrl: nikeAirForceOne.productUrl
+    id: 1, platform: "Shopee", price: 5250, originalPrice: 6500, rating: 4.8, sold: "82K",
+    freeShip: true, mall: true, productName: nikeAirForceOne.productName, productImage: nikeAirForceOne.imageUrl, productUrl: ""
   },
   2: {
-    id: 2,
-    platform: "Lazada",
-    price: 3328,
-    originalPrice: 4300,
-    rating: 4.9,
-    sold: "22",
-    freeShip: true,
-    mall: true,
-    productName: nikeAirForceOne.productName,
-    productImage: nikeAirForceOne.imageUrl,
-    productUrl: ""
+    id: 2, platform: "Lazada", price: 5100, originalPrice: 6500, rating: 4.9, sold: "120K",
+    freeShip: true, mall: true, productName: nikeAirForceOne.productName, productImage: nikeAirForceOne.imageUrl, productUrl: nikeAirForceOne.productUrl
   },
   3: {
-    id: 3,
-    platform: "TikTok",
-    price: 3390,
-    originalPrice: 5290,
-    rating: 4.3,
-    sold: "70",
-    freeShip: true,
-    mall: true,
-    productName: nikeAirForceOne.productName,
-    productImage: nikeAirForceOne.imageUrl,
-    productUrl: ""
+    id: 3, platform: "TikTok", price: 5490, originalPrice: 6500, rating: 4.6, sold: "38K",
+    freeShip: true, mall: true, productName: nikeAirForceOne.productName, productImage: nikeAirForceOne.imageUrl, productUrl: ""
   },
   4: {
-    id: 4,
-    platform: "Shopee",
-    price: 3750,
-    originalPrice: 4390,
-    rating: 4.6,
-    sold: "120K",
-    freeShip: true,
-    mall: true,
-    productName: nikeAirForceOne.productName,
-    productImage: nikeAirForceOne.imageUrl,
-    productUrl: ""
+    id: 4, platform: "Shopee", price: 5250, originalPrice: 6500, rating: 4.8, sold: "82K",
+    freeShip: true, mall: true, productName: nikeAirForceOne.productName, productImage: nikeAirForceOne.imageUrl, productUrl: ""
   },
   5: {
-    id: 5,
-    platform: "Lazada",
-    price: 2890,
-    originalPrice: 3590,
-    rating: 4.4,
-    sold: "86K",
-    freeShip: true,
-    mall: true,
-    productName: nikeAirForceOne.productName,
-    productImage: nikeAirForceOne.imageUrl,
-    productUrl: ""
+    id: 5, platform: "Lazada", price: 5100, originalPrice: 6500, rating: 4.9, sold: "120K",
+    freeShip: true, mall: true, productName: nikeAirForceOne.productName, productImage: nikeAirForceOne.imageUrl, productUrl: nikeAirForceOne.productUrl
   },
   6: {
-    id: 6,
-    platform: "TikTok",
-    price: 4100,
-    originalPrice: 4590,
-    rating: 2.0,
-    sold: "42K",
-    freeShip: false,
-    mall: false,
-    productName: nikeAirForceOne.productName,
-    productImage: nikeAirForceOne.imageUrl,
-    productUrl: ""
+    id: 6, platform: "TikTok", price: 5490, originalPrice: 6500, rating: 4.6, sold: "38K",
+    freeShip: true, mall: true, productName: nikeAirForceOne.productName, productImage: nikeAirForceOne.imageUrl, productUrl: ""
   }
 };
 
@@ -928,12 +887,67 @@ function HomeScreen({
           {homeRecentProducts.map((product) => renderHomeCard(product, "recent"))}
         </div>
 
-        <h2>สินค้าแนะนำ</h2>
+        <div className="home-section-heading">
+          <h2>สินค้าแนะนำ</h2>
+          <button type="button" onClick={() => go("best-seller")}>ดูทั้งหมด</button>
+        </div>
         <div className="home-grid">
           {homeRecommendedProducts.map((product) => renderHomeCard(product, "recommended"))}
         </div>
       </main>
 
+      <BottomNav active="home" go={go} />
+    </section>
+  );
+}
+
+function BestSellerScreen({
+  go
+}: {
+  go: (screen: Screen) => void;
+}) {
+  return (
+    <section className="screen best-seller-screen">
+      <StatusBar />
+      <button className="best-seller-back" type="button" onClick={() => go("home")} aria-label="ย้อนกลับ">
+        <Icon name="back" />
+      </button>
+      <h1 className="best-seller-title">ยอดฮิต</h1>
+      <div className="best-seller-tabs" role="tablist" aria-label="หมวดหมู่สินค้า">
+        <button className="active" type="button">ยอดฮิต</button>
+        <button type="button">รองเท้า</button>
+        <button type="button">ของใช้ในบ้าน</button>
+        <button type="button">ไอที</button>
+      </div>
+      <main className="best-seller-list">
+        {bestSellerProducts.map(({ product, score }) => (
+          <button
+            className="best-seller-card"
+            key={product.id}
+            type="button"
+            onClick={() => go("results")}
+            aria-label={`ดูผลการค้นหา ${product.productName}`}
+          >
+            <img className="best-seller-card-image" src={product.imageUrl} alt="" />
+            <span className="best-seller-card-copy">
+              <span className="best-seller-card-tags">
+                <span className="best-seller-score">★ Best Choice {score}</span>
+                <PlatformBadge platform={product.platform} />
+              </span>
+              <strong>{product.productName}</strong>
+              <span className="best-seller-card-meta">
+                <span className="best-seller-rating">★ {product.rating.toFixed(1)}</span>
+                <span className="best-seller-separator">|</span>
+                <span>ขายไปแล้ว {String(product.sold)} ชิ้น</span>
+              </span>
+            </span>
+            <span className="best-seller-card-price">
+              <strong>฿{product.discountPrice.toLocaleString("en-US")}</strong>
+              <del>฿{product.price.toLocaleString("en-US")}</del>
+            </span>
+          </button>
+        ))}
+      </main>
       <BottomNav active="home" go={go} />
     </section>
   );
@@ -1146,7 +1160,7 @@ function CompareBuyButton({ offer, onUnavailable }: { offer: CompareOffer; onUna
   };
 
   return (
-    <button className="compare-buy" type="button" onClick={buy}>
+    <button className="merged-compare-buy" type="button" onClick={buy}>
       ดูร้านค้า
       <span aria-hidden="true">›</span>
     </button>
@@ -1180,34 +1194,44 @@ function CompareScreen({
     window.setTimeout(() => setToast(""), 1800);
   };
 
+  const scoreForRank = (rank: number) => Math.max(3.6, 4.8 - rank * 0.6).toFixed(1);
+
   if (!bestOffer) return null;
 
   return (
-    <section className="screen compare-screen">
+    <section className="screen compare-screen merged-compare-screen">
       <StatusBar />
-      <Header title="ผลการเปรียบเทียบ" onBack={() => go(backTarget)} />
 
-      <main className="compare-content">
-        <section className="compare-product-summary">
-          <img src={bestOffer.productImage} alt="" />
-          <div className="compare-summary-copy">
-            <span>สินค้าที่กำลังเปรียบเทียบ</span>
-            <strong>{bestOffer.productName}</strong>
+      <section className="merged-compare-hero">
+        <img className="merged-compare-hero-image" src={bestOffer.productImage} alt="" />
+        <div className="merged-compare-hero-scrim" />
+        <button
+          className="merged-compare-back"
+          type="button"
+          onClick={() => go(backTarget)}
+          aria-label="ย้อนกลับ"
+        >
+          <Icon name="back" />
+        </button>
+
+        <div className="merged-compare-hero-copy">
+          <div className="merged-compare-title-row">
+            <h1>{bestOffer.productName}</h1>
+            <button
+              className={favorite ? "merged-compare-track active" : "merged-compare-track"}
+              type="button"
+              aria-label={favorite ? "เลิกติดตามราคา" : "ติดตามราคา"}
+              aria-pressed={favorite}
+              onClick={() => bestProduct && favorites.toggleFavorite(bestProduct)}
+            >
+              <img
+                src={favorite ? ASSET + "/SVG/Like/Property 1=Like.svg" : ASSET + "/SVG/Like/Property 1=Normal.svg"}
+                alt=""
+              />
+              ติดตามราคา
+            </button>
           </div>
-          <button
-            className={favorite ? "compare-track active" : "compare-track"}
-            type="button"
-            aria-label={favorite ? "เลิกติดตามราคา" : "ติดตามราคา"}
-            aria-pressed={favorite}
-            onClick={() => bestProduct && favorites.toggleFavorite(bestProduct)}
-          >
-            <img
-              src={favorite ? `${ASSET}/SVG/Like/Property 1=Like.svg` : `${ASSET}/SVG/Like/Property 1=Normal.svg`}
-              alt=""
-            />
-            {favorite ? "กำลังติดตาม" : "ติดตามราคา"}
-          </button>
-          <div className="compare-summary-stats" aria-label={`เปรียบเทียบ ${offers.length} แพลตฟอร์ม ราคาต่ำสุด ${bestOffer.price.toLocaleString("en-US")} บาท`}>
+          <div className="merged-compare-stats">
             <span>
               <small>ราคาต่ำสุด</small>
               <b>฿{bestOffer.price.toLocaleString("en-US")}</b>
@@ -1221,116 +1245,98 @@ function CompareScreen({
               <b>{offers.length} แห่ง</b>
             </span>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <div className="compare-list-heading">
-          <h2>ราคาจากแต่ละแพลตฟอร์ม</h2>
-          <span>เรียงจากราคาต่ำสุด</span>
+      <main className="compare-content merged-compare-content">
+        <div className="merged-compare-sort" aria-label="ตัวเลือกการเรียงลำดับ">
+          <span>เรียงจากคะแนน Best choice Score</span>
+          <span aria-hidden="true">⌄</span>
         </div>
 
-        <section className="compare-offer-board" aria-label="ราคาจากแต่ละแพลตฟอร์ม">
-          <article className={discountDetailsOpen ? "compare-offer-row best expanded" : "compare-offer-row best"}>
-            <div className="compare-row-top">
-              <CompareTags offer={bestOffer} />
+        <section className="merged-compare-list" aria-label="ราคาจากแต่ละแพลตฟอร์ม">
+          <article className="merged-compare-card merged-compare-card-best">
+            <div className="merged-compare-tags">
+              <span className="merged-best-score">★ Best Choice {scoreForRank(0)}</span>
+              <PlatformBadge platform={bestOffer.platform} />
             </div>
-            <div className="compare-row-main">
-              <div className="compare-row-price">
+
+            <div className="merged-best-offer-body">
+              <div className="merged-compare-price-copy">
                 <strong>฿{bestOffer.price.toLocaleString("en-US")}</strong>
                 <del>฿{bestOffer.originalPrice.toLocaleString("en-US")}</del>
+                <p>ประหยัด <b>฿{bestSaving.toLocaleString("en-US")}</b></p>
               </div>
-              <CompareBuyButton offer={bestOffer} onUnavailable={() => flash("ยังไม่มีลิงก์ร้านค้านี้ใน Prototype")} />
-            </div>
-            <div className="compare-row-meta">
-              <span>★ {bestOffer.rating} <i>• ขายแล้ว {bestOffer.sold} ชิ้น</i></span>
-              <b>ประหยัด ฿{bestSaving.toLocaleString("en-US")}</b>
-            </div>
-            <button
-              className="compare-best-history"
-              type="button"
-              aria-label={`ดูกราฟราคา ${bestOffer.platform}`}
-              onClick={() => openHistory(compareOfferToProductData(bestOffer))}
-            >
-              <span className="compare-history-visual">
-                <span className="compare-best-label">
-                  คุ้มที่สุด
-                  <img src={`${ASSET}/SVG/compare-fire.svg`} alt="" />
-                </span>
+              <button
+                className="merged-compare-trend"
+                type="button"
+                aria-label={"ดูประวัติราคา " + bestOffer.platform}
+                onClick={() => openHistory(compareOfferToProductData(bestOffer))}
+              >
                 <CompareMiniTrend price={bestOffer.price} />
-              </span>
-              <span>
-                <small>แนวโน้มราคา 30 วัน</small>
-                <strong>ราคาลดลง 20%</strong>
-              </span>
-              <b aria-hidden="true">
-                <img src={`${ASSET}/SVG/arrow_forward.svg`} alt="" />
-              </b>
-            </button>
+                <span>เช็คแนวโน้มราคา</span>
+              </button>
+            </div>
+
             <button
-              className="compare-discount-toggle"
+              className="merged-compare-discount-toggle"
               type="button"
               aria-expanded={discountDetailsOpen}
-              onClick={() => setDiscountDetailsOpen((current) => !current)}
+              onClick={() => setDiscountDetailsOpen((open) => !open)}
             >
               <span>รายละเอียดส่วนลด</span>
-              <b>
-                {discountDetailsOpen ? "ซ่อนรายละเอียด" : "ดูรายละเอียด"}
-                <img src={`${ASSET}/SVG/arrow_drop.svg`} alt="" />
-              </b>
+              <b>ดูรายละเอียด <span aria-hidden="true">{discountDetailsOpen ? "⌃" : "⌄"}</span></b>
             </button>
-            <div
-              className={discountDetailsOpen ? "compare-discount-panel open" : "compare-discount-panel"}
-              aria-hidden={!discountDetailsOpen}
-            >
-              <div className="compare-discount-panel-inner">
-                <div className="compare-discount-details">
-                  <div className="compare-discount-heading">
-                    <span>ส่วนลดเพิ่มเติมที่ได้รับ</span>
-                    <b>รวม ฿{compareDiscountTotal.toLocaleString("en-US")}</b>
+
+            {discountDetailsOpen && (
+              <div className="merged-compare-discount-details">
+                {compareDiscountDetails.map((item) => (
+                  <div key={item.label}>
+                    <span>{item.label}</span>
+                    <b>-฿{item.amount}</b>
                   </div>
-                  <div className="compare-discount-list">
-                    {compareDiscountDetails.map((detail) => (
-                      <div className="compare-discount-row" key={detail.label}>
-                        <span>{detail.label}</span>
-                        <b>-฿{detail.amount.toLocaleString("en-US")}</b>
-                      </div>
-                    ))}
-                  </div>
+                ))}
+                <div className="total">
+                  <span>ส่วนลดรวม</span>
+                  <b>-฿{compareDiscountTotal}</b>
                 </div>
               </div>
-            </div>
+            )}
+
+            <CompareBuyButton offer={bestOffer} onUnavailable={() => flash("ยังไม่มีลิงก์ร้านค้านี้ใน Prototype")} />
           </article>
 
-          {otherOffers.map((offer) => (
-            <article className="compare-offer-row" key={offer.id}>
-              <div className="compare-row-top">
-                <CompareTags offer={offer} />
-              </div>
-              <div className="compare-row-main">
-                <div className="compare-row-price">
-                  <strong>฿{offer.price.toLocaleString("en-US")}</strong>
-                  <del>฿{offer.originalPrice.toLocaleString("en-US")}</del>
+          {otherOffers.map((offer, index) => {
+            const rank = index + 1;
+            const priceDifference = Math.max(0, offer.price - bestOffer.price);
+            return (
+              <article className="merged-compare-card merged-compare-card-secondary" key={offer.id}>
+                <div className="merged-compare-tags">
+                  <PlatformBadge platform={offer.platform} />
+                  <span className="merged-bc-score">BC Score {scoreForRank(rank)}</span>
                 </div>
-                <div className="compare-row-actions">
-                  <button
-                    className="compare-graph-icon"
-                    type="button"
-                    aria-label={`ดูกราฟราคา ${offer.platform}`}
-                    onClick={() => openHistory(compareOfferToProductData(offer))}
-                  >
-                    <img src={`${ASSET}/SVG/Nav Bar/HIC03.svg`} alt="" />
-                  </button>
-                  <CompareBuyButton offer={offer} onUnavailable={() => flash("ยังไม่มีลิงก์ร้านค้านี้ใน Prototype")} />
+                <div className="merged-secondary-body">
+                  <div className="merged-compare-price-copy">
+                    <strong>฿{offer.price.toLocaleString("en-US")}</strong>
+                    <del>฿{offer.originalPrice.toLocaleString("en-US")}</del>
+                    <p>แพงกว่า +฿{priceDifference.toLocaleString("en-US")}</p>
+                  </div>
+                  <div className="merged-secondary-actions">
+                    <button
+                      className="merged-compare-history-button"
+                      type="button"
+                      aria-label={"ดูประวัติราคา " + offer.platform}
+                      onClick={() => openHistory(compareOfferToProductData(offer))}
+                    >
+                      <img src={ASSET + "/SVG/Nav Bar/HIC03.svg"} alt="" />
+                    </button>
+                    <CompareBuyButton offer={offer} onUnavailable={() => flash("ยังไม่มีลิงก์ร้านค้านี้ใน Prototype")} />
+                  </div>
                 </div>
-              </div>
-              <div className="compare-row-meta">
-                <span>★ {offer.rating} <i>• ขายแล้ว {offer.sold} ชิ้น</i></span>
-                <b className="higher">+฿{(offer.price - bestOffer.price).toLocaleString("en-US")}</b>
-              </div>
-            </article>
-          ))}
+              </article>
+            );
+          })}
         </section>
-
-        <small className="compare-updated">อัปเดตราคาล่าสุด 10 นาทีที่แล้ว</small>
       </main>
 
       {toast && <div className="toast" role="status">{toast}</div>}
@@ -1340,24 +1346,43 @@ function CompareScreen({
 }
 
 // Keep the selected-price label tied to active chart interactions.
-function PriceChart({ period, history }: { period: Period; history: PriceHistoryRecord }) {
-  const data = createPriceSeries(history, period);
-  const min = Math.min(...data);
-  const max = Math.max(...data);
+function HistoryPriceCard({
+  period,
+  setPeriod,
+  history,
+  product
+}: {
+  period: Period;
+  setPeriod: (period: Period) => void;
+  history: PriceHistoryRecord;
+  product: ProductCardData;
+}) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [dragging, setDragging] = useState(false);
+  const periods = ["7 วัน", "30 วัน", "2 เดือน", "3 เดือน"] as Period[];
+  const data = createPriceSeries(history, period);
+  const min = Math.min(...data);
+  const max = Math.max(...data);
   const chartPoints = data.map((value, index) => ({
     value,
-    x: 8 + (index / (data.length - 1)) * 320,
-    y: 114 - ((value - min) / Math.max(1, max - min)) * 65
+    x: 10 + (index / (data.length - 1)) * 324,
+    y: 116 - ((value - min) / Math.max(1, max - min)) * 68
   }));
-  const linePath = chartPoints.map((point, index) => `${index ? "L" : "M"} ${point.x} ${point.y}`).join(" ");
-  const areaPath = `${linePath} L 328 139 L 8 139 Z`;
   const selectedIndex = activeIndex ?? chartPoints.length - 1;
   const selectedPoint = chartPoints[selectedIndex];
-  const changePercent = Math.round((history.current - history.average) / history.average * 100);
-  const changeLabel = `${changePercent > 0 ? "+" : ""}${changePercent}%`;
+  const linePath = chartPoints.map((point, index) => (index ? "L" : "M") + " " + point.x + " " + point.y).join(" ");
+  const areaPath = linePath + " L 334 132 L 10 132 Z";
+  const periodIndex = periods.indexOf(period);
+  const discountPercent = history.original > 0
+    ? Math.max(0, Math.round((1 - history.current / history.original) * 100))
+    : 0;
+  const labels: Record<Period, string[]> = {
+    "7 วัน": ["จ.", "อ.", "พ.", "วันนี้"],
+    "30 วัน": ["1 ก.ค.", "10 ก.ค.", "20 ก.ค.", "วันนี้"],
+    "2 เดือน": ["มิ.ย.", "ปลาย มิ.ย.", "ก.ค.", "วันนี้"],
+    "3 เดือน": ["เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค."]
+  };
 
   const choosePoint = (event: PointerEvent<SVGSVGElement>) => {
     const svg = svgRef.current;
@@ -1372,52 +1397,104 @@ function PriceChart({ period, history }: { period: Period; history: PriceHistory
   };
 
   return (
-    <div className="chart-card">
-      <div className="chart-head">
-        <strong>฿{(activeIndex === null ? history.current : selectedPoint.value).toLocaleString("en-US")}</strong>
-        <span>{changeLabel}</span>
-        <em>{activeIndex === null ? `ต่ำสุด ฿${history.min.toLocaleString("en-US")} ในรอบ 90 วัน` : `ราคา ณ จุดที่ ${selectedIndex + 1}`}</em>
+    <section className="history-price-card" aria-label={"กราฟประวัติราคา " + product.productName}>
+      <div className="history-price-head">
+        <div className="history-current-price">
+          <span>ราคาตอนนี้</span>
+          <div>
+            <strong>฿{history.current.toLocaleString("en-US")}</strong>
+            {discountPercent > 0 && <b>-{discountPercent}%</b>}
+          </div>
+        </div>
+        <span className="history-cheapest-badge">ถูกสุดในรอบ 90 วัน</span>
       </div>
-      <svg
-        ref={svgRef}
-        viewBox="0 0 344 150"
-        role="img"
-        aria-label={`กราฟราคา ${period} แตะหรือลากเพื่อดูราคา`}
-        onPointerDown={(event) => {
-          setDragging(true);
-          event.currentTarget.setPointerCapture(event.pointerId);
-          choosePoint(event);
-        }}
-        onPointerMove={(event) => {
-          if (dragging || event.pointerType === "mouse") choosePoint(event);
-        }}
-        onPointerUp={(event) => {
-          setDragging(false);
-          if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
-        }}
-        onPointerLeave={() => !dragging && setActiveIndex(null)}
+
+      <div className="history-plot">
+        <div className="history-plot-bg" />
+        <svg
+          key={period}
+          ref={svgRef}
+          className="history-chart"
+          viewBox="0 0 344 140"
+          role="img"
+          aria-label={"กราฟราคา " + period + " แตะหรือลากเพื่อดูราคา"}
+          onPointerDown={(event) => {
+            setDragging(true);
+            event.currentTarget.setPointerCapture(event.pointerId);
+            choosePoint(event);
+          }}
+          onPointerMove={(event) => {
+            if (dragging || event.pointerType === "mouse") choosePoint(event);
+          }}
+          onPointerUp={(event) => {
+            setDragging(false);
+            if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+              event.currentTarget.releasePointerCapture(event.pointerId);
+            }
+          }}
+          onPointerLeave={() => !dragging && setActiveIndex(null)}
+        >
+          <defs>
+            <linearGradient id="history-price-fill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#ffb09c" stopOpacity=".55" />
+              <stop offset="100%" stopColor="#fff" stopOpacity=".05" />
+            </linearGradient>
+          </defs>
+          <path className="history-chart-area" d={areaPath} fill="url(#history-price-fill)" />
+          <path className="history-chart-line" pathLength="1" d={linePath} />
+          {activeIndex !== null && (
+            <line className="history-cursor-line" x1={selectedPoint.x} y1="12" x2={selectedPoint.x} y2="132" />
+          )}
+          <circle className="history-chart-dot" cx={selectedPoint.x} cy={selectedPoint.y} r="8" />
+        </svg>
+        <div className="history-month-labels">
+          {labels[period].map((label) => <span key={label}>{label}</span>)}
+        </div>
+        <div
+          className="history-price-tooltip"
+          style={{ left: Math.min(86, Math.max(14, (selectedPoint.x / 344) * 100)) + "%" }}
+        >
+          <strong>{activeIndex === null ? "31 ก.ค." : "จุดที่ " + (selectedIndex + 1)}</strong>
+          <span>฿{selectedPoint.value.toLocaleString("en-US")}</span>
+        </div>
+      </div>
+
+      <div className="history-summary-strip">
+        <div>
+          <span>ราคาเฉลี่ย</span>
+          <strong>฿{Math.round(history.average).toLocaleString("en-US")}</strong>
+        </div>
+        <div>
+          <span>ราคาเดิม</span>
+          <strong>฿{history.original.toLocaleString("en-US")}</strong>
+        </div>
+        <div className="lowest">
+          <span>ถูกสุดที่เคยมี</span>
+          <strong>฿{history.min.toLocaleString("en-US")}</strong>
+        </div>
+      </div>
+
+      <div
+        className="period-tabs"
+        role="tablist"
+        aria-label="ช่วงเวลา"
+        style={{ "--period-index": periodIndex } as CSSProperties}
       >
-        <defs>
-          <linearGradient id="price-fill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#ffb09c" stopOpacity=".56" />
-            <stop offset="100%" stopColor="#fff" stopOpacity=".08" />
-          </linearGradient>
-          <clipPath id="chart-reveal">
-            <rect className="chart-reveal" width="344" height="150" />
-          </clipPath>
-        </defs>
-        <g clipPath="url(#chart-reveal)">
-          <path className="chart-area" d={areaPath} fill="url(#price-fill)" />
-        </g>
-        <path className="chart-line" pathLength="1" d={linePath} />
-        <text className="average-label" x="174" y="61" textAnchor="middle">ราคาเฉลี่ย</text>
-        <rect className="average-pill" x="149" y="66" width="50" height="20" rx="10" />
-        <text className="average-price" x="174" y="80" textAnchor="middle">฿{history.average.toLocaleString("en-US", { maximumFractionDigits: 2 })}</text>
-        {activeIndex !== null && <line className="cursor-line" x1={selectedPoint.x} y1="45" x2={selectedPoint.x} y2="139" />}
-        <circle className="chart-dot" cx={selectedPoint.x} cy={selectedPoint.y} r="8" />
-      </svg>
-      <div className="month-labels"><span>มิ.ย.</span><span>ก.ค.</span><span>ส.ค.</span><span>วันนี้</span></div>
-    </div>
+        <span className="period-tabs-indicator" aria-hidden="true" />
+        {periods.map((item) => (
+          <button
+            key={item}
+            className={period === item ? "active" : ""}
+            onClick={() => setPeriod(item)}
+            type="button"
+            role="tab"
+            aria-selected={period === item}
+          >
+            {item}
+          </button>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -1430,13 +1507,11 @@ function HistoryScreen({
   onBack: () => void;
   product: ProductCardData;
 }) {
-  const [period, setPeriod] = useState<Period>("3 เดือน");
+  const [period, setPeriod] = useState<Period>("7 วัน");
   const [toast, setToast] = useState("");
   const favorites = useFavorites();
   const favorite = favorites.isFavorite(product);
   const history = getPriceHistory(product);
-  const periods = ["7 วัน", "30 วัน", "2 เดือน", "3 เดือน"] as Period[];
-  const periodIndex = periods.indexOf(period);
   const differenceFromAverage = Math.round(Math.abs(history.current - history.average));
   const isBelowAverage = history.current <= history.average;
 
@@ -1459,7 +1534,7 @@ function HistoryScreen({
       <StatusBar />
       <Header title="ประวัติราคาล่าสุด" onBack={onBack} />
       <main className="history-content">
-        <section className="history-product-summary" aria-label={`ประวัติราคา ${product.productName}`}>
+        <section className="history-product-summary" aria-label={"ประวัติราคา " + product.productName}>
           <img className="history-product-image" src={product.imageUrl} alt={product.productName} />
           <div className="history-product-copy">
             <h2>{product.productName}</h2>
@@ -1471,40 +1546,29 @@ function HistoryScreen({
             <del>฿{history.original.toLocaleString("en-US")}</del>
           </div>
         </section>
-        <div
-          className="period-tabs"
-          role="tablist"
-          aria-label="ช่วงเวลา"
-          style={{ "--period-index": periodIndex } as CSSProperties}
-        >
-          <span className="period-tabs-indicator" aria-hidden="true" />
-          {periods.map((item) => (
-            <button
-              key={item}
-              className={period === item ? "active" : ""}
-              onClick={() => setPeriod(item)}
-              type="button"
-              role="tab"
-              aria-selected={period === item}
-            >
-              {item}
-            </button>
-          ))}
-        </div>
-        <PriceChart key={period} period={period} history={history} />
-        <div className="ai-card">
-          <img className="history-ai-icon" src={`${ASSET}/SVG/AI.png`} alt="" aria-hidden="true" />
+
+        <HistoryPriceCard
+          period={period}
+          setPeriod={setPeriod}
+          history={history}
+          product={product}
+        />
+
+        <div className="history-insight ai-card">
+          <img className="history-ai-icon" src={ASSET + "/SVG/AI.png"} alt="" aria-hidden="true" />
           <div>
-            <strong>{history.current === history.min ? "ราคาดีที่สุดในรอบ 90 วัน!✨" : `พบราคาต่ำสุด ฿${history.min.toLocaleString("en-US")} ในรอบ 90 วัน`}</strong>
+            <strong>{history.current === history.min ? "ราคาดีที่สุดในรอบ 90 วัน!✨" : "พบราคาต่ำสุด ฿" + history.min.toLocaleString("en-US") + " ในรอบ 90 วัน"}</strong>
             <span />
             <p>
               {isBelowAverage
-                ? `ซื้อตอนนี้ประหยัดกว่าราคาเฉลี่ย ฿${differenceFromAverage.toLocaleString("en-US")} แนะนำให้ตัดสินใจซื้อได้เลยเพื่อความคุ้มค่าสูงสุด`
-                : `ราคาปัจจุบันสูงกว่าราคาเฉลี่ย ฿${differenceFromAverage.toLocaleString("en-US")} หากรอโปรโมชันอาจคุ้มกว่าครับ`}
+                ? "ซื้อตอนนี้ประหยัดกว่าราคาเฉลี่ย ฿" + differenceFromAverage.toLocaleString("en-US") + " แนะนำให้ตัดสินใจซื้อได้เลยเพื่อความคุ้มค่าสูงสุด"
+                : "ราคาปัจจุบันสูงกว่าราคาเฉลี่ย ฿" + differenceFromAverage.toLocaleString("en-US") + " หากรอโปรโมชันอาจคุ้มกว่าครับ"}
             </p>
           </div>
         </div>
-        <div className="history-buttons">
+
+        <div className="history-action-bar">
+          <div className="history-buttons">
           <button
             className={favorite ? "favorite active" : "favorite"}
             onClick={() => {
@@ -1513,11 +1577,12 @@ function HistoryScreen({
             }}
             type="button"
           >
-            <img className="history-favorite-icon" src={favorite ? `${ASSET}/SVG/Like/Property 1=Like.svg` : `${ASSET}/SVG/Like/Property 1=Normal.svg`} alt="" aria-hidden="true" /> รายการโปรด
+            <img className="history-favorite-icon" src={favorite ? ASSET + "/SVG/Like/Property 1=Like.svg" : ASSET + "/SVG/Like/Property 1=Normal.svg"} alt="" aria-hidden="true" /> รายการโปรด
           </button>
           <button onClick={buyProduct} type="button">
-            <img className="history-action-icon" src={`${ASSET}/SVG/Buy BT.svg`} alt="" aria-hidden="true" /> ซื้อเลย
+            <img className="history-action-icon" src={ASSET + "/SVG/Buy BT.svg"} alt="" aria-hidden="true" /> ซื้อเลย
           </button>
+          </div>
         </div>
       </main>
       {toast && <div className="toast" role="status">{toast}</div>}
@@ -1968,11 +2033,6 @@ export default function BestChoiceApp() {
   }, [screen]);
 
   const go = (next: Screen) => {
-    if (next === "results" || next === "compare") {
-      setScreen("search");
-      return;
-    }
-
     setScreen(next);
   };
 
@@ -1988,6 +2048,7 @@ export default function BestChoiceApp() {
               setQuery={setQuery}
             />
           )}
+          {screen === "best-seller" && <BestSellerScreen go={go} />}
           {screen === "search" && <SearchScreen go={go} query={query} setQuery={setQuery} />}
           {screen === "results" && (
             <ResultsScreen
