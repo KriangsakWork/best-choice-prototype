@@ -963,11 +963,11 @@ export function CatalogFlowSortStatus() {
                   return (
                     <article className="merged-compare-card merged-compare-card-secondary" key={offer.id}>
                       <div className="merged-compare-tags">
-                        <PlatformBadge platform={offer.platform} />
                         <span className="merged-bc-score">
                           <img src="/assets/compare/figma-bc-score-mark.png" alt="" />
                           BC Score {scoreForRank(rank)}
                         </span>
+                        <PlatformBadge platform={offer.platform} />
                       </div>
                       <div className="merged-secondary-body">
                         <div className="merged-compare-price-copy">
