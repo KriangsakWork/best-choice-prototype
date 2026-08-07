@@ -815,9 +815,7 @@ export function CatalogFlowSortStatus() {
         const trackedOffer = selectedOffer ?? bestOffer;
         const favorite = favorites.isFavorite(trackedOffer);
         const bestSaving = Math.max(0, bestOffer.price - bestOffer.discountPrice);
-        const heroImage = selectedGroup.id === "nike-air-force-1-07"
-          ? "/assets/compare/figma-compare-hero.png"
-          : bestOffer.imageUrl;
+        const heroImage = bestOffer.imageUrl;
         const scoreForRank = (rank: number) => Math.max(3.6, 4.8 - rank * 0.6).toFixed(1);
         const flash = (message: string) => {
           setCompareToast(message);
