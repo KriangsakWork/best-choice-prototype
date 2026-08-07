@@ -848,7 +848,11 @@ export function CatalogFlowSortStatus() {
 
               <div className="merged-compare-hero-copy">
                 <div className="merged-compare-title-row">
-                  <h1>{selectedGroup.name}</h1>
+                  <h1>
+                    {selectedGroup.id === "nike-air-force-1-07" ? (
+                      <>Nike<br />Air Force 1 '07</>
+                    ) : selectedGroup.name}
+                  </h1>
                   <button
                     className={favorite ? "merged-compare-track active" : "merged-compare-track"}
                     type="button"
