@@ -592,3 +592,141 @@
     animation: none;
   }
 }
+
+/* Catalog compare layout guard
+   Keep the portal-owned Compare screen self-contained when CSS chunks are
+   restored from different PWA/deployment cache generations. */
+.catalog-compare-screen .compare-content {
+  position: absolute;
+  top: 108px;
+  right: 18px;
+  bottom: calc(77px + max(0px, calc(env(safe-area-inset-bottom, 0px) - 22px)));
+  left: 18px;
+  overflow-y: auto;
+  padding: 4px 0 24px;
+  scrollbar-width: none;
+}
+
+.catalog-compare-screen .compare-content::-webkit-scrollbar {
+  display: none;
+}
+
+.catalog-compare-screen .compare-product-summary {
+  position: relative;
+  width: 366px;
+  height: 158px;
+  overflow: hidden;
+  border: 1px solid rgba(230, 232, 235, .78);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(38, 27, 20, .055);
+}
+
+.catalog-compare-screen .compare-product-summary > img {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  width: 72px;
+  min-width: 72px;
+  max-width: 72px;
+  height: 72px;
+  min-height: 72px;
+  max-height: 72px;
+  display: block;
+  border-radius: 10px;
+  object-fit: cover;
+  background: #e6e8eb;
+}
+
+.catalog-compare-screen .compare-summary-copy {
+  position: absolute;
+  top: 13px;
+  left: 100px;
+  width: 248px;
+  display: flex;
+  flex-direction: column;
+}
+
+.catalog-compare-screen .compare-summary-copy > span {
+  color: var(--muted, #7a7068);
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 15px;
+}
+
+.catalog-compare-screen .compare-summary-copy strong {
+  display: -webkit-box;
+  margin-top: 2px;
+  overflow: hidden;
+  color: #0f0d0c;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.catalog-compare-screen .compare-track {
+  position: absolute;
+  top: 68px;
+  left: 99px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  border: 1px solid rgba(235, 59, 12, .28);
+  border-radius: 999px;
+  color: var(--primary, #eb3b0c);
+  background: #fff;
+  font-size: 11px;
+  line-height: 17px;
+}
+
+.catalog-compare-screen .compare-track img {
+  width: 16px;
+  height: 16px;
+}
+
+.catalog-compare-screen .compare-summary-stats {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 48px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid rgba(230, 232, 235, .72);
+  background: #fefcfb;
+}
+
+.catalog-compare-screen .compare-summary-stats > span {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.catalog-compare-screen .compare-list-heading {
+  height: 27px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 14px 1px 6px;
+}
+
+.catalog-compare-screen .compare-offer-board {
+  width: 366px;
+  overflow: hidden;
+  border: 1px solid rgba(230, 232, 235, .85);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(38, 27, 20, .05);
+}
+
+.catalog-compare-screen .compare-updated {
+  display: block;
+  margin: 8px 1px 0;
+}
+
