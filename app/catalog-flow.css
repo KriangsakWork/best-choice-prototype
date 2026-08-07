@@ -675,7 +675,19 @@
 .catalog-compare-screen .merged-compare-card-best .platform-badge-crop {
   width: 87px;
   height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
   border-radius: 7px;
+}
+
+.catalog-compare-screen .platform-badge-crop > img {
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
 }
 
 .catalog-compare-screen .merged-compare-price-line {
