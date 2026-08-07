@@ -735,16 +735,16 @@
 }
 
 .catalog-compare-screen .merged-compare-card-secondary .merged-compare-tags {
-  gap: 7px;
+  gap: 3px;
 }
 
 .catalog-compare-screen .merged-compare-card-secondary .platform-badge-crop {
   width: var(--platform-badge-width);
-  height: 16px;
+  height: 20px;
 }
 
 .catalog-compare-screen .merged-bc-score {
-  height: 16px;
+  height: 20px;
   gap: 4px;
   padding: 0 8px 0 5px;
   border-radius: 10px;
@@ -755,8 +755,8 @@
 }
 
 .catalog-compare-screen .merged-bc-score > img {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   display: block;
   object-fit: contain;
 }
