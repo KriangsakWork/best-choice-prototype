@@ -609,6 +609,7 @@
   width: 402px;
   height: 50px;
   pointer-events: none;
+  mix-blend-mode: difference;
 }
 
 .catalog-merged-status img {
