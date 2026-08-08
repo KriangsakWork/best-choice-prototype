@@ -3112,3 +3112,250 @@ img[src$="/compare-fire.svg"] {
   font-size: 14px;
   line-height: 21px;
 }
+
+
+/* Figma Final UI 1:1389 — Compare alignment (keeps existing 4-item nav and back button) */
+.merged-compare-screen .status-bar {
+  mix-blend-mode: difference;
+}
+
+.merged-compare-screen .status-bar > img {
+  filter: brightness(0) invert(1);
+}
+
+.merged-compare-hero-copy {
+  top: 260px;
+}
+
+.merged-compare-title-row {
+  min-height: 74px;
+}
+
+.merged-compare-track {
+  margin-top: 23px;
+}
+
+.merged-compare-content {
+  top: 402px;
+  padding: 10px 16px 24px;
+}
+
+.merged-compare-sort {
+  width: 370px;
+  height: 17px;
+  gap: 0;
+  padding: 0;
+}
+
+.merged-compare-sort > span:last-child {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  transform: translateY(-1px);
+}
+
+.merged-score-info {
+  width: 370px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  padding: 8px 10px;
+  border: 1px solid #fbdcd3;
+  border-radius: 9px;
+  color: #312d2a;
+  background: #fef7f5;
+}
+
+.merged-score-info-icon {
+  flex: 0 0 14px;
+  width: 14px;
+  height: 14px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #4a463f;
+  border-radius: 50%;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.merged-score-info p {
+  min-width: 0;
+  flex: 1;
+  margin: 0;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 15px;
+  white-space: nowrap;
+}
+
+.merged-score-info p b {
+  color: #eb3b0c;
+  font-weight: 500;
+}
+
+.merged-score-info button {
+  flex: 0 0 14px;
+  width: 14px;
+  height: 14px;
+  color: #312d2a;
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 12px;
+}
+
+.merged-compare-list {
+  gap: 9px;
+  margin-top: 16px;
+}
+
+.merged-compare-card {
+  width: 370px;
+  border: 0;
+}
+
+.merged-compare-card-best {
+  height: 210px;
+  padding: 12px 14px 14px;
+}
+
+.merged-compare-card-best.expanded {
+  height: 304px;
+}
+
+.merged-compare-tags {
+  height: 24px;
+  gap: 8px;
+}
+
+.merged-best-score {
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 18px;
+}
+
+.merged-best-score > span,
+.merged-bc-score > span {
+  margin-right: 4px;
+  font-size: 7px;
+}
+
+.merged-compare-tags .platform-badge-crop {
+  height: 26px;
+}
+
+.merged-best-offer-body {
+  min-height: 72px;
+  padding-top: 5px;
+}
+
+.merged-price-line {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.merged-price-line strong {
+  color: var(--primary);
+  font-size: 27.912px;
+  font-weight: 600;
+  line-height: 41.868px;
+}
+
+.merged-price-line del {
+  margin: 0;
+  color: #978f89;
+  font-size: 13.956px;
+  line-height: 21.569px;
+}
+
+.merged-compare-price-copy > p {
+  margin: -3px 0 0;
+  color: var(--success);
+  font-size: 15.225px;
+  font-weight: 600;
+  line-height: 22.837px;
+}
+
+.merged-compare-trend {
+  width: 104px;
+  height: 54px;
+  align-items: center;
+  text-align: center;
+  text-decoration: underline;
+}
+
+.merged-compare-trend svg {
+  width: 86px;
+  height: 31px;
+}
+
+.merged-compare-discount-toggle {
+  margin-top: 3px;
+}
+
+.merged-compare-buy {
+  margin-top: 6px;
+}
+
+.merged-compare-card-secondary {
+  height: 110px;
+  padding: 15px 14px;
+}
+
+.merged-compare-card-secondary .merged-compare-tags {
+  height: 16px;
+  gap: 7px;
+}
+
+.merged-bc-score {
+  height: 16px;
+  padding: 0 8px 0 5px;
+  border-radius: 10px;
+  background: #eef0f4;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 16px;
+}
+
+.merged-compare-card-secondary .merged-compare-tags .platform-badge-crop {
+  height: 16px;
+}
+
+.merged-secondary-body {
+  height: 64px;
+}
+
+.merged-secondary-body .merged-price-line strong {
+  font-size: 22px;
+  line-height: 33px;
+}
+
+.merged-secondary-body .merged-price-line del {
+  font-size: 11px;
+  line-height: 17px;
+}
+
+.merged-secondary-body .merged-compare-price-copy > p {
+  margin-top: -1px;
+  color: #979797;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.merged-secondary-actions {
+  gap: 4px;
+}
+
+.merged-compare-history-button img {
+  width: 18px;
+  height: 18px;
+}
