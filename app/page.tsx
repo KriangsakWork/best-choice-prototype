@@ -128,6 +128,10 @@ const navIconAssets: Record<string, { default: string; active: string }> = {
     default: `${ASSET}/SVG/Nav Bar/HIC01.svg`,
     active: `${ASSET}/SVG/Nav Bar/HIC01A.svg`
   },
+  bestSeller: {
+    default: `${ASSET}/SVG/Nav Bar/HIC05.svg`,
+    active: `${ASSET}/SVG/Nav Bar/HIC05B.svg`
+  },
   interest: {
     default: `${ASSET}/SVG/Nav Bar/HIC02.svg`,
     active: `${ASSET}/SVG/Nav Bar/HIC02B.svg`
@@ -619,6 +623,7 @@ function StatusBar() {
 function BottomNav({ active, go }: { active?: string; go: (screen: Screen) => void }) {
   const items = [
     { key: "home", label: "หน้าหลัก", screen: "home" as Screen },
+    { key: "bestSeller", label: "ยอดฮิต", screen: "best-seller" as Screen },
     { key: "interest", label: "สนใจ", screen: "interest" as Screen },
     { key: "savings", label: "ประหยัด", screen: "total-save" as Screen },
     { key: "profile", label: "โปรไฟล์", screen: "profile" as Screen }
@@ -948,7 +953,7 @@ function BestSellerScreen({
           </button>
         ))}
       </main>
-      <BottomNav active="home" go={go} />
+      <BottomNav active="bestSeller" go={go} />
     </section>
   );
 }
@@ -1025,9 +1030,10 @@ function ResultsScreen({
     [sortLow]
   );
 
-  const toggleProduct = (id: number) => {
-    if (selected.includes(id)) setSelected(selected.filter((item) => item !== id));
-    else if (selected.length < 3) setSelected([...selected, id]);
+  const openProductComparison = () => {
+    // The new single-model flow compares the same Nike model across three shops.
+    setSelected([2, 3, 1]);
+    go("compare");
   };
 
   return (
@@ -1063,20 +1069,19 @@ function ResultsScreen({
       </header>
       <main className="results-grid">
         {visibleProducts.map((product) => {
-          const isSelected = selected.includes(product.id);
           return (
             <div
-              className={isSelected ? "product-card selected" : "product-card"}
+              className="product-card"
               key={product.id}
-              onClick={() => toggleProduct(product.id)}
+              onClick={openProductComparison}
               onKeyDown={(event) => {
                 if (event.key !== "Enter" && event.key !== " ") return;
                 event.preventDefault();
-                toggleProduct(product.id);
+                openProductComparison();
               }}
               role="button"
               tabIndex={0}
-              aria-pressed={isSelected}
+              aria-label="ดูราคาจาก 3 แพลตฟอร์ม"
             >
               {product.data ? (
                 <ProductCard
@@ -1087,19 +1092,10 @@ function ResultsScreen({
               ) : (
                 <img src={product.image} alt={`สินค้าราคา ${product.price.toLocaleString()} บาท`} />
               )}
-              {isSelected && <span className="selected-ring" />}
             </div>
           );
         })}
       </main>
-      <button
-        className={selected.length >= 2 ? "compare-button ready" : "compare-button"}
-        onClick={() => selected.length >= 2 && go("compare")}
-        type="button"
-        aria-disabled={selected.length < 2}
-      >
-        เปรียบเทียบ
-      </button>
       <BottomNav go={go} />
     </section>
   );
