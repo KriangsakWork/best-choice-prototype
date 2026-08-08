@@ -233,7 +233,7 @@ img[src$="/compare-fire.svg"] {
   width: 402px;
   height: 77px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
 }
 
 .reference-nav button {
