@@ -1180,6 +1180,7 @@ function CompareScreen({
 }) {
   const [toast, setToast] = useState("");
   const [discountDetailsOpen, setDiscountDetailsOpen] = useState(false);
+  const [scoreInfoOpen, setScoreInfoOpen] = useState(true);
   const favorites = useFavorites();
   const effectiveIds = selected.length >= 2 ? selected.slice(0, 3) : [1, 2, 3];
   const offers = effectiveIds.map((id) => compareOfferById[id]).filter(Boolean).sort((a, b) => a.price - b.price);
@@ -1228,7 +1229,7 @@ function CompareScreen({
                 src={favorite ? ASSET + "/SVG/Like/Property 1=Like.svg" : ASSET + "/SVG/Like/Property 1=Normal.svg"}
                 alt=""
               />
-              ติดตามราคา
+              สนใจ
             </button>
           </div>
           <div className="merged-compare-stats">
@@ -1254,17 +1255,27 @@ function CompareScreen({
           <span aria-hidden="true">⌄</span>
         </div>
 
+        {scoreInfoOpen && (
+          <div className="merged-score-info">
+            <span className="merged-score-info-icon" aria-hidden="true">i</span>
+            <p>คะแนน Best Choice คิดจาก <b>ราคา 50%&nbsp;&nbsp;รีวิว 30%&nbsp;&nbsp;ยอดขาย 20%</b></p>
+            <button type="button" aria-label="ปิดคำอธิบายคะแนน" onClick={() => setScoreInfoOpen(false)}>×</button>
+          </div>
+        )}
+
         <section className="merged-compare-list" aria-label="ราคาจากแต่ละแพลตฟอร์ม">
-          <article className="merged-compare-card merged-compare-card-best">
+          <article className={discountDetailsOpen ? "merged-compare-card merged-compare-card-best expanded" : "merged-compare-card merged-compare-card-best"}>
             <div className="merged-compare-tags">
-              <span className="merged-best-score">★ Best Choice {scoreForRank(0)}</span>
+              <span className="merged-best-score"><span aria-hidden="true">●</span> Best Choice {scoreForRank(0)}</span>
               <PlatformBadge platform={bestOffer.platform} />
             </div>
 
             <div className="merged-best-offer-body">
               <div className="merged-compare-price-copy">
-                <strong>฿{bestOffer.price.toLocaleString("en-US")}</strong>
-                <del>฿{bestOffer.originalPrice.toLocaleString("en-US")}</del>
+                <div className="merged-price-line">
+                  <strong>฿{bestOffer.price.toLocaleString("en-US")}</strong>
+                  <del>฿{bestOffer.originalPrice.toLocaleString("en-US")}</del>
+                </div>
                 <p>ประหยัด <b>฿{bestSaving.toLocaleString("en-US")}</b></p>
               </div>
               <button
@@ -1312,13 +1323,15 @@ function CompareScreen({
             return (
               <article className="merged-compare-card merged-compare-card-secondary" key={offer.id}>
                 <div className="merged-compare-tags">
+                  <span className="merged-bc-score"><span aria-hidden="true">●</span>{scoreForRank(rank)}</span>
                   <PlatformBadge platform={offer.platform} />
-                  <span className="merged-bc-score">BC Score {scoreForRank(rank)}</span>
                 </div>
                 <div className="merged-secondary-body">
                   <div className="merged-compare-price-copy">
-                    <strong>฿{offer.price.toLocaleString("en-US")}</strong>
-                    <del>฿{offer.originalPrice.toLocaleString("en-US")}</del>
+                    <div className="merged-price-line">
+                      <strong>฿{offer.price.toLocaleString("en-US")}</strong>
+                      <del>฿{offer.originalPrice.toLocaleString("en-US")}</del>
+                    </div>
                     <p>แพงกว่า +฿{priceDifference.toLocaleString("en-US")}</p>
                   </div>
                   <div className="merged-secondary-actions">
