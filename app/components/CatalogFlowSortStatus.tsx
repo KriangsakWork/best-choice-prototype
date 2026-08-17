@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { PlatformBadge } from "./PlatformBadge";
-import { ProductCard, ProductCardData } from "./ProductCard";
+import { ProductCardData } from "./ProductCard";
 import { recentSearches, searchSuggestions } from "../data/catalog";
 import { useFavorites } from "../data/favorite-store";
 
@@ -35,6 +35,13 @@ const ASSET = "/assets/products/product-pic";
 const SEARCH_ICON = "/assets/SVG/Search Bar/icon/Icon Search2.svg";
 const CLOSE_ICON = "/assets/SVG/Search Bar/icon/Icon Close.svg";
 const FILTER_ICON = "/assets/SVG/Search Bar/icon/Filter.svg";
+const LIKE_ICON = "/assets/SVG/Like/Property 1=Like.svg";
+const LIKE_ICON_EMPTY = "/assets/SVG/Like/Property 1=Normal.svg";
+const PLATFORM_BADGE: Record<ProductCardData["platform"], string> = {
+  Shopee: "/assets/App/Platform=Shopee.jpg",
+  Lazada: "/assets/App/Platform=Lazada.jpg",
+  TikTok: "/assets/App/Platform=TikTok Shop.jpg"
+};
 const TARGET_CARD_COUNT = 6;
 
 const SORT_OPTIONS: Array<{ value: SortMode; label: string }> = [
@@ -299,10 +306,14 @@ function sortGroups(items: ProductGroup[], mode: SortMode) {
 function ProductGroupCard({ group, onOpen }: { group: ProductGroup; onOpen: () => void }) {
   const range = getPriceRange(group);
   const favorites = useFavorites();
+  const representative = group.representative;
+  const favorite = favorites.isFavorite(representative);
+  const platforms = group.offers.map((offer) => offer.platform);
+  const freeShip = group.offers.some((offer) => offer.freeShip);
 
   return (
     <div
-      className="catalog-result-card"
+      className="catalog-unified-card"
       onClick={onOpen}
       onKeyDown={(event) => {
         if (event.key !== "Enter" && event.key !== " ") return;
@@ -311,21 +322,70 @@ function ProductGroupCard({ group, onOpen }: { group: ProductGroup; onOpen: () =
       }}
       role="button"
       tabIndex={0}
-      aria-label={`เปรียบเทียบราคา ${group.name} จาก ${group.offers.length} แพลตฟอร์ม`}
+      aria-label={`เปรียบเทียบราคา ${group.name} จาก ${group.offers.length} แพลตฟอร์ม เริ่มต้น ฿${range.min.toLocaleString("th-TH")}`}
     >
-      <ProductCard
-        product={group.representative}
-        favorite={favorites.isFavorite(group.representative)}
-        onFavoriteToggle={() => favorites.toggleFavorite(group.representative)}
-      />
-      <span className="catalog-result-summary">
-        <span className="catalog-platform-count">
-          ดูราคาจาก <b>{group.offers.length}</b> แพลตฟอร์ม <span aria-hidden="true">›</span>
-        </span>
-        <span className="catalog-price-range">
-          ฿{range.min.toLocaleString("th-TH")}–฿{range.max.toLocaleString("th-TH")}
-        </span>
-      </span>
+      <div className="catalog-unified-card__media">
+        <img
+          src={representative.imageUrl}
+          alt={group.name}
+          width={181}
+          height={123}
+          referrerPolicy="no-referrer"
+        />
+      </div>
+
+      <button
+        type="button"
+        className="catalog-unified-card__heart"
+        aria-label={favorite ? "นำออกจากรายการสนใจ" : "เพิ่มในรายการสนใจ"}
+        aria-pressed={favorite}
+        onClick={(event) => {
+          event.stopPropagation();
+          favorites.toggleFavorite(representative);
+        }}
+      >
+        <img src={favorite ? LIKE_ICON : LIKE_ICON_EMPTY} alt="" width={16} height={15} />
+      </button>
+
+      <div className="catalog-unified-card__content">
+        <h3 className="catalog-unified-card__name">{group.name}</h3>
+
+        <div className="catalog-unified-card__platforms" aria-label={`วางขายบน ${platforms.join(" ")}`}>
+          {platforms.map((platform, index) => (
+            <img
+              key={`${platform}-${index}`}
+              className="catalog-unified-card__badge"
+              src={PLATFORM_BADGE[platform]}
+              alt={platform}
+              height={14}
+            />
+          ))}
+        </div>
+
+        <div className="catalog-unified-card__price">
+          <strong>฿{range.min.toLocaleString("th-TH")}</strong>
+          <span>ช่วงราคา ฿{range.min.toLocaleString("th-TH")}–{range.max.toLocaleString("th-TH")}</span>
+        </div>
+
+        <p className="catalog-unified-card__meta">
+          <span>★ {representative.rating}</span>
+          <span className="catalog-unified-card__dot" aria-hidden="true">·</span>
+          <span>ขายแล้ว {representative.sold}</span>
+          {freeShip && (
+            <>
+              <span className="catalog-unified-card__dot" aria-hidden="true">·</span>
+              <span>ส่งฟรี</span>
+            </>
+          )}
+        </p>
+
+        <div className="catalog-unified-card__divider" aria-hidden="true" />
+
+        <div className="catalog-unified-card__cta">
+          <span>เทียบราคา {group.offers.length} แพลตฟอร์ม</span>
+          <span aria-hidden="true">›</span>
+        </div>
+      </div>
     </div>
   );
 }

@@ -6,6 +6,7 @@ import "./search-animation.css";
 import "./catalog-flow.css";
 import "./catalog-summary-refinement.css";
 import "./catalog-recommendations.css";
+import "./catalog-unified-card.css";
 import "./catalog-sort-status.css";
 import "./catalog-chip-figma.css";
 import "./catalog-navbar-sync.css";
