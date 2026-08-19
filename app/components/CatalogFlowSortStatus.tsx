@@ -494,6 +494,7 @@ export function CatalogFlowSortStatus() {
   const [compareDiscountDetailsOpen, setCompareDiscountDetailsOpen] = useState(false);
   const [compareSort, setCompareSort] = useState<"bc" | "price">("bc");
   const [compareSortOpen, setCompareSortOpen] = useState(false);
+  const [bcInfoOpen, setBcInfoOpen] = useState(false);
   const syncFrame = useRef<number | null>(null);
   const sortControlRef = useRef<HTMLDivElement | null>(null);
   const compareSortRef = useRef<HTMLDivElement | null>(null);
@@ -962,15 +963,26 @@ export function CatalogFlowSortStatus() {
                   onClick={() => setCompareSortOpen((current) => !current)}
                 >
                   <b>{compareSort === "bc" ? "Best Choice Score" : "Best Price Score"}</b>
-                  <svg className="cmp-info" viewBox="0 0 14 14" aria-hidden="true">
-                    <circle cx="7" cy="7" r="6.2" fill="none" stroke="currentColor" strokeWidth="1.1" />
-                    <circle cx="7" cy="4.2" r="0.9" fill="currentColor" />
-                    <rect x="6.35" y="6" width="1.3" height="4.2" rx="0.65" fill="currentColor" />
-                  </svg>
                   <svg className={`cmp-caret ${compareSortOpen ? "open" : ""}`} viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M7 10l5 5 5-5z" fill="currentColor" />
                   </svg>
                 </button>
+
+                {compareSort === "bc" && (
+                  <button
+                    type="button"
+                    className={`cmp-info-btn ${bcInfoOpen ? "active" : ""}`}
+                    aria-label="วิธีคิดคะแนน Best Choice"
+                    aria-expanded={bcInfoOpen}
+                    onClick={() => setBcInfoOpen((current) => !current)}
+                  >
+                    <svg className="cmp-info" viewBox="0 0 14 14" aria-hidden="true">
+                      <circle cx="7" cy="7" r="6.2" fill="none" stroke="currentColor" strokeWidth="1.1" />
+                      <circle cx="7" cy="4.2" r="0.9" fill="currentColor" />
+                      <rect x="6.35" y="6" width="1.3" height="4.2" rx="0.65" fill="currentColor" />
+                    </svg>
+                  </button>
+                )}
 
                 {compareSortOpen && (
                   <div className="cmp-sort-menu" role="menu">
@@ -987,6 +999,7 @@ export function CatalogFlowSortStatus() {
                         onClick={() => {
                           setCompareSort(option.value);
                           setCompareSortOpen(false);
+                          setBcInfoOpen(false);
                         }}
                       >
                         <b>{option.label}</b>
@@ -996,6 +1009,26 @@ export function CatalogFlowSortStatus() {
                   </div>
                 )}
               </div>
+
+              {compareSort === "bc" && bcInfoOpen && (
+                <div className="cmp-bc-info" role="note">
+                  <div className="cmp-bc-info-text">
+                    <svg className="cmp-bc-info-icon" viewBox="0 0 14 14" aria-hidden="true">
+                      <circle cx="7" cy="7" r="6.2" fill="none" stroke="currentColor" strokeWidth="1.1" />
+                      <circle cx="7" cy="4.2" r="0.9" fill="currentColor" />
+                      <rect x="6.35" y="6" width="1.3" height="4.2" rx="0.65" fill="currentColor" />
+                    </svg>
+                    <p>
+                      คะแนน Best Choice คิดจาก <b>ราคา 50%&nbsp;&nbsp;รีวิว 30%&nbsp;&nbsp;ยอดขาย 20%</b>
+                    </p>
+                  </div>
+                  <button type="button" className="cmp-bc-info-close" aria-label="ปิด" onClick={() => setBcInfoOpen(false)}>
+                    <svg viewBox="0 0 14 14" aria-hidden="true">
+                      <path d="M3.5 3.5l7 7M10.5 3.5l-7 7" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+                    </svg>
+                  </button>
+                </div>
+              )}
 
               <article className="cmp-card cmp-card--best">
                 <div className="cmp-card-head">
