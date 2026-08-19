@@ -62,7 +62,46 @@ const NAV_ITEMS = [
   { label: "โปรไฟล์", icon: "/assets/SVG/Nav Bar/HIC04.svg" }
 ];
 
-function buildOffer(id: number, name: string, offer: OfferSeed, average: number): ProductCardData {
+const OFFER_LINKS: Record<string, string> = {
+  "nike-air-force-1-07|Shopee": "https://shopee.co.th/product/1676687866/56408537514",
+  "nike-air-force-1-07|Lazada": "https://www.lazada.co.th/products/pdp-i16106542551-s126914129880.html",
+  "nike-air-force-1-07|TikTok": "https://vt.tiktok.com/ZS9MEAdLRKL3w-mZLJy/",
+  "converse-chuck-taylor|Shopee": "https://shopee.co.th/search?keyword=Converse%20Chuck%20Taylor",
+  "converse-chuck-taylor|Lazada": "https://www.lazada.co.th/products/pdp-i16096804530-s126814426909.html",
+  "converse-chuck-taylor|TikTok": "https://vt.tiktok.com/ZS9MEP85MRvTD-My8Pf/",
+  "vans-old-skool|Shopee": "https://shopee.co.th/search?keyword=Vans%20Old%20Skool",
+  "vans-old-skool|Lazada": "https://www.lazada.co.th/products/pdp-i2328548110-s7873986440.html",
+  "vans-old-skool|TikTok": "https://vt.tiktok.com/ZS9ME5qxWMTjb-QiyCS/",
+  "new-balance-740|Shopee": "https://shopee.co.th/NEW-BALANCE-740-%E0%B8%A3%E0%B8%AD%E0%B8%87%E0%B9%80%E0%B8%97%E0%B9%89%E0%B8%B2%E0%B8%A5%E0%B8%B3%E0%B8%A5%E0%B8%AD%E0%B8%87%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B9%83%E0%B8%AB%E0%B8%8D%E0%B9%88-i.295338991.52412795912",
+  "new-balance-740|Lazada": "https://www.lazada.co.th/products/authentic-new-balance-nb-740-black-u740bm2-sneakers-i16106881076-s126924904221.html",
+  "new-balance-740|TikTok": "https://www.tiktok.com/view/product/1736524162440266949",
+  "hoka-clifton-one9|Shopee": "https://shopee.co.th/search?keyword=HOKA%20CLIFTON%20ONE9",
+  "hoka-clifton-one9|Lazada": "https://www.lazada.co.th/products/pdp-i5963228282-s25613775480.html",
+  "hoka-clifton-one9|TikTok": "https://vt.tiktok.com/ZS9MEmcfmGcxr-rMU3c/",
+  "adidas-ultraboost-light|Shopee": "https://shopee.co.th/adidas-%E0%B8%A7%E0%B8%B4%E0%B9%88%E0%B8%87-%E0%B8%A3%E0%B8%AD%E0%B8%87%E0%B9%80%E0%B8%97%E0%B9%89%E0%B8%B2-Ultraboost-Light-%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B8%AB%E0%B8%8D%E0%B8%B4%E0%B8%87-%E0%B8%AA%E0%B8%B5%E0%B8%AA%E0%B9%89%E0%B8%A1-HQ8598-i.217077552.29356820353",
+  "adidas-ultraboost-light|Lazada": "https://www.lazada.co.th/products/pdp-i5276577093-s22439527940.html",
+  "adidas-ultraboost-light|TikTok": "https://vt.tiktok.com/ZS9MEHs2xSQLU-QpXHo/",
+  "crocs-classic-clog|Shopee": "https://shopee.co.th/CROCS-Classic-Clog-%E0%B8%A3%E0%B8%AD%E0%B8%87%E0%B9%80%E0%B8%97%E0%B9%89%E0%B8%B2%E0%B8%A5%E0%B8%B3%E0%B8%A5%E0%B8%AD%E0%B8%87%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B9%83%E0%B8%AB%E0%B8%8D%E0%B9%88-i.295338991.24903381653",
+  "crocs-classic-clog|Lazada": "https://www.lazada.co.th/products/pdp-i5031090015-s21271454906.html",
+  "crocs-classic-clog|TikTok": "https://vt.tiktok.com/ZS9MExYEsKCpv-PDkfo/",
+  "birkenstock-arizona|Shopee": "https://shopee.co.th/BIRKENSTOCK-Arizona-BF-Black-%E0%B8%A3%E0%B8%AD%E0%B8%87%E0%B9%80%E0%B8%97%E0%B9%89%E0%B8%B2%E0%B9%81%E0%B8%95%E0%B8%B0-Unisex-%E0%B8%AA%E0%B8%B5%E0%B8%94%E0%B8%B3-%E0%B8%A3%E0%B8%B8%E0%B9%88%E0%B8%99-51791-(regular)-i.241098047.3232243174",
+  "birkenstock-arizona|Lazada": "https://www.lazada.co.th/products/birkenstock-arizona-birko-flor-soft-footbed-bf-sfb-black-i4893158604-s20607623120.html",
+  "birkenstock-arizona|TikTok": "https://vt.tiktok.com/ZS9MEQSbgQMQL-gE17o/",
+  "kito-biocare|Shopee": "https://shopee.co.th/Kito-%E0%B8%81%E0%B8%B5%E0%B9%82%E0%B8%95%E0%B9%89-%E0%B8%A3%E0%B8%AD%E0%B8%87%E0%B9%80%E0%B8%97%E0%B9%89%E0%B8%B2%E0%B9%81%E0%B8%95%E0%B8%B0-%E0%B8%A3%E0%B8%B8%E0%B9%88%E0%B8%99-BioCare-BC3-Size-40-43-i.34539611.47507754810",
+  "kito-biocare|Lazada": "https://www.lazada.co.th/products/pdp-i16110630870-s126961340188.html",
+  "kito-biocare|TikTok": "https://vt.tiktok.com/ZS9MEX1nGb8pf-ON4nL/",
+  "womenager-jane-original|Shopee": "https://shopee.co.th/womenager-Jane-Original-%E0%B8%AA%E0%B8%B5-Black-%E0%B8%A3%E0%B8%AD%E0%B8%87%E0%B9%80%E0%B8%97%E0%B9%89%E0%B8%B2%E0%B9%81%E0%B8%95%E0%B8%B0%E0%B8%84%E0%B8%B1%E0%B8%97%E0%B8%8A%E0%B8%B9%E0%B9%80%E0%B8%9B%E0%B8%B4%E0%B8%94%E0%B8%AA%E0%B9%89%E0%B8%99-%E0%B8%AA%E0%B8%A7%E0%B8%A1%E0%B9%83%E0%B8%AA%E0%B9%88%E0%B8%87%E0%B9%88%E0%B8%B2%E0%B8%A2-i.1258482371.51450158383",
+  "womenager-jane-original|Lazada": "https://www.lazada.co.th/products/womenager-jane-classic-black-leather-i4437413798-s17845714417.html",
+  "womenager-jane-original|TikTok": "https://vt.tiktok.com/ZS9MEXbspFngS-Q68ZX/",
+  "flynn-ballet-flats|Shopee": "https://shopee.co.th/-New!-Baozi%F0%9F%A5%A0%F0%9F%A4%8E-Flynn-Ballet-Flats-Room-Service-Collection-%E0%B8%84%E0%B8%B1%E0%B8%97%E0%B8%8A%E0%B8%B9%E0%B8%88%E0%B8%B8%E0%B8%94%E0%B8%99%E0%B8%B8%E0%B9%88%E0%B8%A1%E0%B8%A1%E0%B8%B2%E0%B8%81-%E0%B8%82%E0%B8%B2%E0%B8%A2%E0%B8%94%E0%B8%B5-no.1-i.1605904.19079072019",
+  "flynn-ballet-flats|Lazada": "https://www.lazada.co.th/products/pdp-i4215601986-s16608659654.html",
+  "flynn-ballet-flats|TikTok": "https://www.tiktok.com/view/product/1729560312589486476",
+  "labotte-the-rookie|Shopee": "https://shopee.co.th/The-Rookie-Labotte.bkk-%E0%B8%A3%E0%B8%AD%E0%B8%87%E0%B9%80%E0%B8%97%E0%B9%89%E0%B8%B2%E0%B9%81%E0%B8%A1%E0%B8%A3%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%88%E0%B8%99-%E0%B8%AA%E0%B8%99%E0%B8%B4%E0%B8%81%E0%B9%80%E0%B8%81%E0%B9%89%E0%B8%AD-mary-jane-sneaker-(YHM8128-2)-i.105436413.43660704638",
+  "labotte-the-rookie|Lazada": "https://www.lazada.co.th/products/pdp-i5819783497-s24842971125.html",
+  "labotte-the-rookie|TikTok": "https://vt.tiktok.com/ZS9MEqRfaceds-8gGiX/",
+};
+
+function buildOffer(id: number, name: string, offer: OfferSeed, average: number, groupId: string): ProductCardData {
   return {
     id,
     productName: name,
@@ -75,7 +114,7 @@ function buildOffer(id: number, name: string, offer: OfferSeed, average: number)
     freeShip: offer.freeShip,
     mall: offer.mall,
     imageUrl: `${ASSET}/${offer.image}`,
-    productUrl: "",
+    productUrl: OFFER_LINKS[`${groupId}|${offer.platform}`] ?? "",
     averagePrice: average,
     trendLabel: offer.discount <= average ? "ลดจากค่าเฉลี่ย" : "เพิ่มจากค่าเฉลี่ย",
     trendPercent: average > 0 ? Math.round(Math.abs(offer.discount - average) / average * 100) : 0
@@ -84,7 +123,7 @@ function buildOffer(id: number, name: string, offer: OfferSeed, average: number)
 
 function createGroup(seed: GroupSeed, startId: number): ProductGroup {
   const offers = seed.offers
-    .map((offer, index) => buildOffer(startId + index, seed.name, offer, seed.average))
+    .map((offer, index) => buildOffer(startId + index, seed.name, offer, seed.average, seed.id))
     .sort((a, b) => a.discountPrice - b.discountPrice);
 
   return {
