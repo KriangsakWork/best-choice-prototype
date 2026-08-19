@@ -22,14 +22,24 @@ type ProductGroup = {
   offers: ProductCardData[];
 };
 
+type OfferSeed = {
+  platform: ProductCardData["platform"];
+  price: number;
+  discount: number;
+  rating: number;
+  sold: number | string;
+  freeShip: boolean;
+  mall: boolean;
+  image: string;
+};
+
 type GroupSeed = {
   id: string;
   category: Category;
   name: string;
   aliases: string[];
-  image: string;
-  prices: [number, number, number];
   average: number;
+  offers: OfferSeed[];
 };
 
 const ASSET = "/assets/products/product-pic";
@@ -52,42 +62,30 @@ const NAV_ITEMS = [
   { label: "โปรไฟล์", icon: "/assets/SVG/Nav Bar/HIC04.svg" }
 ];
 
-function makeOffer(
-  id: number,
-  name: string,
-  platform: ProductCardData["platform"],
-  price: number,
-  average: number,
-  imageUrl: string,
-  sold: number | string,
-  freeShip: boolean,
-  mall: boolean
-): ProductCardData {
+function buildOffer(id: number, name: string, offer: OfferSeed, average: number): ProductCardData {
   return {
     id,
     productName: name,
-    platform,
-    price: Math.round(price * 1.16),
-    discountPrice: price,
-    percent: 14,
-    rating: platform === "TikTok" ? 4.8 : 4.9,
-    sold,
-    freeShip,
-    mall,
-    imageUrl,
+    platform: offer.platform,
+    price: offer.price,
+    discountPrice: offer.discount,
+    percent: offer.price > 0 ? Math.round((offer.price - offer.discount) / offer.price * 100) : 0,
+    rating: offer.rating,
+    sold: offer.sold,
+    freeShip: offer.freeShip,
+    mall: offer.mall,
+    imageUrl: `${ASSET}/${offer.image}`,
     productUrl: "",
     averagePrice: average,
-    trendLabel: price <= average ? "ลดจากค่าเฉลี่ย" : "เพิ่มจากค่าเฉลี่ย",
-    trendPercent: Math.round(Math.abs(price - average) / average * 100)
+    trendLabel: offer.discount <= average ? "ลดจากค่าเฉลี่ย" : "เพิ่มจากค่าเฉลี่ย",
+    trendPercent: average > 0 ? Math.round(Math.abs(offer.discount - average) / average * 100) : 0
   };
 }
 
 function createGroup(seed: GroupSeed, startId: number): ProductGroup {
-  const offers = [
-    makeOffer(startId, seed.name, "Lazada", seed.prices[0], seed.average, seed.image, 185, true, true),
-    makeOffer(startId + 1, seed.name, "TikTok", seed.prices[1], seed.average, seed.image, 446, false, false),
-    makeOffer(startId + 2, seed.name, "Shopee", seed.prices[2], seed.average, seed.image, "2k+", true, true)
-  ].sort((a, b) => a.discountPrice - b.discountPrice);
+  const offers = seed.offers
+    .map((offer, index) => buildOffer(startId + index, seed.name, offer, seed.average))
+    .sort((a, b) => a.discountPrice - b.discountPrice);
 
   return {
     id: seed.id,
@@ -99,134 +97,154 @@ function createGroup(seed: GroupSeed, startId: number): ProductGroup {
   };
 }
 
-const nikeOffers = [
-  makeOffer(1, "Nike Air Force 1 '07", "Lazada", 3328, 3437.33, `${ASSET}/1-nike-lazada.webp`, 86, true, true),
-  makeOffer(2, "Nike Air Force 1 '07", "TikTok", 3390, 3437.33, `${ASSET}/1-nike-tiktok.webp`, 70, false, false),
-  makeOffer(3, "Nike Air Force 1 '07", "Shopee", 3594, 3437.33, `${ASSET}/1-nike-shopee.webp`, 56, true, true)
-].sort((a, b) => a.discountPrice - b.discountPrice);
-
 const seeds: GroupSeed[] = [
+  {
+    id: "nike-air-force-1-07",
+    category: "Sneakers",
+    name: "Nike Air Force 1 '07",
+    aliases: ["nike", "air force", "air force 1", "af1", "รองเท้าผ้าใบ", "รองเท้า nike"],
+    average: 3437,
+    offers: [
+      { platform: "Lazada", price: 4300, discount: 3328, rating: 5, sold: 22, freeShip: true, mall: true, image: "1-nike-lazada.webp" },
+      { platform: "TikTok", price: 5290, discount: 3390, rating: 4.3, sold: 70, freeShip: false, mall: false, image: "1-nike-tikok.webp" },
+      { platform: "Shopee", price: 4300, discount: 3594, rating: 5, sold: 56, freeShip: true, mall: true, image: "1-nike-shopee.webp" },
+    ]
+  },
   {
     id: "converse-chuck-taylor",
     category: "Sneakers",
     name: "Converse Chuck Taylor",
-    aliases: ["converse", "chuck taylor", "chuck 70", "รองเท้าผ้าใบ"],
-    image: `${ASSET}/2-converse-shopee.webp`,
-    prices: [2950, 3040, 3090],
-    average: 3026.67
+    aliases: ["converse", "chuck taylor", "chuck 70", "คอนเวิร์ส", "รองเท้าผ้าใบ"],
+    average: 3027,
+    offers: [
+      { platform: "Shopee", price: 3090, discount: 3090, rating: 4.6, sold: 2000, freeShip: true, mall: true, image: "2-converse-shopee.webp" },
+      { platform: "Lazada", price: 2950, discount: 2950, rating: 2, sold: 0, freeShip: false, mall: true, image: "2-converse-lazada.png" },
+      { platform: "TikTok", price: 3090, discount: 3040, rating: 4.4, sold: 3120, freeShip: true, mall: true, image: "2-converse-tiktok.webp" },
+    ]
   },
   {
     id: "vans-old-skool",
     category: "Sneakers",
     name: "Vans Old Skool",
-    aliases: ["vans", "old skool", "old school", "รองเท้าผ้าใบ"],
-    image: `${ASSET}/3-vans-tiktok.webp`,
-    prices: [2190, 2565, 2590],
-    average: 2448.33
+    aliases: ["vans", "old skool", "old school", "รองเท้าวานส์", "รองเท้าผ้าใบ"],
+    average: 2448,
+    offers: [
+      { platform: "TikTok", price: 2690, discount: 2190, rating: 4.3, sold: 151, freeShip: true, mall: true, image: "3-vans-tiktok.webp" },
+      { platform: "Lazada", price: 2690, discount: 2565, rating: 5, sold: 664, freeShip: true, mall: true, image: "3-vans-lazada.webp" },
+      { platform: "Shopee", price: 2590, discount: 2590, rating: 4.9, sold: "5k+", freeShip: true, mall: true, image: "3-vans-shopee.webp" },
+    ]
   },
   {
     id: "new-balance-740",
     category: "RunShoes",
-    name: "New Balance 740",
-    aliases: ["new balance", "new balance 740", "nb 740", "รองเท้าวิ่ง"],
-    image: `${ASSET}/4-nb-lazada.webp`,
-    prices: [1949, 4050, 4150],
-    average: 3383
+    name: "NEW BALANCE 740",
+    aliases: ["new balance", "new balance 740", "nb 740", "นิวบาลานซ์", "รองเท้าวิ่ง"],
+    average: 3383,
+    offers: [
+      { platform: "Lazada", price: 7000, discount: 1949, rating: 5, sold: 16, freeShip: true, mall: false, image: "4-nb-lazada.webp" },
+      { platform: "TikTok", price: 4300, discount: 4050, rating: 0, sold: 0, freeShip: true, mall: true, image: "4-nb-tiktok.webp" },
+      { platform: "Shopee", price: 4150, discount: 4150, rating: 5, sold: 16, freeShip: true, mall: true, image: "4-nb-shopee.webp" },
+    ]
   },
   {
     id: "hoka-clifton-one9",
     category: "RunShoes",
     name: "HOKA CLIFTON ONE9",
-    aliases: ["hoka", "clifton", "clifton one9", "รองเท้าวิ่ง"],
-    image: `${ASSET}/5-hoka-shopee.webp`,
-    prices: [3294, 3590, 3890],
-    average: 3591.33
+    aliases: ["hoka", "clifton", "clifton one9", "โฮก้า", "รองเท้าวิ่ง"],
+    average: 3294,
+    offers: [
+      { platform: "Shopee", price: 5990, discount: 3294, rating: 4.9, sold: 38, freeShip: true, mall: true, image: "5-hoka-shopee.webp" },
+      { platform: "Lazada", price: 5990, discount: 3293, rating: 4.6, sold: 4, freeShip: false, mall: true, image: "5-hoka-lazada.webp" },
+      { platform: "TikTok", price: 5990, discount: 2793, rating: 4.2, sold: 34, freeShip: false, mall: false, image: "5-hoka-tiktok.webp" },
+    ]
   },
   {
     id: "adidas-ultraboost-light",
     category: "RunShoes",
     name: "Adidas Ultraboost Light",
-    aliases: ["adidas", "ultraboost", "adidas ultraboost", "รองเท้าวิ่ง"],
-    image: `${ASSET}/6-adidas-lazada.webp`,
-    prices: [3750, 4410, 4500],
-    average: 4220
+    aliases: ["adidas", "ultraboost", "adidas ultraboost", "อาดิดาส", "รองเท้าวิ่ง"],
+    average: 4220,
+    offers: [
+      { platform: "Lazada", price: 7000, discount: 3750, rating: 5, sold: 2, freeShip: true, mall: true, image: "6-adidas-lazada.webp" },
+      { platform: "Shopee", price: 7000, discount: 4410, rating: 4.9, sold: 83, freeShip: true, mall: true, image: "6-adidas-shopee.webp" },
+      { platform: "TikTok", price: 7000, discount: 4500, rating: 0, sold: 2, freeShip: true, mall: true, image: "6-adidas-tiktok.webp" },
+    ]
   },
   {
     id: "crocs-classic-clog",
     category: "Sandals",
     name: "Crocs Classic Clog",
-    aliases: ["crocs", "classic clog", "รองเท้าแตะ"],
-    image: `${ASSET}/7-crocs-shopee.webp`,
-    prices: [2040, 2040, 2190],
-    average: 2090
+    aliases: ["crocs", "classic clog", "คร็อคส์", "รองเท้าแตะ"],
+    average: 2090,
+    offers: [
+      { platform: "Shopee", price: 2190, discount: 2040, rating: 4.9, sold: 9000, freeShip: true, mall: true, image: "7-crocs-shopee.webp" },
+      { platform: "Lazada", price: 2190, discount: 2040, rating: 4.5, sold: 154, freeShip: false, mall: true, image: "7-crocs-lazada.webp" },
+      { platform: "TikTok", price: 2190, discount: 2190, rating: 4.1, sold: 32200, freeShip: true, mall: true, image: "7-crocs-tiktok.webp" },
+    ]
   },
   {
     id: "birkenstock-arizona",
     category: "Sandals",
     name: "Birkenstock Arizona",
-    aliases: ["birkenstock", "arizona", "รองเท้าแตะ"],
-    image: `${ASSET}/8-birken-tiktok.webp`,
-    prices: [3311, 3990, 5190],
-    average: 4163.67
+    aliases: ["birkenstock", "arizona", "เบียร์เคนสต็อก", "รองเท้าแตะ"],
+    average: 4164,
+    offers: [
+      { platform: "Shopee", price: 3990, discount: 3990, rating: 4.8, sold: 2000, freeShip: true, mall: true, image: "8-birken-shopee.webp" },
+      { platform: "Lazada", price: 5290, discount: 5190, rating: 4.6, sold: 21, freeShip: false, mall: true, image: "8-birken-lazada.png" },
+      { platform: "TikTok", price: 3990, discount: 3311, rating: 3.8, sold: 157, freeShip: true, mall: true, image: "8-birken-tiktok.webp" },
+    ]
   },
   {
     id: "kito-biocare",
     category: "Sandals",
     name: "Kito BioCare",
-    aliases: ["kito", "กีโต้", "รองเท้าแตะ"],
-    image: `${ASSET}/9-kito-tiktok.png`,
-    prices: [486, 524, 529],
-    average: 513
+    aliases: ["kito", "biocare", "กีโต้", "รองเท้าแตะ"],
+    average: 513,
+    offers: [
+      { platform: "Shopee", price: 628, discount: 529, rating: 4.4, sold: 16, freeShip: true, mall: true, image: "9-kito-shopee.webp" },
+      { platform: "Lazada", price: 628, discount: 524, rating: 3.9, sold: 3, freeShip: false, mall: true, image: "9-kito-lazada.webp" },
+      { platform: "TikTok", price: 628, discount: 486, rating: 2.6, sold: 95, freeShip: true, mall: true, image: "9-kito-tiktok.png" },
+    ]
   },
   {
     id: "womenager-jane-original",
     category: "WomanShoes",
-    name: "Womenager - Jane Original",
+    name: "womenager - Jane Original",
     aliases: ["womenager", "jane original", "รองเท้าผู้หญิง", "คัทชู"],
-    image: `${ASSET}/10-womanager-shopee.webp`,
-    prices: [1740, 1790, 2541],
-    average: 2023.67
+    average: 2024,
+    offers: [
+      { platform: "Shopee", price: 1790, discount: 1790, rating: 4.6, sold: 47, freeShip: true, mall: true, image: "10-womanager-shopee.webp" },
+      { platform: "Lazada", price: 1790, discount: 1740, rating: 4.1, sold: 185, freeShip: false, mall: true, image: "10-womanager-lazada.webp" },
+      { platform: "TikTok", price: 2912, discount: 2541, rating: 2.4, sold: 0, freeShip: true, mall: false, image: "10-womanager-tiktok.webp" },
+    ]
   },
   {
     id: "flynn-ballet-flats",
     category: "WomanShoes",
     name: "Flynn - Ballet Flats",
     aliases: ["flynn", "ballet flats", "รองเท้าผู้หญิง", "คัทชู"],
-    image: `${ASSET}/11-flynn-shopee.webp`,
-    prices: [1352, 1440, 1490],
-    average: 1427.33
+    average: 1427,
+    offers: [
+      { platform: "Shopee", price: 1490, discount: 1352, rating: 4.7, sold: 4000, freeShip: true, mall: true, image: "11-flynn-shopee.webp" },
+      { platform: "Lazada", price: 1590, discount: 1490, rating: 4.3, sold: 162, freeShip: false, mall: true, image: "11-flynn-lazada.webp" },
+      { platform: "TikTok", price: 1490, discount: 1440, rating: 3.6, sold: 446, freeShip: true, mall: true, image: "11-flynn-tiktok.webp" },
+    ]
   },
   {
-    id: "labotte-mary-jane",
+    id: "labotte-the-rookie",
     category: "WomanShoes",
-    name: "Labotte Mary Jane",
-    aliases: ["labotte", "mary jane", "รองเท้าผู้หญิง", "คัทชู"],
-    image: `${ASSET}/10-womanager-shopee.webp`,
-    prices: [1490, 1690, 1860],
-    average: 1680
+    name: "Labotte.bkk - The Rookie",
+    aliases: ["labotte", "the rookie", "รองเท้าผู้หญิง", "คัทชู"],
+    average: 1521,
+    offers: [
+      { platform: "Shopee", price: 1690, discount: 1519, rating: 4.8, sold: 10000, freeShip: true, mall: false, image: "12-labotte-shopee.webp" },
+      { platform: "Lazada", price: 1690, discount: 1690, rating: 4.4, sold: 100, freeShip: false, mall: false, image: "12-labotte-lazada.webp" },
+      { platform: "TikTok", price: 1690, discount: 1354, rating: 3.3, sold: 23600, freeShip: true, mall: false, image: "12-labotte-tiktok.webp" },
+    ]
   },
-  {
-    id: "classic-mary-jane",
-    category: "WomanShoes",
-    name: "Classic Mary Jane",
-    aliases: ["classic mary jane", "mary jane", "รองเท้าผู้หญิง", "คัทชู"],
-    image: `${ASSET}/11-flynn-shopee.webp`,
-    prices: [1490, 1690, 1790],
-    average: 1590
-  }
 ];
 
-const groups: ProductGroup[] = [
-  {
-    id: "nike-air-force-1-07",
-    category: "Sneakers",
-    name: "Nike Air Force 1 '07",
-    aliases: ["nike", "air force", "air force 1", "af1", "รองเท้าผ้าใบ", "รองเท้า nike"],
-    representative: nikeOffers[0],
-    offers: nikeOffers
-  },
-  ...seeds.map((seed, index) => createGroup(seed, 10 + index * 3))
-];
+const groups: ProductGroup[] = seeds.map((seed, index) => createGroup(seed, index * 3 + 1));
 
 function normalize(value: string) {
   return value.trim().toLocaleLowerCase("th-TH").replace(/\s+/g, " ");
