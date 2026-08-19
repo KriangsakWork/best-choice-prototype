@@ -66,7 +66,8 @@
 .cmp-headline {
   position: absolute;
   z-index: 6;
-  top: 258px;
+  top: auto;
+  bottom: calc(100% - 400px);
   left: 16px;
   width: 370px;
   display: flex;
