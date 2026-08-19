@@ -3,7 +3,8 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { PlatformBadge } from "./PlatformBadge";
-import { ProductCard, ProductCardData } from "./ProductCard";
+import { ProductCardData } from "./ProductCard";
+import { ResultCard, ResultCardData } from "./ResultCard";
 import { recentSearches, searchSuggestions } from "../data/catalog";
 import { useFavorites } from "../data/favorite-store";
 
@@ -296,37 +297,34 @@ function sortGroups(items: ProductGroup[], mode: SortMode) {
   });
 }
 
+function groupToResultCard(group: ProductGroup): ResultCardData {
+  const best = group.representative;
+  const platformsInGroup = group.offers.map((offer) => offer.platform);
+
+  return {
+    id: best.id,
+    productName: group.name,
+    imageUrl: best.imageUrl,
+    mainPlatform: best.platform,
+    otherPlatforms: platformsInGroup.filter((platform) => platform !== best.platform),
+    price: best.discountPrice,
+    originalPrice: best.price,
+    rating: best.rating,
+    savings: Math.max(0, best.price - best.discountPrice),
+    storeCount: group.offers.length
+  };
+}
+
 function ProductGroupCard({ group, onOpen }: { group: ProductGroup; onOpen: () => void }) {
-  const range = getPriceRange(group);
   const favorites = useFavorites();
 
   return (
-    <div
-      className="catalog-result-card"
-      onClick={onOpen}
-      onKeyDown={(event) => {
-        if (event.key !== "Enter" && event.key !== " ") return;
-        event.preventDefault();
-        onOpen();
-      }}
-      role="button"
-      tabIndex={0}
-      aria-label={`เปรียบเทียบราคา ${group.name} จาก ${group.offers.length} แพลตฟอร์ม`}
-    >
-      <ProductCard
-        product={group.representative}
-        favorite={favorites.isFavorite(group.representative)}
-        onFavoriteToggle={() => favorites.toggleFavorite(group.representative)}
-      />
-      <span className="catalog-result-summary">
-        <span className="catalog-platform-count">
-          ดูราคาจาก <b>{group.offers.length}</b> แพลตฟอร์ม <span aria-hidden="true">›</span>
-        </span>
-        <span className="catalog-price-range">
-          ฿{range.min.toLocaleString("th-TH")}–฿{range.max.toLocaleString("th-TH")}
-        </span>
-      </span>
-    </div>
+    <ResultCard
+      product={groupToResultCard(group)}
+      favorite={favorites.isFavorite(group.representative)}
+      onFavoriteToggle={() => favorites.toggleFavorite(group.representative)}
+      onOpen={onOpen}
+    />
   );
 }
 
