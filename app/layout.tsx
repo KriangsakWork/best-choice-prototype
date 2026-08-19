@@ -12,6 +12,7 @@ import "./catalog-navbar-sync.css";
 import "./interest-figma-screen.css";
 import "./interest-quick-remove.css";
 import "./result-card.css";
+import "./compare-redesign.css";
 import { CatalogFlowSortStatus } from "./components/CatalogFlowSortStatus";
 import { InterestFigmaScreen } from "./components/InterestFigmaScreen";
 
