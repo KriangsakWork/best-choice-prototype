@@ -1010,25 +1010,6 @@ export function CatalogFlowSortStatus() {
                 )}
               </div>
 
-              {compareSort === "bc" && bcInfoOpen && (
-                <div className="cmp-bc-info" role="note">
-                  <div className="cmp-bc-info-text">
-                    <svg className="cmp-bc-info-icon" viewBox="0 0 14 14" aria-hidden="true">
-                      <circle cx="7" cy="7" r="6.2" fill="none" stroke="currentColor" strokeWidth="1.1" />
-                      <circle cx="7" cy="4.2" r="0.9" fill="currentColor" />
-                      <rect x="6.35" y="6" width="1.3" height="4.2" rx="0.65" fill="currentColor" />
-                    </svg>
-                    <p>
-                      คะแนน Best Choice คิดจาก <b>ราคา 50%&nbsp;&nbsp;รีวิว 30%&nbsp;&nbsp;ยอดขาย 20%</b>
-                    </p>
-                  </div>
-                  <button type="button" className="cmp-bc-info-close" aria-label="ปิด" onClick={() => setBcInfoOpen(false)}>
-                    <svg viewBox="0 0 14 14" aria-hidden="true">
-                      <path d="M3.5 3.5l7 7M10.5 3.5l-7 7" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-                    </svg>
-                  </button>
-                </div>
-              )}
 
               <article className="cmp-card cmp-card--best">
                 <div className="cmp-card-head">
@@ -1134,6 +1115,44 @@ export function CatalogFlowSortStatus() {
             </nav>
 
             {compareToast && <div className="toast" role="status">{compareToast}</div>}
+
+            {bcInfoOpen && (
+              <div className="cmp-bc-sheet-root">
+                <div className="cmp-bc-scrim" onClick={() => setBcInfoOpen(false)} />
+                <div className="cmp-bc-sheet" role="dialog" aria-label="คะแนน Best Choice คิดจากอะไร">
+                  <div className="cmp-bc-handle" aria-hidden="true" />
+                  <h2 className="cmp-bc-sheet-title">คะแนน Best Choice คิดจากอะไร</h2>
+
+                  <div className="cmp-bc-stack" aria-hidden="true">
+                    <span className="cmp-bc-seg" style={{ width: "50%", background: "#eb3b0c" }} />
+                    <span className="cmp-bc-seg" style={{ width: "30%", background: "#f58060" }} />
+                    <span className="cmp-bc-seg" style={{ width: "20%", background: "#f9b89f" }} />
+                  </div>
+
+                  {[
+                    { label: "ราคา", percent: 50, color: "#eb3b0c" },
+                    { label: "รีวิวและคะแนนร้าน", percent: 30, color: "#f58060" },
+                    { label: "ยอดขาย", percent: 20, color: "#f9b89f" }
+                  ].map((row) => (
+                    <div className="cmp-bc-row" key={row.label}>
+                      <span className="cmp-bc-row-label">{row.label}</span>
+                      <span className="cmp-bc-row-track">
+                        <span className="cmp-bc-row-bar" style={{ width: `${row.percent}%`, background: row.color }} />
+                      </span>
+                      <b className="cmp-bc-row-pct">{row.percent}%</b>
+                    </div>
+                  ))}
+
+                  <p className="cmp-bc-note">
+                    ยิ่งคะแนนสูง แปลว่าคุ้มค่าเมื่อชั่งน้ำหนักทั้งราคา ความน่าเชื่อถือของร้าน และความนิยมรวมกันแล้ว
+                  </p>
+
+                  <button type="button" className="cmp-bc-sheet-btn" onClick={() => setBcInfoOpen(false)}>
+                    เข้าใจแล้ว
+                  </button>
+                </div>
+              </div>
+            )}
           </section>
         );
       })()}
