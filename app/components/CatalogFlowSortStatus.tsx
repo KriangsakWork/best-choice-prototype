@@ -467,6 +467,12 @@ function ComparePlatformBadge({ platform, size = "sm" }: { platform: ProductCard
   return <img className={`cmp-badge cmp-badge--${size}`} src={meta.badge} alt={meta.label} />;
 }
 
+function trendIcon(offer: ProductCardData): { src: string; label: string } {
+  if (offer.discountPrice < offer.averagePrice) return { src: "/assets/SVG/Train/Down.svg", label: "ราคาต่ำกว่าค่าเฉลี่ย" };
+  if (offer.discountPrice > offer.averagePrice) return { src: "/assets/SVG/Train/Up.svg", label: "ราคาสูงกว่าค่าเฉลี่ย" };
+  return { src: "/assets/SVG/Train/EQ.svg", label: "ราคาเท่าค่าเฉลี่ย" };
+}
+
 function CompareThumbIcon() {
   return (
     <svg viewBox="0 0 16 16" aria-hidden="true" className="cmp-thumb">
@@ -1013,10 +1019,10 @@ export function CatalogFlowSortStatus() {
                     <button
                       className="cmp-graph"
                       type="button"
-                      aria-label={`ดูกราฟราคา ${offer.platform}`}
+                      aria-label={`ดูกราฟราคา ${offer.platform} ${trendIcon(offer).label}`}
                       onClick={() => openPriceHistory(offer)}
                     >
-                      <img src="/assets/SVG/Nav Bar/HIC03.svg" alt="" />
+                      <img src={trendIcon(offer).src} alt="" />
                     </button>
                     <CatalogCompareBuy offer={offer} onUnavailable={() => flash("ยังไม่มีลิงก์ร้านค้านี้ใน Prototype")} />
                   </div>
