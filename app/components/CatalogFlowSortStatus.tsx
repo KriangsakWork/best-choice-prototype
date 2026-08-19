@@ -10,7 +10,7 @@ import { useFavorites } from "../data/favorite-store";
 
 type Category = "Sneakers" | "RunShoes" | "Sandals" | "WomanShoes";
 type FlowScreen = "results" | "compare" | "no-results" | null;
-type SortMode = "relevance" | "best-selling" | "price-desc" | "price-asc";
+type SortMode = "relevance" | "best-selling" | "price-desc" | "price-asc" | "bc-score";
 type CompareOrigin = "results" | "interest";
 
 type ProductGroup = {
@@ -49,10 +49,11 @@ const FILTER_ICON = "/assets/SVG/Search Bar/icon/Filter.svg";
 const TARGET_CARD_COUNT = 6;
 
 const SORT_OPTIONS: Array<{ value: SortMode; label: string }> = [
-  { value: "relevance", label: "เกี่ยวข้อง" },
-  { value: "best-selling", label: "สินค้าขายดี" },
+  { value: "price-asc", label: "ราคา (จากน้อยไปมาก)" },
   { value: "price-desc", label: "ราคา (จากมากไปน้อย)" },
-  { value: "price-asc", label: "ราคา (จากน้อยไปมาก)" }
+  { value: "bc-score", label: "BC Score (คะแนนสูงสุด)" },
+  { value: "best-selling", label: "สินค้าขายดี" },
+  { value: "relevance", label: "เกี่ยวข้อง" }
 ];
 
 const NAV_ITEMS = [
@@ -310,6 +311,7 @@ function sortGroups(items: ProductGroup[], mode: SortMode) {
 
   return [...items].sort((a, b) => {
     if (mode === "best-selling") return bestSellerScore(b) - bestSellerScore(a);
+    if (mode === "bc-score") return b.representative.rating - a.representative.rating;
     if (mode === "price-desc") return getPriceRange(b).min - getPriceRange(a).min;
     return getPriceRange(a).min - getPriceRange(b).min;
   });
@@ -443,7 +445,7 @@ export function CatalogFlowSortStatus() {
   const [selectedOffer, setSelectedOffer] = useState<ProductCardData | null>(null);
   const [mallOnly, setMallOnly] = useState(true);
   const [freeShipOnly, setFreeShipOnly] = useState(true);
-  const [sortMode, setSortMode] = useState<SortMode>("relevance");
+  const [sortMode, setSortMode] = useState<SortMode>("price-asc");
   const [sortOpen, setSortOpen] = useState(false);
   const [compareToast, setCompareToast] = useState("");
   const [compareDiscountDetailsOpen, setCompareDiscountDetailsOpen] = useState(false);
@@ -1028,7 +1030,7 @@ export function CatalogFlowSortStatus() {
               setQuery("รองเท้าวิ่ง Nike");
               setMallOnly(false);
               setFreeShipOnly(false);
-              setSortMode("relevance");
+              setSortMode("price-asc");
               setFlowScreen("results");
             }}
           />

@@ -28,7 +28,7 @@
   top: 50px;
   right: -1px;
   width: 154px;
-  height: 140px;
+  height: auto;
   display: flex;
   flex-direction: column;
   padding: 10px;
