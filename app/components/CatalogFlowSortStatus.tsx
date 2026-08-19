@@ -2,14 +2,15 @@
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { PlatformBadge } from "./PlatformBadge";
-import { ProductCard, ProductCardData } from "./ProductCard";
+import { ProductCardData } from "./ProductCard";
+import { ResultCard, ResultCardData } from "./ResultCard";
 import { recentSearches, searchSuggestions } from "../data/catalog";
 import { useFavorites } from "../data/favorite-store";
+import { createPriceSeries, getPriceHistory } from "../data/price-history";
 
 type Category = "Sneakers" | "RunShoes" | "Sandals" | "WomanShoes";
 type FlowScreen = "results" | "compare" | "no-results" | null;
-type SortMode = "relevance" | "best-selling" | "price-desc" | "price-asc";
+type SortMode = "relevance" | "best-selling" | "price-desc" | "price-asc" | "bc-score";
 type CompareOrigin = "results" | "interest";
 
 type ProductGroup = {
@@ -21,14 +22,24 @@ type ProductGroup = {
   offers: ProductCardData[];
 };
 
+type OfferSeed = {
+  platform: ProductCardData["platform"];
+  price: number;
+  discount: number;
+  rating: number;
+  sold: number | string;
+  freeShip: boolean;
+  mall: boolean;
+  image: string;
+};
+
 type GroupSeed = {
   id: string;
   category: Category;
   name: string;
   aliases: string[];
-  image: string;
-  prices: [number, number, number];
   average: number;
+  offers: OfferSeed[];
 };
 
 const ASSET = "/assets/products/product-pic";
@@ -38,10 +49,11 @@ const FILTER_ICON = "/assets/SVG/Search Bar/icon/Filter.svg";
 const TARGET_CARD_COUNT = 6;
 
 const SORT_OPTIONS: Array<{ value: SortMode; label: string }> = [
-  { value: "relevance", label: "เกี่ยวข้อง" },
-  { value: "best-selling", label: "สินค้าขายดี" },
+  { value: "price-asc", label: "ราคา (จากน้อยไปมาก)" },
   { value: "price-desc", label: "ราคา (จากมากไปน้อย)" },
-  { value: "price-asc", label: "ราคา (จากน้อยไปมาก)" }
+  { value: "bc-score", label: "BC Score (คะแนนสูงสุด)" },
+  { value: "best-selling", label: "สินค้าขายดี" },
+  { value: "relevance", label: "เกี่ยวข้อง" }
 ];
 
 const NAV_ITEMS = [
@@ -51,42 +63,69 @@ const NAV_ITEMS = [
   { label: "โปรไฟล์", icon: "/assets/SVG/Nav Bar/HIC04.svg" }
 ];
 
-function makeOffer(
-  id: number,
-  name: string,
-  platform: ProductCardData["platform"],
-  price: number,
-  average: number,
-  imageUrl: string,
-  sold: number | string,
-  freeShip: boolean,
-  mall: boolean
-): ProductCardData {
+const OFFER_LINKS: Record<string, string> = {
+  "nike-air-force-1-07|Shopee": "https://shopee.co.th/product/1676687866/56408537514",
+  "nike-air-force-1-07|Lazada": "https://www.lazada.co.th/products/pdp-i16106542551-s126914129880.html",
+  "nike-air-force-1-07|TikTok": "https://vt.tiktok.com/ZS9MEAdLRKL3w-mZLJy/",
+  "converse-chuck-taylor|Shopee": "https://shopee.co.th/search?keyword=Converse%20Chuck%20Taylor",
+  "converse-chuck-taylor|Lazada": "https://www.lazada.co.th/products/pdp-i16096804530-s126814426909.html",
+  "converse-chuck-taylor|TikTok": "https://vt.tiktok.com/ZS9MEP85MRvTD-My8Pf/",
+  "vans-old-skool|Shopee": "https://shopee.co.th/search?keyword=Vans%20Old%20Skool",
+  "vans-old-skool|Lazada": "https://www.lazada.co.th/products/pdp-i2328548110-s7873986440.html",
+  "vans-old-skool|TikTok": "https://vt.tiktok.com/ZS9ME5qxWMTjb-QiyCS/",
+  "new-balance-740|Shopee": "https://shopee.co.th/NEW-BALANCE-740-%E0%B8%A3%E0%B8%AD%E0%B8%87%E0%B9%80%E0%B8%97%E0%B9%89%E0%B8%B2%E0%B8%A5%E0%B8%B3%E0%B8%A5%E0%B8%AD%E0%B8%87%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B9%83%E0%B8%AB%E0%B8%8D%E0%B9%88-i.295338991.52412795912",
+  "new-balance-740|Lazada": "https://www.lazada.co.th/products/authentic-new-balance-nb-740-black-u740bm2-sneakers-i16106881076-s126924904221.html",
+  "new-balance-740|TikTok": "https://www.tiktok.com/view/product/1736524162440266949",
+  "hoka-clifton-one9|Shopee": "https://shopee.co.th/search?keyword=HOKA%20CLIFTON%20ONE9",
+  "hoka-clifton-one9|Lazada": "https://www.lazada.co.th/products/pdp-i5963228282-s25613775480.html",
+  "hoka-clifton-one9|TikTok": "https://vt.tiktok.com/ZS9MEmcfmGcxr-rMU3c/",
+  "adidas-ultraboost-light|Shopee": "https://shopee.co.th/adidas-%E0%B8%A7%E0%B8%B4%E0%B9%88%E0%B8%87-%E0%B8%A3%E0%B8%AD%E0%B8%87%E0%B9%80%E0%B8%97%E0%B9%89%E0%B8%B2-Ultraboost-Light-%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B8%AB%E0%B8%8D%E0%B8%B4%E0%B8%87-%E0%B8%AA%E0%B8%B5%E0%B8%AA%E0%B9%89%E0%B8%A1-HQ8598-i.217077552.29356820353",
+  "adidas-ultraboost-light|Lazada": "https://www.lazada.co.th/products/pdp-i5276577093-s22439527940.html",
+  "adidas-ultraboost-light|TikTok": "https://vt.tiktok.com/ZS9MEHs2xSQLU-QpXHo/",
+  "crocs-classic-clog|Shopee": "https://shopee.co.th/CROCS-Classic-Clog-%E0%B8%A3%E0%B8%AD%E0%B8%87%E0%B9%80%E0%B8%97%E0%B9%89%E0%B8%B2%E0%B8%A5%E0%B8%B3%E0%B8%A5%E0%B8%AD%E0%B8%87%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B9%83%E0%B8%AB%E0%B8%8D%E0%B9%88-i.295338991.24903381653",
+  "crocs-classic-clog|Lazada": "https://www.lazada.co.th/products/pdp-i5031090015-s21271454906.html",
+  "crocs-classic-clog|TikTok": "https://vt.tiktok.com/ZS9MExYEsKCpv-PDkfo/",
+  "birkenstock-arizona|Shopee": "https://shopee.co.th/BIRKENSTOCK-Arizona-BF-Black-%E0%B8%A3%E0%B8%AD%E0%B8%87%E0%B9%80%E0%B8%97%E0%B9%89%E0%B8%B2%E0%B9%81%E0%B8%95%E0%B8%B0-Unisex-%E0%B8%AA%E0%B8%B5%E0%B8%94%E0%B8%B3-%E0%B8%A3%E0%B8%B8%E0%B9%88%E0%B8%99-51791-(regular)-i.241098047.3232243174",
+  "birkenstock-arizona|Lazada": "https://www.lazada.co.th/products/birkenstock-arizona-birko-flor-soft-footbed-bf-sfb-black-i4893158604-s20607623120.html",
+  "birkenstock-arizona|TikTok": "https://vt.tiktok.com/ZS9MEQSbgQMQL-gE17o/",
+  "kito-biocare|Shopee": "https://shopee.co.th/Kito-%E0%B8%81%E0%B8%B5%E0%B9%82%E0%B8%95%E0%B9%89-%E0%B8%A3%E0%B8%AD%E0%B8%87%E0%B9%80%E0%B8%97%E0%B9%89%E0%B8%B2%E0%B9%81%E0%B8%95%E0%B8%B0-%E0%B8%A3%E0%B8%B8%E0%B9%88%E0%B8%99-BioCare-BC3-Size-40-43-i.34539611.47507754810",
+  "kito-biocare|Lazada": "https://www.lazada.co.th/products/pdp-i16110630870-s126961340188.html",
+  "kito-biocare|TikTok": "https://vt.tiktok.com/ZS9MEX1nGb8pf-ON4nL/",
+  "womenager-jane-original|Shopee": "https://shopee.co.th/womenager-Jane-Original-%E0%B8%AA%E0%B8%B5-Black-%E0%B8%A3%E0%B8%AD%E0%B8%87%E0%B9%80%E0%B8%97%E0%B9%89%E0%B8%B2%E0%B9%81%E0%B8%95%E0%B8%B0%E0%B8%84%E0%B8%B1%E0%B8%97%E0%B8%8A%E0%B8%B9%E0%B9%80%E0%B8%9B%E0%B8%B4%E0%B8%94%E0%B8%AA%E0%B9%89%E0%B8%99-%E0%B8%AA%E0%B8%A7%E0%B8%A1%E0%B9%83%E0%B8%AA%E0%B9%88%E0%B8%87%E0%B9%88%E0%B8%B2%E0%B8%A2-i.1258482371.51450158383",
+  "womenager-jane-original|Lazada": "https://www.lazada.co.th/products/womenager-jane-classic-black-leather-i4437413798-s17845714417.html",
+  "womenager-jane-original|TikTok": "https://vt.tiktok.com/ZS9MEXbspFngS-Q68ZX/",
+  "flynn-ballet-flats|Shopee": "https://shopee.co.th/-New!-Baozi%F0%9F%A5%A0%F0%9F%A4%8E-Flynn-Ballet-Flats-Room-Service-Collection-%E0%B8%84%E0%B8%B1%E0%B8%97%E0%B8%8A%E0%B8%B9%E0%B8%88%E0%B8%B8%E0%B8%94%E0%B8%99%E0%B8%B8%E0%B9%88%E0%B8%A1%E0%B8%A1%E0%B8%B2%E0%B8%81-%E0%B8%82%E0%B8%B2%E0%B8%A2%E0%B8%94%E0%B8%B5-no.1-i.1605904.19079072019",
+  "flynn-ballet-flats|Lazada": "https://www.lazada.co.th/products/pdp-i4215601986-s16608659654.html",
+  "flynn-ballet-flats|TikTok": "https://www.tiktok.com/view/product/1729560312589486476",
+  "labotte-the-rookie|Shopee": "https://shopee.co.th/The-Rookie-Labotte.bkk-%E0%B8%A3%E0%B8%AD%E0%B8%87%E0%B9%80%E0%B8%97%E0%B9%89%E0%B8%B2%E0%B9%81%E0%B8%A1%E0%B8%A3%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%88%E0%B8%99-%E0%B8%AA%E0%B8%99%E0%B8%B4%E0%B8%81%E0%B9%80%E0%B8%81%E0%B9%89%E0%B8%AD-mary-jane-sneaker-(YHM8128-2)-i.105436413.43660704638",
+  "labotte-the-rookie|Lazada": "https://www.lazada.co.th/products/pdp-i5819783497-s24842971125.html",
+  "labotte-the-rookie|TikTok": "https://vt.tiktok.com/ZS9MEqRfaceds-8gGiX/",
+};
+
+function buildOffer(id: number, name: string, offer: OfferSeed, average: number, groupId: string): ProductCardData {
   return {
     id,
     productName: name,
-    platform,
-    price: Math.round(price * 1.16),
-    discountPrice: price,
-    percent: 14,
-    rating: platform === "TikTok" ? 4.8 : 4.9,
-    sold,
-    freeShip,
-    mall,
-    imageUrl,
-    productUrl: "",
+    platform: offer.platform,
+    price: offer.price,
+    discountPrice: offer.discount,
+    percent: offer.price > 0 ? Math.round((offer.price - offer.discount) / offer.price * 100) : 0,
+    rating: offer.rating,
+    sold: offer.sold,
+    freeShip: offer.freeShip,
+    mall: offer.mall,
+    imageUrl: `${ASSET}/${offer.image}`,
+    productUrl: OFFER_LINKS[`${groupId}|${offer.platform}`] ?? "",
     averagePrice: average,
-    trendLabel: price <= average ? "ลดจากค่าเฉลี่ย" : "เพิ่มจากค่าเฉลี่ย",
-    trendPercent: Math.round(Math.abs(price - average) / average * 100)
+    trendLabel: offer.discount <= average ? "ลดจากค่าเฉลี่ย" : "เพิ่มจากค่าเฉลี่ย",
+    trendPercent: average > 0 ? Math.round(Math.abs(offer.discount - average) / average * 100) : 0
   };
 }
 
 function createGroup(seed: GroupSeed, startId: number): ProductGroup {
-  const offers = [
-    makeOffer(startId, seed.name, "Lazada", seed.prices[0], seed.average, seed.image, 185, true, true),
-    makeOffer(startId + 1, seed.name, "TikTok", seed.prices[1], seed.average, seed.image, 446, false, false),
-    makeOffer(startId + 2, seed.name, "Shopee", seed.prices[2], seed.average, seed.image, "2k+", true, true)
-  ].sort((a, b) => a.discountPrice - b.discountPrice);
+  const offers = seed.offers
+    .map((offer, index) => buildOffer(startId + index, seed.name, offer, seed.average, seed.id))
+    .sort((a, b) => a.discountPrice - b.discountPrice);
 
   return {
     id: seed.id,
@@ -98,134 +137,154 @@ function createGroup(seed: GroupSeed, startId: number): ProductGroup {
   };
 }
 
-const nikeOffers = [
-  makeOffer(1, "Nike Air Force 1 '07", "Lazada", 3328, 3437.33, `${ASSET}/1-nike-lazada.webp`, 86, true, true),
-  makeOffer(2, "Nike Air Force 1 '07", "TikTok", 3390, 3437.33, `${ASSET}/1-nike-tiktok.webp`, 70, false, false),
-  makeOffer(3, "Nike Air Force 1 '07", "Shopee", 3594, 3437.33, `${ASSET}/1-nike-shopee.webp`, 56, true, true)
-].sort((a, b) => a.discountPrice - b.discountPrice);
-
 const seeds: GroupSeed[] = [
+  {
+    id: "nike-air-force-1-07",
+    category: "Sneakers",
+    name: "Nike Air Force 1 '07",
+    aliases: ["nike", "air force", "air force 1", "af1", "รองเท้าผ้าใบ", "รองเท้า nike"],
+    average: 3437,
+    offers: [
+      { platform: "Lazada", price: 4300, discount: 3328, rating: 5, sold: 22, freeShip: true, mall: true, image: "1-nike-lazada.webp" },
+      { platform: "TikTok", price: 5290, discount: 3390, rating: 4.3, sold: 70, freeShip: false, mall: false, image: "1-nike-tikok.webp" },
+      { platform: "Shopee", price: 4300, discount: 3594, rating: 5, sold: 56, freeShip: true, mall: true, image: "1-nike-shopee.webp" },
+    ]
+  },
   {
     id: "converse-chuck-taylor",
     category: "Sneakers",
     name: "Converse Chuck Taylor",
-    aliases: ["converse", "chuck taylor", "chuck 70", "รองเท้าผ้าใบ"],
-    image: `${ASSET}/2-converse-shopee.webp`,
-    prices: [2950, 3040, 3090],
-    average: 3026.67
+    aliases: ["converse", "chuck taylor", "chuck 70", "คอนเวิร์ส", "รองเท้าผ้าใบ"],
+    average: 3027,
+    offers: [
+      { platform: "Shopee", price: 3090, discount: 3090, rating: 4.6, sold: 2000, freeShip: true, mall: true, image: "2-converse-shopee.webp" },
+      { platform: "Lazada", price: 2950, discount: 2950, rating: 2, sold: 0, freeShip: false, mall: true, image: "2-converse-lazada.png" },
+      { platform: "TikTok", price: 3090, discount: 3040, rating: 4.4, sold: 3120, freeShip: true, mall: true, image: "2-converse-tiktok.webp" },
+    ]
   },
   {
     id: "vans-old-skool",
     category: "Sneakers",
     name: "Vans Old Skool",
-    aliases: ["vans", "old skool", "old school", "รองเท้าผ้าใบ"],
-    image: `${ASSET}/3-vans-tiktok.webp`,
-    prices: [2190, 2565, 2590],
-    average: 2448.33
+    aliases: ["vans", "old skool", "old school", "รองเท้าวานส์", "รองเท้าผ้าใบ"],
+    average: 2448,
+    offers: [
+      { platform: "TikTok", price: 2690, discount: 2190, rating: 4.3, sold: 151, freeShip: true, mall: true, image: "3-vans-tiktok.webp" },
+      { platform: "Lazada", price: 2690, discount: 2565, rating: 5, sold: 664, freeShip: true, mall: true, image: "3-vans-lazada.webp" },
+      { platform: "Shopee", price: 2590, discount: 2590, rating: 4.9, sold: "5k+", freeShip: true, mall: true, image: "3-vans-shopee.webp" },
+    ]
   },
   {
     id: "new-balance-740",
     category: "RunShoes",
-    name: "New Balance 740",
-    aliases: ["new balance", "new balance 740", "nb 740", "รองเท้าวิ่ง"],
-    image: `${ASSET}/4-nb-lazada.webp`,
-    prices: [1949, 4050, 4150],
-    average: 3383
+    name: "NEW BALANCE 740",
+    aliases: ["new balance", "new balance 740", "nb 740", "นิวบาลานซ์", "รองเท้าวิ่ง"],
+    average: 3383,
+    offers: [
+      { platform: "Lazada", price: 7000, discount: 1949, rating: 5, sold: 16, freeShip: true, mall: false, image: "4-nb-lazada.webp" },
+      { platform: "TikTok", price: 4300, discount: 4050, rating: 0, sold: 0, freeShip: true, mall: true, image: "4-nb-tiktok.webp" },
+      { platform: "Shopee", price: 4150, discount: 4150, rating: 5, sold: 16, freeShip: true, mall: true, image: "4-nb-shopee.webp" },
+    ]
   },
   {
     id: "hoka-clifton-one9",
     category: "RunShoes",
     name: "HOKA CLIFTON ONE9",
-    aliases: ["hoka", "clifton", "clifton one9", "รองเท้าวิ่ง"],
-    image: `${ASSET}/5-hoka-shopee.webp`,
-    prices: [3294, 3590, 3890],
-    average: 3591.33
+    aliases: ["hoka", "clifton", "clifton one9", "โฮก้า", "รองเท้าวิ่ง"],
+    average: 3294,
+    offers: [
+      { platform: "Shopee", price: 5990, discount: 3294, rating: 4.9, sold: 38, freeShip: true, mall: true, image: "5-hoka-shopee.webp" },
+      { platform: "Lazada", price: 5990, discount: 3293, rating: 4.6, sold: 4, freeShip: false, mall: true, image: "5-hoka-lazada.webp" },
+      { platform: "TikTok", price: 5990, discount: 2793, rating: 4.2, sold: 34, freeShip: false, mall: false, image: "5-hoka-tiktok.webp" },
+    ]
   },
   {
     id: "adidas-ultraboost-light",
     category: "RunShoes",
     name: "Adidas Ultraboost Light",
-    aliases: ["adidas", "ultraboost", "adidas ultraboost", "รองเท้าวิ่ง"],
-    image: `${ASSET}/6-adidas-lazada.webp`,
-    prices: [3750, 4410, 4500],
-    average: 4220
+    aliases: ["adidas", "ultraboost", "adidas ultraboost", "อาดิดาส", "รองเท้าวิ่ง"],
+    average: 4220,
+    offers: [
+      { platform: "Lazada", price: 7000, discount: 3750, rating: 5, sold: 2, freeShip: true, mall: true, image: "6-adidas-lazada.webp" },
+      { platform: "Shopee", price: 7000, discount: 4410, rating: 4.9, sold: 83, freeShip: true, mall: true, image: "6-adidas-shopee.webp" },
+      { platform: "TikTok", price: 7000, discount: 4500, rating: 0, sold: 2, freeShip: true, mall: true, image: "6-adidas-tiktok.webp" },
+    ]
   },
   {
     id: "crocs-classic-clog",
     category: "Sandals",
     name: "Crocs Classic Clog",
-    aliases: ["crocs", "classic clog", "รองเท้าแตะ"],
-    image: `${ASSET}/7-crocs-shopee.webp`,
-    prices: [2040, 2040, 2190],
-    average: 2090
+    aliases: ["crocs", "classic clog", "คร็อคส์", "รองเท้าแตะ"],
+    average: 2090,
+    offers: [
+      { platform: "Shopee", price: 2190, discount: 2040, rating: 4.9, sold: 9000, freeShip: true, mall: true, image: "7-crocs-shopee.webp" },
+      { platform: "Lazada", price: 2190, discount: 2040, rating: 4.5, sold: 154, freeShip: false, mall: true, image: "7-crocs-lazada.webp" },
+      { platform: "TikTok", price: 2190, discount: 2190, rating: 4.1, sold: 32200, freeShip: true, mall: true, image: "7-crocs-tiktok.webp" },
+    ]
   },
   {
     id: "birkenstock-arizona",
     category: "Sandals",
     name: "Birkenstock Arizona",
-    aliases: ["birkenstock", "arizona", "รองเท้าแตะ"],
-    image: `${ASSET}/8-birken-tiktok.webp`,
-    prices: [3311, 3990, 5190],
-    average: 4163.67
+    aliases: ["birkenstock", "arizona", "เบียร์เคนสต็อก", "รองเท้าแตะ"],
+    average: 4164,
+    offers: [
+      { platform: "Shopee", price: 3990, discount: 3990, rating: 4.8, sold: 2000, freeShip: true, mall: true, image: "8-birken-shopee.webp" },
+      { platform: "Lazada", price: 5290, discount: 5190, rating: 4.6, sold: 21, freeShip: false, mall: true, image: "8-birken-lazada.png" },
+      { platform: "TikTok", price: 3990, discount: 3311, rating: 3.8, sold: 157, freeShip: true, mall: true, image: "8-birken-tiktok.webp" },
+    ]
   },
   {
     id: "kito-biocare",
     category: "Sandals",
     name: "Kito BioCare",
-    aliases: ["kito", "กีโต้", "รองเท้าแตะ"],
-    image: `${ASSET}/9-kito-tiktok.png`,
-    prices: [486, 524, 529],
-    average: 513
+    aliases: ["kito", "biocare", "กีโต้", "รองเท้าแตะ"],
+    average: 513,
+    offers: [
+      { platform: "Shopee", price: 628, discount: 529, rating: 4.4, sold: 16, freeShip: true, mall: true, image: "9-kito-shopee.webp" },
+      { platform: "Lazada", price: 628, discount: 524, rating: 3.9, sold: 3, freeShip: false, mall: true, image: "9-kito-lazada.webp" },
+      { platform: "TikTok", price: 628, discount: 486, rating: 2.6, sold: 95, freeShip: true, mall: true, image: "9-kito-tiktok.png" },
+    ]
   },
   {
     id: "womenager-jane-original",
     category: "WomanShoes",
-    name: "Womenager - Jane Original",
+    name: "womenager - Jane Original",
     aliases: ["womenager", "jane original", "รองเท้าผู้หญิง", "คัทชู"],
-    image: `${ASSET}/10-womanager-shopee.webp`,
-    prices: [1740, 1790, 2541],
-    average: 2023.67
+    average: 2024,
+    offers: [
+      { platform: "Shopee", price: 1790, discount: 1790, rating: 4.6, sold: 47, freeShip: true, mall: true, image: "10-womanager-shopee.webp" },
+      { platform: "Lazada", price: 1790, discount: 1740, rating: 4.1, sold: 185, freeShip: false, mall: true, image: "10-womanager-lazada.webp" },
+      { platform: "TikTok", price: 2912, discount: 2541, rating: 2.4, sold: 0, freeShip: true, mall: false, image: "10-womanager-tiktok.webp" },
+    ]
   },
   {
     id: "flynn-ballet-flats",
     category: "WomanShoes",
     name: "Flynn - Ballet Flats",
     aliases: ["flynn", "ballet flats", "รองเท้าผู้หญิง", "คัทชู"],
-    image: `${ASSET}/11-flynn-shopee.webp`,
-    prices: [1352, 1440, 1490],
-    average: 1427.33
+    average: 1427,
+    offers: [
+      { platform: "Shopee", price: 1490, discount: 1352, rating: 4.7, sold: 4000, freeShip: true, mall: true, image: "11-flynn-shopee.webp" },
+      { platform: "Lazada", price: 1590, discount: 1490, rating: 4.3, sold: 162, freeShip: false, mall: true, image: "11-flynn-lazada.webp" },
+      { platform: "TikTok", price: 1490, discount: 1440, rating: 3.6, sold: 446, freeShip: true, mall: true, image: "11-flynn-tiktok.webp" },
+    ]
   },
   {
-    id: "labotte-mary-jane",
+    id: "labotte-the-rookie",
     category: "WomanShoes",
-    name: "Labotte Mary Jane",
-    aliases: ["labotte", "mary jane", "รองเท้าผู้หญิง", "คัทชู"],
-    image: `${ASSET}/10-womanager-shopee.webp`,
-    prices: [1490, 1690, 1860],
-    average: 1680
+    name: "Labotte.bkk - The Rookie",
+    aliases: ["labotte", "the rookie", "รองเท้าผู้หญิง", "คัทชู"],
+    average: 1521,
+    offers: [
+      { platform: "Shopee", price: 1690, discount: 1519, rating: 4.8, sold: 10000, freeShip: true, mall: false, image: "12-labotte-shopee.webp" },
+      { platform: "Lazada", price: 1690, discount: 1690, rating: 4.4, sold: 100, freeShip: false, mall: false, image: "12-labotte-lazada.webp" },
+      { platform: "TikTok", price: 1690, discount: 1354, rating: 3.3, sold: 23600, freeShip: true, mall: false, image: "12-labotte-tiktok.webp" },
+    ]
   },
-  {
-    id: "classic-mary-jane",
-    category: "WomanShoes",
-    name: "Classic Mary Jane",
-    aliases: ["classic mary jane", "mary jane", "รองเท้าผู้หญิง", "คัทชู"],
-    image: `${ASSET}/11-flynn-shopee.webp`,
-    prices: [1490, 1690, 1790],
-    average: 1590
-  }
 ];
 
-const groups: ProductGroup[] = [
-  {
-    id: "nike-air-force-1-07",
-    category: "Sneakers",
-    name: "Nike Air Force 1 '07",
-    aliases: ["nike", "air force", "air force 1", "af1", "รองเท้าผ้าใบ", "รองเท้า nike"],
-    representative: nikeOffers[0],
-    offers: nikeOffers
-  },
-  ...seeds.map((seed, index) => createGroup(seed, 10 + index * 3))
-];
+const groups: ProductGroup[] = seeds.map((seed, index) => createGroup(seed, index * 3 + 1));
 
 function normalize(value: string) {
   return value.trim().toLocaleLowerCase("th-TH").replace(/\s+/g, " ");
@@ -291,55 +350,43 @@ function sortGroups(items: ProductGroup[], mode: SortMode) {
 
   return [...items].sort((a, b) => {
     if (mode === "best-selling") return bestSellerScore(b) - bestSellerScore(a);
+    if (mode === "bc-score") return b.representative.rating - a.representative.rating;
     if (mode === "price-desc") return getPriceRange(b).min - getPriceRange(a).min;
     return getPriceRange(a).min - getPriceRange(b).min;
   });
 }
 
+function groupToResultCard(group: ProductGroup): ResultCardData {
+  const best = group.representative;
+  const platformsInGroup = group.offers.map((offer) => offer.platform);
+
+  return {
+    id: best.id,
+    productName: group.name,
+    imageUrl: best.imageUrl,
+    mainPlatform: best.platform,
+    otherPlatforms: platformsInGroup.filter((platform) => platform !== best.platform),
+    price: best.discountPrice,
+    originalPrice: best.price,
+    rating: best.rating,
+    savings: Math.max(0, best.price - best.discountPrice),
+    storeCount: group.offers.length
+  };
+}
+
 function ProductGroupCard({ group, onOpen }: { group: ProductGroup; onOpen: () => void }) {
-  const range = getPriceRange(group);
   const favorites = useFavorites();
 
   return (
-    <div
-      className="catalog-result-card"
-      onClick={onOpen}
-      onKeyDown={(event) => {
-        if (event.key !== "Enter" && event.key !== " ") return;
-        event.preventDefault();
-        onOpen();
-      }}
-      role="button"
-      tabIndex={0}
-      aria-label={`เปรียบเทียบราคา ${group.name} จาก ${group.offers.length} แพลตฟอร์ม`}
-    >
-      <ProductCard
-        product={group.representative}
-        favorite={favorites.isFavorite(group.representative)}
-        onFavoriteToggle={() => favorites.toggleFavorite(group.representative)}
-      />
-      <span className="catalog-result-summary">
-        <span className="catalog-platform-count">
-          ดูราคาจาก <b>{group.offers.length}</b> แพลตฟอร์ม <span aria-hidden="true">›</span>
-        </span>
-        <span className="catalog-price-range">
-          ฿{range.min.toLocaleString("th-TH")}–฿{range.max.toLocaleString("th-TH")}
-        </span>
-      </span>
-    </div>
+    <ResultCard
+      product={groupToResultCard(group)}
+      favorite={favorites.isFavorite(group.representative)}
+      onFavoriteToggle={() => favorites.toggleFavorite(group.representative)}
+      onOpen={onOpen}
+    />
   );
 }
 
-
-function CatalogCompareTags({ offer }: { offer: ProductCardData }) {
-  return (
-    <div className="compare-tags" aria-label={offer.platform + (offer.mall ? " Mall" : "")}>
-      <PlatformBadge platform={offer.platform} />
-      {offer.mall && <PlatformBadge platform="MALL" />}
-      {offer.freeShip && <span className="compare-tag free">ส่งฟรี</span>}
-    </div>
-  );
-}
 
 const catalogCompareDiscountDetails = [
   { label: "ส่วนลดร้านค้า", amount: 48 },
@@ -353,24 +400,10 @@ const catalogCompareDiscountTotal = catalogCompareDiscountDetails.reduce(
 );
 
 function CatalogCompareTrend({ offer }: { offer: ProductCardData }) {
-  const currentPrice = offer.discountPrice;
-  const referencePrice = offer.averagePrice;
-  const priceChange = currentPrice - referencePrice;
-
-  // The mini chart follows the actual comparison fields:
-  // averagePrice is the reference and discountPrice is the latest price.
-  // Intermediate points preserve the small ups and downs without using
-  // one hardcoded price series for every product.
-  const values = [
-    referencePrice,
-    referencePrice + priceChange * 0.18,
-    referencePrice - priceChange * 0.08,
-    referencePrice + priceChange * 0.12,
-    referencePrice - priceChange * 0.16,
-    currentPrice - priceChange * 0.14,
-    currentPrice - priceChange * 0.05,
-    currentPrice
-  ];
+  // Use the same series the Price History screen draws (createPriceSeries over
+  // the real per-platform min/max/current), so the sparkline previews the exact
+  // curve of the next screen. "3 เดือน" matches the full-range view.
+  const values = createPriceSeries(getPriceHistory(offer), "3 เดือน");
   const min = Math.min(...values);
   const max = Math.max(...values);
   const points = values.map((value, index) => ({
@@ -378,19 +411,20 @@ function CatalogCompareTrend({ offer }: { offer: ProductCardData }) {
     y: 3 + ((max - value) / Math.max(1, max - min)) * 27
   }));
   const path = points.map((point, index) => (index ? "L" : "M") + " " + point.x + " " + point.y).join(" ");
+  const last = points[points.length - 1];
+  const areaPath = `${path} L ${points[points.length - 1].x} 34 L ${points[0].x} 34 Z`;
 
   return (
-    <svg viewBox="0 0 106 34" aria-hidden="true">
-      <path d={path} pathLength="1" />
-      <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r="2.5" />
-    </svg>
-  );
-}
-
-function CatalogCompareUpIcon() {
-  return (
-    <svg viewBox="0 0 14 14" aria-hidden="true">
-      <path d="M2 10.5 5.1 7.4l2.1 2.1L12 4.7V8h1V3H8v1h3.3L7.2 8.1 5.1 6 1.3 9.8z" />
+    <svg className="cmp-trend-svg" viewBox="0 0 106 34" aria-hidden="true">
+      <defs>
+        <linearGradient id="cmp-trend-fill" x1="0" y1="0" x2="0" y2="1">
+          <stop className="cmp-trend-stop cmp-trend-stop--top" offset="0%" />
+          <stop className="cmp-trend-stop cmp-trend-stop--bottom" offset="100%" />
+        </linearGradient>
+      </defs>
+      <path className="cmp-trend-area" d={areaPath} fill="url(#cmp-trend-fill)" />
+      <path className="cmp-trend-line" pathLength="1" d={path} />
+      <circle className="cmp-trend-dot" cx={last.x} cy={last.y} r="2.5" />
     </svg>
   );
 }
@@ -418,6 +452,33 @@ function CatalogCompareBuy({
   );
 }
 
+const COMPARE_PLATFORM: Record<ProductCardData["platform"], { badge: string; label: string }> = {
+  Shopee: { badge: "/assets/product-card/shopee-badge.png", label: "Shopee" },
+  Lazada: { badge: "/assets/product-card/lazada-badge.png", label: "Lazada" },
+  TikTok: { badge: "/assets/product-card/tiktok-badge.png", label: "TikTok" }
+};
+
+function ComparePlatformBadge({ platform, size = "sm" }: { platform: ProductCardData["platform"]; size?: "sm" | "lg" }) {
+  const meta = COMPARE_PLATFORM[platform];
+  return <img className={`cmp-badge cmp-badge--${size}`} src={meta.badge} alt={meta.label} />;
+}
+
+function trendIcon(offer: ProductCardData): { src: string; label: string } {
+  // Down.svg draws an upward arrow (price up → red); Up.svg draws a downward
+  // arrow (price down / cheaper → orange).
+  if (offer.discountPrice > offer.averagePrice) return { src: "/assets/SVG/Train/Down.svg", label: "ราคาสูงกว่าค่าเฉลี่ย" };
+  if (offer.discountPrice < offer.averagePrice) return { src: "/assets/SVG/Train/Up.svg", label: "ราคาต่ำกว่าค่าเฉลี่ย" };
+  return { src: "/assets/SVG/Train/EQ.svg", label: "ราคาเท่าค่าเฉลี่ย" };
+}
+
+function CompareThumbIcon() {
+  return (
+    <svg viewBox="0 0 16 16" aria-hidden="true" className="cmp-thumb">
+      <path d="M4.5 7.1 7 1.9c.6-.1 1.1.1 1.4.6.2.4.2.9.1 1.5l-.4 1.6h2.9c.5 0 .9.2 1.2.6.3.4.3.9.2 1.4l-1 3.6c-.2.8-.9 1.3-1.7 1.3H4.5V7.1Zm-1.3.3v5.7H2.4c-.5 0-.9-.4-.9-.9V8.3c0-.5.4-.9.9-.9h.8Z" fill="currentColor" />
+    </svg>
+  );
+}
+
 export function CatalogFlowSortStatus() {
   const [portalTarget, setPortalTarget] = useState<Element | null>(null);
   const [flowScreen, setFlowScreen] = useState<FlowScreen>(null);
@@ -427,12 +488,16 @@ export function CatalogFlowSortStatus() {
   const [selectedOffer, setSelectedOffer] = useState<ProductCardData | null>(null);
   const [mallOnly, setMallOnly] = useState(true);
   const [freeShipOnly, setFreeShipOnly] = useState(true);
-  const [sortMode, setSortMode] = useState<SortMode>("relevance");
+  const [sortMode, setSortMode] = useState<SortMode>("price-asc");
   const [sortOpen, setSortOpen] = useState(false);
   const [compareToast, setCompareToast] = useState("");
   const [compareDiscountDetailsOpen, setCompareDiscountDetailsOpen] = useState(false);
+  const [compareSort, setCompareSort] = useState<"bc" | "price">("bc");
+  const [compareSortOpen, setCompareSortOpen] = useState(false);
+  const [bcInfoOpen, setBcInfoOpen] = useState(false);
   const syncFrame = useRef<number | null>(null);
   const sortControlRef = useRef<HTMLDivElement | null>(null);
+  const compareSortRef = useRef<HTMLDivElement | null>(null);
   const favorites = useFavorites();
 
   const exactGroups = useMemo(() => findGroups(query), [query]);
@@ -660,6 +725,25 @@ export function CatalogFlowSortStatus() {
     };
   }, [sortOpen]);
 
+  useEffect(() => {
+    if (!compareSortOpen) return;
+
+    const closeOnOutsidePointer = (event: PointerEvent) => {
+      if (!compareSortRef.current?.contains(event.target as Node)) setCompareSortOpen(false);
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setCompareSortOpen(false);
+    };
+
+    document.addEventListener("pointerdown", closeOnOutsidePointer);
+    document.addEventListener("keydown", closeOnEscape);
+
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsidePointer);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [compareSortOpen]);
+
   const submitResultSearch = (event: FormEvent) => {
     event.preventDefault();
     openCatalogResults(query);
@@ -809,176 +893,216 @@ export function CatalogFlowSortStatus() {
       )}
 
       {flowScreen === "compare" && selectedGroup && (() => {
-        const offers = [...selectedGroup.offers].sort((a, b) => a.discountPrice - b.discountPrice);
+        const cheapestPrice = Math.min(...selectedGroup.offers.map((offer) => offer.discountPrice));
+        const offers = [...selectedGroup.offers].sort((a, b) =>
+          compareSort === "bc" ? b.rating - a.rating || a.discountPrice - b.discountPrice : a.discountPrice - b.discountPrice
+        );
         const bestOffer = offers[0];
         const otherOffers = offers.slice(1);
         const trackedOffer = selectedOffer ?? bestOffer;
         const favorite = favorites.isFavorite(trackedOffer);
         const bestSaving = Math.max(0, bestOffer.price - bestOffer.discountPrice);
+        const baht = (value: number) => `฿${value.toLocaleString("en-US")}`;
         const flash = (message: string) => {
           setCompareToast(message);
           window.setTimeout(() => setCompareToast(""), 1800);
         };
 
         return (
-          <section className="catalog-compare-screen">
-            <header className="catalog-compare-header">
-              <button type="button" onClick={closeCompare} aria-label="ย้อนกลับ">
-                <img src="/assets/SVG/arrow_back.svg" alt="" />
-              </button>
-              <strong>ผลการเปรียบเทียบ</strong>
-            </header>
+          <section className="catalog-compare-screen cmp-screen">
+            <div className="cmp-hero">
+              <img src={bestOffer.imageUrl} alt={selectedGroup.name} referrerPolicy="no-referrer" />
+              <div className="cmp-hero-scrim" aria-hidden="true" />
+            </div>
 
-            <main className="compare-content">
-              <section className="compare-product-summary">
-                <img src={bestOffer.imageUrl} alt="" />
-                <div className="compare-summary-copy">
-                  <span>สินค้าที่กำลังเปรียบเทียบ</span>
-                  <strong>{selectedGroup.name}</strong>
-                </div>
+            <div className="cmp-status" aria-hidden="true" />
+            <button className="cmp-back" type="button" onClick={closeCompare} aria-label="ย้อนกลับ">
+              <img src="/assets/SVG/arrow_back.svg" alt="" />
+            </button>
+
+            <header className="cmp-headline">
+              <div className="cmp-headline-top">
+                <h1>{selectedGroup.name}</h1>
                 <button
-                  className={favorite ? "compare-track active" : "compare-track"}
+                  className={favorite ? "cmp-track active" : "cmp-track"}
                   type="button"
-                  aria-label={favorite ? "ยกเลิกติดตามราคา" : "ติดตามราคา"}
                   aria-pressed={favorite}
+                  aria-label={favorite ? "กำลังติดตามราคา" : "ติดตามราคา"}
                   onClick={() => favorites.toggleFavorite(trackedOffer)}
                 >
-                  <img
-                    src={favorite ? "/assets/SVG/Like/Property 1=Like.svg" : "/assets/SVG/Like/Property 1=Normal.svg"}
-                    alt=""
-                  />
-                  {favorite ? "กำลังติดตาม" : "ติดตามราคา"}
+                  <img src={favorite ? "/assets/SVG/Like/Property 1=Like.svg" : "/assets/SVG/Like/Property 1=Normal.svg"} alt="" />
+                  {favorite ? "กำลังติดตาม" : "สนใจ"}
                 </button>
-                <div className="compare-summary-stats" aria-label={`เปรียบเทียบ ${offers.length} แพลตฟอร์ม ราคาต่ำสุด ${bestOffer.discountPrice.toLocaleString("en-US")} บาท`}>
-                  <span>
-                    <small>ราคาต่ำสุด</small>
-                    <b>฿{bestOffer.discountPrice.toLocaleString("en-US")}</b>
-                  </span>
-                  <span>
-                    <small>ประหยัดได้</small>
-                    <b>฿{bestSaving.toLocaleString("en-US")}</b>
-                  </span>
-                  <span>
-                    <small>แพลตฟอร์มที่เทียบ</small>
-                    <b>{offers.length} แห่ง</b>
-                  </span>
+              </div>
+              <div className="cmp-stats" aria-label={`ราคาต่ำสุด ${baht(bestOffer.discountPrice)} ประหยัดได้ ${baht(bestSaving)} เทียบ ${offers.length} แพลตฟอร์ม`}>
+                <div>
+                  <span>ราคาต่ำสุด</span>
+                  <b>{baht(bestOffer.discountPrice)}</b>
                 </div>
-              </section>
+                <i aria-hidden="true" />
+                <div>
+                  <span>ประหยัดได้</span>
+                  <b className="cmp-stat-save">{baht(bestSaving)}</b>
+                </div>
+                <i aria-hidden="true" />
+                <div>
+                  <span>แพลตฟอร์มที่เทียบ</span>
+                  <b>{offers.length} แห่ง</b>
+                </div>
+              </div>
+            </header>
 
-              <div className="compare-list-heading">
-                <h2>ราคาจากแต่ละแพลตฟอร์ม</h2>
-                <span>เรียงจากราคาต่ำสุด</span>
+            <main className="cmp-list">
+              <div className="cmp-sortbar" ref={compareSortRef}>
+                <span>เรียงจาก</span>
+                <button
+                  type="button"
+                  className="cmp-sort-toggle"
+                  aria-haspopup="menu"
+                  aria-expanded={compareSortOpen}
+                  onClick={() => setCompareSortOpen((current) => !current)}
+                >
+                  <b>{compareSort === "bc" ? "Best Choice Score" : "Best Price Score"}</b>
+                  <svg className={`cmp-caret ${compareSortOpen ? "open" : ""}`} viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 10l5 5 5-5z" fill="currentColor" />
+                  </svg>
+                </button>
+
+                {compareSort === "bc" && (
+                  <button
+                    type="button"
+                    className={`cmp-info-btn ${bcInfoOpen ? "active" : ""}`}
+                    aria-label="วิธีคิดคะแนน Best Choice"
+                    aria-expanded={bcInfoOpen}
+                    onClick={() => setBcInfoOpen((current) => !current)}
+                  >
+                    <svg className="cmp-info" viewBox="0 0 14 14" aria-hidden="true">
+                      <circle cx="7" cy="7" r="6.2" fill="none" stroke="currentColor" strokeWidth="1.1" />
+                      <circle cx="7" cy="4.2" r="0.9" fill="currentColor" />
+                      <rect x="6.35" y="6" width="1.3" height="4.2" rx="0.65" fill="currentColor" />
+                    </svg>
+                  </button>
+                )}
+
+                {compareSortOpen && (
+                  <div className="cmp-sort-menu" role="menu">
+                    {([
+                      { value: "bc", label: "Best Choice Score", hint: "เรียงตามคะแนนรีวิว" },
+                      { value: "price", label: "Best Price Score", hint: "เรียงตามราคาถูกสุด" }
+                    ] as const).map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        role="menuitemradio"
+                        aria-checked={compareSort === option.value}
+                        className={compareSort === option.value ? "selected" : ""}
+                        onClick={() => {
+                          setCompareSort(option.value);
+                          setCompareSortOpen(false);
+                          setBcInfoOpen(false);
+                        }}
+                      >
+                        <b>{option.label}</b>
+                        <span>{option.hint}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
-              <section className="compare-offer-board" aria-label="ราคาจากแต่ละแพลตฟอร์ม">
-                <article className={compareDiscountDetailsOpen ? "compare-offer-row best expanded" : "compare-offer-row best"}>
-                  <div className="compare-row-top">
-                    <CatalogCompareTags offer={bestOffer} />
-                  </div>
-                  <div className="compare-row-main">
-                    <div className="compare-row-price">
-                      <strong>฿{bestOffer.discountPrice.toLocaleString("en-US")}</strong>
-                      <del>฿{bestOffer.price.toLocaleString("en-US")}</del>
+
+              <article className="cmp-card cmp-card--best">
+                <div className="cmp-card-head">
+                  <span className="cmp-bc-best">
+                    <CompareThumbIcon />
+                    Best Choice <b>{bestOffer.rating}</b>
+                  </span>
+                  <ComparePlatformBadge platform={bestOffer.platform} size="lg" />
+                </div>
+
+                <div className="cmp-card-mid">
+                  <div className="cmp-price-col">
+                    <div className="cmp-price cmp-price--lg">
+                      <strong>{baht(bestOffer.discountPrice)}</strong>
+                      <del>{baht(bestOffer.price)}</del>
                     </div>
-                    <CatalogCompareBuy
-                      offer={bestOffer}
-                      onUnavailable={() => flash("ยังไม่มีลิงก์ร้านค้านี้ใน Prototype")}
-                    />
-                  </div>
-                  <div className="compare-row-meta">
-                    <span>★ {bestOffer.rating} <i>• ขายแล้ว {bestOffer.sold} ชิ้น</i></span>
-                    <b>ประหยัด ฿{bestSaving.toLocaleString("en-US")}</b>
+                    <p className="cmp-save">ประหยัด {baht(bestSaving)}</p>
                   </div>
                   <button
-                    className="compare-best-history"
+                    className="cmp-trend"
                     type="button"
-                    aria-label={`ดูกราฟราคา ${bestOffer.platform}`}
+                    data-trend={bestOffer.discountPrice > bestOffer.averagePrice ? "up" : bestOffer.discountPrice < bestOffer.averagePrice ? "down" : "eq"}
+                    aria-label={`ดูแนวโน้มราคา ${bestOffer.platform}`}
                     onClick={() => openPriceHistory(bestOffer)}
                   >
-                    <span className="compare-history-visual">
-                      <span className="compare-best-label">
-                        คุ้มที่สุด
-                        <img src="/assets/SVG/compare-fire.svg" alt="" />
-                      </span>
-                      <CatalogCompareTrend offer={bestOffer} />
-                    </span>
-                    <span>
-                      <small>แนวโน้มราคา 30 วัน</small>
-                      <strong>ราคาลดลง {bestOffer.trendPercent}%</strong>
-                    </span>
-                    <b aria-hidden="true">
-                      <img src="/assets/SVG/arrow_forward.svg" alt="" />
-                    </b>
+                    <CatalogCompareTrend offer={bestOffer} />
+                    <span>แนวโน้มราคา <b aria-hidden="true">›</b></span>
                   </button>
-                  <button
-                    className="compare-discount-toggle"
-                    type="button"
-                    aria-expanded={compareDiscountDetailsOpen}
-                    onClick={() => setCompareDiscountDetailsOpen((current) => !current)}
-                  >
-                    <span>รายละเอียดส่วนลด</span>
-                    <b>
-                      {compareDiscountDetailsOpen ? "ซ่อนรายละเอียด" : "ดูรายละเอียด"}
-                      <img src="/assets/SVG/arrow_drop.svg" alt="" />
-                    </b>
-                  </button>
-                  <div
-                    className={compareDiscountDetailsOpen ? "compare-discount-panel open" : "compare-discount-panel"}
-                    aria-hidden={!compareDiscountDetailsOpen}
-                  >
-                    <div className="compare-discount-panel-inner">
-                      <div className="compare-discount-details">
-                        <div className="compare-discount-heading">
-                          <span>ส่วนลดเพิ่มเติมที่ได้รับ</span>
-                          <b>รวม ฿{catalogCompareDiscountTotal.toLocaleString("en-US")}</b>
-                        </div>
-                        <div className="compare-discount-list">
-                          {catalogCompareDiscountDetails.map((detail) => (
-                            <div className="compare-discount-row" key={detail.label}>
-                              <span>{detail.label}</span>
-                              <b>-฿{detail.amount.toLocaleString("en-US")}</b>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
+                </div>
+
+                <button
+                  className="cmp-discount-bar"
+                  type="button"
+                  aria-expanded={compareDiscountDetailsOpen}
+                  onClick={() => setCompareDiscountDetailsOpen((current) => !current)}
+                >
+                  <span>รายละเอียดส่วนลด</span>
+                  <b>
+                    {compareDiscountDetailsOpen ? "ซ่อนรายละเอียด" : "ดูรายละเอียด"}
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5z" fill="currentColor" /></svg>
+                  </b>
+                </button>
+                <div className={compareDiscountDetailsOpen ? "cmp-discount-panel open" : "cmp-discount-panel"} aria-hidden={!compareDiscountDetailsOpen}>
+                  <div className="cmp-discount-inner">
+                    <div className="cmp-discount-head">
+                      <span>ส่วนลดเพิ่มเติมที่ได้รับ</span>
+                      <b>รวม ฿{catalogCompareDiscountTotal.toLocaleString("en-US")}</b>
                     </div>
+                    {catalogCompareDiscountDetails.map((detail) => (
+                      <div className="cmp-discount-row" key={detail.label}>
+                        <span>{detail.label}</span>
+                        <b>-฿{detail.amount.toLocaleString("en-US")}</b>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <CatalogCompareBuy offer={bestOffer} onUnavailable={() => flash("ยังไม่มีลิงก์ร้านค้านี้ใน Prototype")} />
+              </article>
+
+              {otherOffers.map((offer) => (
+                <article className="cmp-card cmp-card--offer" key={offer.id}>
+                  <div className="cmp-offer-info">
+                    <div className="cmp-card-head">
+                      <span className="cmp-bc">
+                        <img src="/assets/product-card/star.svg" alt="" width={11} height={11} />
+                        {offer.rating}
+                      </span>
+                      <ComparePlatformBadge platform={offer.platform} size="sm" />
+                    </div>
+                    <div className="cmp-price">
+                      <strong>{baht(offer.discountPrice)}</strong>
+                      <del>{baht(offer.price)}</del>
+                    </div>
+                    {offer.discountPrice > cheapestPrice ? (
+                      <p className="cmp-higher">แพงกว่า +{baht(offer.discountPrice - cheapestPrice)}</p>
+                    ) : (
+                      <p className="cmp-higher cmp-cheapest">ราคาถูกที่สุด</p>
+                    )}
+                  </div>
+                  <div className="cmp-offer-actions">
+                    <button
+                      className="cmp-graph"
+                      type="button"
+                      aria-label={`ดูกราฟราคา ${offer.platform} ${trendIcon(offer).label}`}
+                      onClick={() => openPriceHistory(offer)}
+                    >
+                      <img src={trendIcon(offer).src} alt="" />
+                    </button>
+                    <CatalogCompareBuy offer={offer} onUnavailable={() => flash("ยังไม่มีลิงก์ร้านค้านี้ใน Prototype")} />
                   </div>
                 </article>
-
-                {otherOffers.map((offer) => (
-                  <article className="compare-offer-row" key={offer.id}>
-                    <div className="compare-row-top">
-                      <CatalogCompareTags offer={offer} />
-                    </div>
-                    <div className="compare-row-main">
-                      <div className="compare-row-price">
-                        <strong>฿{offer.discountPrice.toLocaleString("en-US")}</strong>
-                        <del>฿{offer.price.toLocaleString("en-US")}</del>
-                      </div>
-                      <div className="compare-row-actions">
-                        <button
-                          className="compare-graph-icon"
-                          type="button"
-                          aria-label={`ดูกราฟราคา ${offer.platform}`}
-                          onClick={() => openPriceHistory(offer)}
-                        >
-                          <img src="/assets/SVG/Nav Bar/HIC03.svg" alt="" />
-                        </button>
-                        <CatalogCompareBuy
-                          offer={offer}
-                          onUnavailable={() => flash("ยังไม่มีลิงก์ร้านค้านี้ใน Prototype")}
-                        />
-                      </div>
-                    </div>
-                    <div className="compare-row-meta">
-                      <span>★ {offer.rating} <i>• ขายแล้ว {offer.sold} ชิ้น</i></span>
-                      <b className="higher">+฿{(offer.discountPrice - bestOffer.discountPrice).toLocaleString("en-US")}</b>
-                    </div>
-                  </article>
-                ))}
-              </section>
-
-              <small className="compare-updated">อัปเดตราคาล่าสุด 10 นาทีที่แล้ว</small>
+              ))}
             </main>
 
             <nav className="catalog-bottom-nav" aria-label="เมนูหลัก">
@@ -991,6 +1115,44 @@ export function CatalogFlowSortStatus() {
             </nav>
 
             {compareToast && <div className="toast" role="status">{compareToast}</div>}
+
+            {bcInfoOpen && (
+              <div className="cmp-bc-sheet-root">
+                <div className="cmp-bc-scrim" onClick={() => setBcInfoOpen(false)} />
+                <div className="cmp-bc-sheet" role="dialog" aria-label="คะแนน Best Choice คิดจากอะไร">
+                  <div className="cmp-bc-handle" aria-hidden="true" />
+                  <h2 className="cmp-bc-sheet-title">คะแนน Best Choice คิดจากอะไร</h2>
+
+                  <div className="cmp-bc-stack" aria-hidden="true">
+                    <span className="cmp-bc-seg" style={{ width: "50%", background: "#eb3b0c" }} />
+                    <span className="cmp-bc-seg" style={{ width: "30%", background: "#f58060" }} />
+                    <span className="cmp-bc-seg" style={{ width: "20%", background: "#f9b89f" }} />
+                  </div>
+
+                  {[
+                    { label: "ราคา", percent: 50, color: "#eb3b0c" },
+                    { label: "รีวิวและคะแนนร้าน", percent: 30, color: "#f58060" },
+                    { label: "ยอดขาย", percent: 20, color: "#f9b89f" }
+                  ].map((row) => (
+                    <div className="cmp-bc-row" key={row.label}>
+                      <span className="cmp-bc-row-label">{row.label}</span>
+                      <span className="cmp-bc-row-track">
+                        <span className="cmp-bc-row-bar" style={{ width: `${row.percent}%`, background: row.color }} />
+                      </span>
+                      <b className="cmp-bc-row-pct">{row.percent}%</b>
+                    </div>
+                  ))}
+
+                  <p className="cmp-bc-note">
+                    ยิ่งคะแนนสูง แปลว่าคุ้มค่าเมื่อชั่งน้ำหนักทั้งราคา ความน่าเชื่อถือของร้าน และความนิยมรวมกันแล้ว
+                  </p>
+
+                  <button type="button" className="cmp-bc-sheet-btn" onClick={() => setBcInfoOpen(false)}>
+                    เข้าใจแล้ว
+                  </button>
+                </div>
+              </div>
+            )}
           </section>
         );
       })()}
@@ -1012,7 +1174,7 @@ export function CatalogFlowSortStatus() {
               setQuery("รองเท้าวิ่ง Nike");
               setMallOnly(false);
               setFreeShipOnly(false);
-              setSortMode("relevance");
+              setSortMode("price-asc");
               setFlowScreen("results");
             }}
           />
