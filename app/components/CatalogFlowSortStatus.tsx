@@ -963,6 +963,7 @@ export function CatalogFlowSortStatus() {
                   <button
                     className="cmp-trend"
                     type="button"
+                    data-trend={bestOffer.discountPrice > bestOffer.averagePrice ? "up" : bestOffer.discountPrice < bestOffer.averagePrice ? "down" : "eq"}
                     aria-label={`ดูแนวโน้มราคา ${bestOffer.platform}`}
                     onClick={() => openPriceHistory(bestOffer)}
                   >

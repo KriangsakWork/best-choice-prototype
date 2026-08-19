@@ -318,20 +318,32 @@
   overflow: visible;
 }
 
+.cmp-trend {
+  --cmp-trend-color: #7a7068;
+}
+
+.cmp-trend[data-trend="down"] {
+  --cmp-trend-color: #eb3b0c;
+}
+
+.cmp-trend[data-trend="up"] {
+  --cmp-trend-color: #d42b2b;
+}
+
 .cmp-trend svg path {
   fill: none;
-  stroke: #38943d;
+  stroke: var(--cmp-trend-color);
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 .cmp-trend svg circle {
-  fill: #38943d;
+  fill: var(--cmp-trend-color);
 }
 
 .cmp-trend > span {
-  color: var(--primary);
+  color: var(--cmp-trend-color);
   font-size: 12px;
   font-weight: 600;
   line-height: 18px;
