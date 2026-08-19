@@ -6,6 +6,7 @@ import { ProductCardData } from "./ProductCard";
 import { ResultCard, ResultCardData } from "./ResultCard";
 import { recentSearches, searchSuggestions } from "../data/catalog";
 import { useFavorites } from "../data/favorite-store";
+import { createPriceSeries, getPriceHistory } from "../data/price-history";
 
 type Category = "Sneakers" | "RunShoes" | "Sandals" | "WomanShoes";
 type FlowScreen = "results" | "compare" | "no-results" | null;
@@ -399,24 +400,10 @@ const catalogCompareDiscountTotal = catalogCompareDiscountDetails.reduce(
 );
 
 function CatalogCompareTrend({ offer }: { offer: ProductCardData }) {
-  const currentPrice = offer.discountPrice;
-  const referencePrice = offer.averagePrice;
-  const priceChange = currentPrice - referencePrice;
-
-  // The mini chart follows the actual comparison fields:
-  // averagePrice is the reference and discountPrice is the latest price.
-  // Intermediate points preserve the small ups and downs without using
-  // one hardcoded price series for every product.
-  const values = [
-    referencePrice,
-    referencePrice + priceChange * 0.18,
-    referencePrice - priceChange * 0.08,
-    referencePrice + priceChange * 0.12,
-    referencePrice - priceChange * 0.16,
-    currentPrice - priceChange * 0.14,
-    currentPrice - priceChange * 0.05,
-    currentPrice
-  ];
+  // Use the same series the Price History screen draws (createPriceSeries over
+  // the real per-platform min/max/current), so the sparkline previews the exact
+  // curve of the next screen. "3 เดือน" matches the full-range view.
+  const values = createPriceSeries(getPriceHistory(offer), "3 เดือน");
   const min = Math.min(...values);
   const max = Math.max(...values);
   const points = values.map((value, index) => ({
