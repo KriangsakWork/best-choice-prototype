@@ -468,8 +468,10 @@ function ComparePlatformBadge({ platform, size = "sm" }: { platform: ProductCard
 }
 
 function trendIcon(offer: ProductCardData): { src: string; label: string } {
-  if (offer.discountPrice < offer.averagePrice) return { src: "/assets/SVG/Train/Down.svg", label: "ราคาต่ำกว่าค่าเฉลี่ย" };
-  if (offer.discountPrice > offer.averagePrice) return { src: "/assets/SVG/Train/Up.svg", label: "ราคาสูงกว่าค่าเฉลี่ย" };
+  // Down.svg draws an upward arrow (price up → red); Up.svg draws a downward
+  // arrow (price down / cheaper → orange).
+  if (offer.discountPrice > offer.averagePrice) return { src: "/assets/SVG/Train/Down.svg", label: "ราคาสูงกว่าค่าเฉลี่ย" };
+  if (offer.discountPrice < offer.averagePrice) return { src: "/assets/SVG/Train/Up.svg", label: "ราคาต่ำกว่าค่าเฉลี่ย" };
   return { src: "/assets/SVG/Train/EQ.svg", label: "ราคาเท่าค่าเฉลี่ย" };
 }
 
