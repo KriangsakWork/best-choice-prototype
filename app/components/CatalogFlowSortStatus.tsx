@@ -483,8 +483,11 @@ export function CatalogFlowSortStatus() {
   const [sortOpen, setSortOpen] = useState(false);
   const [compareToast, setCompareToast] = useState("");
   const [compareDiscountDetailsOpen, setCompareDiscountDetailsOpen] = useState(false);
+  const [compareSort, setCompareSort] = useState<"bc" | "price">("bc");
+  const [compareSortOpen, setCompareSortOpen] = useState(false);
   const syncFrame = useRef<number | null>(null);
   const sortControlRef = useRef<HTMLDivElement | null>(null);
+  const compareSortRef = useRef<HTMLDivElement | null>(null);
   const favorites = useFavorites();
 
   const exactGroups = useMemo(() => findGroups(query), [query]);
@@ -712,6 +715,25 @@ export function CatalogFlowSortStatus() {
     };
   }, [sortOpen]);
 
+  useEffect(() => {
+    if (!compareSortOpen) return;
+
+    const closeOnOutsidePointer = (event: PointerEvent) => {
+      if (!compareSortRef.current?.contains(event.target as Node)) setCompareSortOpen(false);
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setCompareSortOpen(false);
+    };
+
+    document.addEventListener("pointerdown", closeOnOutsidePointer);
+    document.addEventListener("keydown", closeOnEscape);
+
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsidePointer);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [compareSortOpen]);
+
   const submitResultSearch = (event: FormEvent) => {
     event.preventDefault();
     openCatalogResults(query);
@@ -861,7 +883,10 @@ export function CatalogFlowSortStatus() {
       )}
 
       {flowScreen === "compare" && selectedGroup && (() => {
-        const offers = [...selectedGroup.offers].sort((a, b) => a.discountPrice - b.discountPrice);
+        const cheapestPrice = Math.min(...selectedGroup.offers.map((offer) => offer.discountPrice));
+        const offers = [...selectedGroup.offers].sort((a, b) =>
+          compareSort === "bc" ? b.rating - a.rating || a.discountPrice - b.discountPrice : a.discountPrice - b.discountPrice
+        );
         const bestOffer = offers[0];
         const otherOffers = offers.slice(1);
         const trackedOffer = selectedOffer ?? bestOffer;
@@ -918,16 +943,49 @@ export function CatalogFlowSortStatus() {
             </header>
 
             <main className="cmp-list">
-              <div className="cmp-sortbar">
-                <span>เรียงจากคะแนน <b>Best choice Score</b></span>
-                <svg className="cmp-info" viewBox="0 0 14 14" aria-hidden="true">
-                  <circle cx="7" cy="7" r="6.2" fill="none" stroke="currentColor" strokeWidth="1.1" />
-                  <circle cx="7" cy="4.2" r="0.9" fill="currentColor" />
-                  <rect x="6.35" y="6" width="1.3" height="4.2" rx="0.65" fill="currentColor" />
-                </svg>
-                <svg className="cmp-caret" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M7 10l5 5 5-5z" fill="currentColor" />
-                </svg>
+              <div className="cmp-sortbar" ref={compareSortRef}>
+                <span>เรียงจาก</span>
+                <button
+                  type="button"
+                  className="cmp-sort-toggle"
+                  aria-haspopup="menu"
+                  aria-expanded={compareSortOpen}
+                  onClick={() => setCompareSortOpen((current) => !current)}
+                >
+                  <b>{compareSort === "bc" ? "Best Choice Score" : "Best Price Score"}</b>
+                  <svg className="cmp-info" viewBox="0 0 14 14" aria-hidden="true">
+                    <circle cx="7" cy="7" r="6.2" fill="none" stroke="currentColor" strokeWidth="1.1" />
+                    <circle cx="7" cy="4.2" r="0.9" fill="currentColor" />
+                    <rect x="6.35" y="6" width="1.3" height="4.2" rx="0.65" fill="currentColor" />
+                  </svg>
+                  <svg className={`cmp-caret ${compareSortOpen ? "open" : ""}`} viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 10l5 5 5-5z" fill="currentColor" />
+                  </svg>
+                </button>
+
+                {compareSortOpen && (
+                  <div className="cmp-sort-menu" role="menu">
+                    {([
+                      { value: "bc", label: "Best Choice Score", hint: "เรียงตามคะแนนรีวิว" },
+                      { value: "price", label: "Best Price Score", hint: "เรียงตามราคาถูกสุด" }
+                    ] as const).map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        role="menuitemradio"
+                        aria-checked={compareSort === option.value}
+                        className={compareSort === option.value ? "selected" : ""}
+                        onClick={() => {
+                          setCompareSort(option.value);
+                          setCompareSortOpen(false);
+                        }}
+                      >
+                        <b>{option.label}</b>
+                        <span>{option.hint}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <article className="cmp-card cmp-card--best">
@@ -1003,7 +1061,11 @@ export function CatalogFlowSortStatus() {
                       <strong>{baht(offer.discountPrice)}</strong>
                       <del>{baht(offer.price)}</del>
                     </div>
-                    <p className="cmp-higher">แพงกว่า +{baht(offer.discountPrice - bestOffer.discountPrice)}</p>
+                    {offer.discountPrice > cheapestPrice ? (
+                      <p className="cmp-higher">แพงกว่า +{baht(offer.discountPrice - cheapestPrice)}</p>
+                    ) : (
+                      <p className="cmp-higher cmp-cheapest">ราคาถูกที่สุด</p>
+                    )}
                   </div>
                   <div className="cmp-offer-actions">
                     <button
