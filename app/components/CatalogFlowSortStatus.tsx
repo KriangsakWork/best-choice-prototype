@@ -411,11 +411,20 @@ function CatalogCompareTrend({ offer }: { offer: ProductCardData }) {
     y: 3 + ((max - value) / Math.max(1, max - min)) * 27
   }));
   const path = points.map((point, index) => (index ? "L" : "M") + " " + point.x + " " + point.y).join(" ");
+  const last = points[points.length - 1];
+  const areaPath = `${path} L ${points[points.length - 1].x} 34 L ${points[0].x} 34 Z`;
 
   return (
-    <svg viewBox="0 0 106 34" aria-hidden="true">
-      <path d={path} pathLength="1" />
-      <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r="2.5" />
+    <svg className="cmp-trend-svg" viewBox="0 0 106 34" aria-hidden="true">
+      <defs>
+        <linearGradient id="cmp-trend-fill" x1="0" y1="0" x2="0" y2="1">
+          <stop className="cmp-trend-stop cmp-trend-stop--top" offset="0%" />
+          <stop className="cmp-trend-stop cmp-trend-stop--bottom" offset="100%" />
+        </linearGradient>
+      </defs>
+      <path className="cmp-trend-area" d={areaPath} fill="url(#cmp-trend-fill)" />
+      <path className="cmp-trend-line" pathLength="1" d={path} />
+      <circle className="cmp-trend-dot" cx={last.x} cy={last.y} r="2.5" />
     </svg>
   );
 }
