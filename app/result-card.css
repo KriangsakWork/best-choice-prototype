@@ -93,43 +93,16 @@
   height: 11px;
 }
 
-.result-card__platform {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  color: #fff;
-  font-size: 10px;
-  font-weight: 400;
-  line-height: 14px;
-  white-space: nowrap;
-}
-
-.result-card__platform img {
-  width: 10px;
-  height: 10px;
+.result-card__platform-badge {
+  height: 16px;
+  width: auto;
   object-fit: contain;
 }
 
-.result-card__platform--label {
-  gap: 3px;
-  padding: 1px 5px;
-}
-
-.result-card__platform--icon {
-  padding: 3px;
-}
-
-.result-card__platform[data-platform="Shopee"] {
-  background: #eb3b0c;
-}
-
-.result-card__platform[data-platform="Lazada"] {
-  background: #0e1472;
-}
-
-.result-card__platform[data-platform="TikTok"] {
-  background: #000;
+.result-card__platform-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
 }
 
 .result-card__price {

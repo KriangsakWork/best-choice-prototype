@@ -244,53 +244,17 @@
 }
 
 .cmp-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  border-radius: 6px;
-  color: #fff;
-  white-space: nowrap;
-}
-
-.cmp-badge img {
+  display: inline-block;
+  width: auto;
   object-fit: contain;
 }
 
 .cmp-badge--lg {
   height: 26px;
-  padding: 0 9px;
-  font-size: 15px;
-  font-weight: 400;
-}
-
-.cmp-badge--lg img {
-  width: 16px;
-  height: 16px;
 }
 
 .cmp-badge--sm {
-  height: 18px;
-  padding: 1px 6px;
-  border-radius: 4px;
-  font-size: 10px;
-}
-
-.cmp-badge--sm img {
-  width: 10px;
-  height: 10px;
-}
-
-.cmp-badge[data-platform="Shopee"] {
-  background: #eb3b0c;
-}
-
-.cmp-badge[data-platform="Lazada"] {
-  background: #0e1472;
-}
-
-.cmp-badge[data-platform="TikTok"] {
-  background: #000;
+  height: 20px;
 }
 
 .cmp-card-mid {

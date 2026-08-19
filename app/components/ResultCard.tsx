@@ -15,10 +15,10 @@ export type ResultCardData = {
 
 const PLATFORM_ORDER: ResultPlatform[] = ["Shopee", "Lazada", "TikTok"];
 
-const platformMeta: Record<ResultPlatform, { mark: string; label: string }> = {
-  Shopee: { mark: "/assets/product-card/shopee-mark.svg", label: "Shopee" },
-  Lazada: { mark: "/assets/product-card/lazada-mark.svg", label: "Lazada" },
-  TikTok: { mark: "/assets/product-card/tiktok-mark.svg", label: "TikTok" }
+const platformMeta: Record<ResultPlatform, { badge: string; icon: string; label: string }> = {
+  Shopee: { badge: "/assets/product-card/shopee-badge.png", icon: "/assets/product-card/shopee-icon.png", label: "Shopee" },
+  Lazada: { badge: "/assets/product-card/lazada-badge.png", icon: "/assets/product-card/lazada-icon.png", label: "Lazada" },
+  TikTok: { badge: "/assets/product-card/tiktok-badge.png", icon: "/assets/product-card/tiktok-icon.png", label: "TikTok" }
 };
 
 function formatBaht(value: number) {
@@ -66,15 +66,19 @@ export function ResultCard({
               {product.rating}
             </span>
 
-            <span className="result-card__platform result-card__platform--label" data-platform={product.mainPlatform}>
-              <img src={platformMeta[product.mainPlatform].mark} alt="" width={10} height={10} />
-              <span>{platformMeta[product.mainPlatform].label}</span>
-            </span>
+            <img
+              className="result-card__platform-badge"
+              src={platformMeta[product.mainPlatform].badge}
+              alt={platformMeta[product.mainPlatform].label}
+            />
 
             {otherPlatforms.map((platform) => (
-              <span key={platform} className="result-card__platform result-card__platform--icon" data-platform={platform} aria-label={platform}>
-                <img src={platformMeta[platform].mark} alt="" width={10} height={10} />
-              </span>
+              <img
+                key={platform}
+                className="result-card__platform-icon"
+                src={platformMeta[platform].icon}
+                alt={platformMeta[platform].label}
+              />
             ))}
           </div>
 

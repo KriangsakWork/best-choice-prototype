@@ -456,20 +456,15 @@ function CatalogCompareBuy({
   );
 }
 
-const COMPARE_PLATFORM: Record<ProductCardData["platform"], { mark: string; label: string }> = {
-  Shopee: { mark: "/assets/product-card/shopee-mark.svg", label: "Shopee" },
-  Lazada: { mark: "/assets/product-card/lazada-mark.svg", label: "Lazada" },
-  TikTok: { mark: "/assets/product-card/tiktok-mark.svg", label: "TikTok" }
+const COMPARE_PLATFORM: Record<ProductCardData["platform"], { badge: string; label: string }> = {
+  Shopee: { badge: "/assets/product-card/shopee-badge.png", label: "Shopee" },
+  Lazada: { badge: "/assets/product-card/lazada-badge.png", label: "Lazada" },
+  TikTok: { badge: "/assets/product-card/tiktok-badge.png", label: "TikTok" }
 };
 
 function ComparePlatformBadge({ platform, size = "sm" }: { platform: ProductCardData["platform"]; size?: "sm" | "lg" }) {
   const meta = COMPARE_PLATFORM[platform];
-  return (
-    <span className={`cmp-badge cmp-badge--${size}`} data-platform={platform} aria-label={platform}>
-      <img src={meta.mark} alt="" />
-      <span>{meta.label}</span>
-    </span>
-  );
+  return <img className={`cmp-badge cmp-badge--${size}`} src={meta.badge} alt={meta.label} />;
 }
 
 function CompareThumbIcon() {
