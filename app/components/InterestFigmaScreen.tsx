@@ -231,6 +231,7 @@ const FILTERS: Array<{ value: PlatformFilter; label: string }> = [
 
 const NAV_ITEMS = [
   { label: "หน้าหลัก", icon: "/assets/SVG/Nav Bar/HIC01.svg" },
+  { label: "ยอดฮิต", icon: "/assets/SVG/Nav Bar/HIC06.svg" },
   { label: "สนใจ", icon: "/assets/SVG/Nav Bar/HIC02B.svg", active: true },
   { label: "ประหยัด", icon: "/assets/SVG/Nav Bar/HIC03.svg" },
   { label: "โปรไฟล์", icon: "/assets/SVG/Nav Bar/HIC04.svg" }
@@ -265,7 +266,8 @@ export function InterestFigmaScreen() {
       if (!button || !nav) return;
 
       const buttons = Array.from(nav.querySelectorAll<HTMLButtonElement>(":scope > button"));
-      if (buttons.indexOf(button) !== 1) return;
+      const interestIndex = buttons.findIndex((b) => b.textContent?.trim() === "สนใจ");
+      if (interestIndex < 0 || buttons.indexOf(button) !== interestIndex) return;
 
       event.preventDefault();
       event.stopPropagation();
@@ -287,14 +289,14 @@ export function InterestFigmaScreen() {
     if (toastTimer.current !== null) window.clearTimeout(toastTimer.current);
   }, []);
 
-  const navigateTo = (index: number) => {
-    if (index === 1) return;
-
+  const navigateTo = (label: string) => {
     setOpen(false);
     window.requestAnimationFrame(() => {
       const nav = document.querySelector<HTMLElement>(".catalog-bottom-nav, .bottom-nav");
-      const buttons = nav ? Array.from(nav.querySelectorAll<HTMLButtonElement>(":scope > button")) : [];
-      buttons[index]?.click();
+      if (!nav) return;
+      const buttons = Array.from(nav.querySelectorAll<HTMLButtonElement>(":scope > button"));
+      const target = buttons.find((b) => b.textContent?.trim() === label);
+      if (target && target.textContent?.trim() !== "สนใจ") target.click();
     });
   };
 
@@ -397,7 +399,7 @@ export function InterestFigmaScreen() {
             key={item.label}
             className={item.active ? "active" : ""}
             aria-current={item.active ? "page" : undefined}
-            onClick={() => navigateTo(index)}
+            onClick={() => navigateTo(item.label)}
           >
             <img src={item.icon} alt="" aria-hidden="true" />
             <span>{item.label}</span>
@@ -421,7 +423,7 @@ export function InterestFigmaScreen() {
                 type="button"
                 key={item.label}
                 aria-label={item.label}
-                onClick={() => navigateTo(index)}
+                onClick={() => navigateTo(item.label)}
               />
             ))}
           </div>

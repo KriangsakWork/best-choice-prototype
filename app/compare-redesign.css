@@ -111,6 +111,16 @@
 .cmp-track img {
   width: 14px;
   height: 14px;
+  transform-origin: 50% 55%;
+}
+
+.cmp-track.is-bumping img {
+  animation: heart-pop .55s cubic-bezier(.2, 1.5, .3, 1);
+}
+
+.cmp-track__label {
+  display: inline-block;
+  animation: fav-label-in .28s ease .18s both;
 }
 
 .cmp-stats {

@@ -20,6 +20,7 @@ type Screen =
   | "results"
   | "compare"
   | "history"
+  | "best-sellers"
   | "total-save"
   | "profile"
   | "interest"
@@ -134,6 +135,10 @@ const navIconAssets: Record<string, { default: string; active: string }> = {
     default: `${ASSET}/SVG/Nav Bar/HIC01.svg`,
     active: `${ASSET}/SVG/Nav Bar/HIC01A.svg`
   },
+  hot: {
+    default: `${ASSET}/SVG/Nav Bar/HIC06.svg`,
+    active: `${ASSET}/SVG/Nav Bar/HIC06A.svg`
+  },
   interest: {
     default: `${ASSET}/SVG/Nav Bar/HIC02.svg`,
     active: `${ASSET}/SVG/Nav Bar/HIC02B.svg`
@@ -152,6 +157,7 @@ type ProductResult = {
   id: number;
   image?: string;
   price: number;
+  bcScore: number;
   data?: ProductCardData;
 };
 
@@ -370,12 +376,12 @@ const homeRecommendedProducts: ProductCardData[] = [
 ];
 
 const products: ProductResult[] = [
-  { id: 1, price: nikeAirForceOne.discountPrice, data: nikeAirForceOne },
-  { id: 2, image: `${ASSET}/result-2.png`, price: 3594 },
-  { id: 3, image: `${ASSET}/result-3.png`, price: 3390 },
-  { id: 4, image: `${ASSET}/result-4.png`, price: 3750 },
-  { id: 5, image: `${ASSET}/result-5.png`, price: 2890 },
-  { id: 6, image: `${ASSET}/result-6.png`, price: 4100 }
+  { id: 1, price: nikeAirForceOne.discountPrice, bcScore: 4.7, data: nikeAirForceOne },
+  { id: 2, image: `${ASSET}/result-2.png`, price: 3594, bcScore: 4.6 },
+  { id: 3, image: `${ASSET}/result-3.png`, price: 3390, bcScore: 4.9 },
+  { id: 4, image: `${ASSET}/result-4.png`, price: 3750, bcScore: 4.5 },
+  { id: 5, image: `${ASSET}/result-5.png`, price: 2890, bcScore: 5.0 },
+  { id: 6, image: `${ASSET}/result-6.png`, price: 4100, bcScore: 4.3 }
 ];
 
 type CompareOffer = {
@@ -588,6 +594,7 @@ function StatusBar() {
 function BottomNav({ active, go }: { active?: string; go: (screen: Screen) => void }) {
   const items = [
     { key: "home", label: "หน้าหลัก", screen: "home" as Screen },
+    { key: "hot", label: "ยอดฮิต", screen: "best-sellers" as Screen },
     { key: "interest", label: "สนใจ", screen: "interest" as Screen },
     { key: "savings", label: "ประหยัด", screen: "total-save" as Screen },
     { key: "profile", label: "โปรไฟล์", screen: "profile" as Screen }
@@ -885,7 +892,19 @@ function SearchScreen({ go, query, setQuery }: { go: (screen: Screen) => void; q
         <SearchField value={query} onChange={setQuery} onSubmit={submit} active autoFocus showLight />
       </div>
       <main className="search-content">
-        <h2>สินค้าแนะนำ</h2>
+        <h2>ค้นหาล่าสุด</h2>
+        <div className="recent-list">
+          {[
+            ["รองเท้าวิ่ง", `${ASSET}/search-recent-1.png`],
+            ["เลโก้", `${ASSET}/search-recent-2.png`],
+            ["หมวก", `${ASSET}/search-recent-3.png`]
+          ].map(([label, image]) => (
+            <button key={label} onClick={() => { setQuery(label); go("results"); }} type="button">
+              <span>{label}</span><img src={image} alt="" />
+            </button>
+          ))}
+        </div>
+        <h2 className="recent-heading">สินค้าแนะนำ</h2>
         <div className="suggestions">
           {(filtered.length ? filtered : suggestions).map((item) => (
             <button
@@ -897,18 +916,6 @@ function SearchScreen({ go, query, setQuery }: { go: (screen: Screen) => void; q
               <small className={item.trend.startsWith("-") ? "down" : ""}>
                 <span aria-hidden="true">{item.trend.startsWith("-") ? "⌁" : "⌁"}</span> นิยม {item.trend}
               </small>
-            </button>
-          ))}
-        </div>
-        <h2 className="recent-heading">ค้นหาล่าสุด</h2>
-        <div className="recent-list">
-          {[
-            ["รองเท้าวิ่ง", `${ASSET}/search-recent-1.png`],
-            ["เลโก้", `${ASSET}/search-recent-2.png`],
-            ["หมวก", `${ASSET}/search-recent-3.png`]
-          ].map(([label, image]) => (
-            <button key={label} onClick={() => { setQuery(label); go("results"); }} type="button">
-              <span>{label}</span><img src={image} alt="" />
             </button>
           ))}
         </div>
@@ -935,7 +942,9 @@ function ResultsScreen({
   const [sortLow, setSortLow] = useState(false);
   const favorites = useFavorites();
   const visibleProducts = useMemo(
-    () => sortLow ? [...products].sort((a, b) => a.price - b.price) : products,
+    () => sortLow
+      ? [...products].sort((a, b) => a.price - b.price)
+      : [...products].sort((a, b) => b.bcScore - a.bcScore),
     [sortLow]
   );
 
@@ -1094,6 +1103,7 @@ function CompareScreen({
 }) {
   const [toast, setToast] = useState("");
   const [discountDetailsOpen, setDiscountDetailsOpen] = useState(false);
+  const [favBumpKey, setFavBumpKey] = useState(0);
   const favorites = useFavorites();
   const effectiveIds = selected.length >= 2 ? selected.slice(0, 3) : [1, 2, 3];
   const offers = effectiveIds.map((id) => compareOfferById[id]).filter(Boolean).sort((a, b) => a.price - b.price);
@@ -1123,17 +1133,27 @@ function CompareScreen({
             <strong>{bestOffer.productName}</strong>
           </div>
           <button
-            className={favorite ? "compare-track active" : "compare-track"}
+            className={
+              (favorite ? "compare-track active" : "compare-track") +
+              (favBumpKey > 0 ? " is-bumping" : "")
+            }
             type="button"
             aria-label={favorite ? "เลิกติดตามราคา" : "ติดตามราคา"}
             aria-pressed={favorite}
-            onClick={() => bestProduct && favorites.toggleFavorite(bestProduct)}
+            onClick={() => {
+              if (!bestProduct) return;
+              favorites.toggleFavorite(bestProduct);
+              setFavBumpKey((k) => k + 1);
+            }}
           >
             <img
+              key={`compare-fav-icon-${favBumpKey}`}
               src={favorite ? `${ASSET}/SVG/Like/Property 1=Like.svg` : `${ASSET}/SVG/Like/Property 1=Normal.svg`}
               alt=""
             />
-            {favorite ? "กำลังติดตาม" : "ติดตามราคา"}
+            <span key={`compare-fav-label-${favorite}`} className="compare-track__label">
+              {favorite ? "กำลังติดตาม" : "ติดตามราคา"}
+            </span>
           </button>
           <div className="compare-summary-stats" aria-label={`เปรียบเทียบ ${offers.length} แพลตฟอร์ม ราคาต่ำสุด ${bestOffer.price.toLocaleString("en-US")} บาท`}>
             <span>
@@ -1267,25 +1287,56 @@ function CompareScreen({
   );
 }
 
-// Keep the selected-price label tied to active chart interactions.
-function PriceChart({ period, history }: { period: Period; history: PriceHistoryRecord }) {
+const PERIOD_MONTH_LABELS: Record<Period, string[]> = {
+  "7 วัน": ["25 ก.ค.", "27 ก.ค.", "29 ก.ค.", "31 ก.ค."],
+  "30 วัน": ["ต้น ก.ค.", "กลาง ก.ค.", "ปลาย ก.ค.", "วันนี้"],
+  "2 เดือน": ["มิ.ย.", "กลาง มิ.ย.", "ก.ค.", "วันนี้"],
+  "3 เดือน": ["เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค."]
+};
+
+const PERIOD_TOOLTIP_DATE: Record<Period, string> = {
+  "7 วัน": "31 ก.ค.",
+  "30 วัน": "31 ก.ค.",
+  "2 เดือน": "31 ก.ค.",
+  "3 เดือน": "31 ก.ค."
+};
+
+function PriceCard({
+  history,
+  period,
+  onPeriodChange
+}: {
+  history: PriceHistoryRecord;
+  period: Period;
+  onPeriodChange: (period: Period) => void;
+}) {
   const data = createPriceSeries(history, period);
   const min = Math.min(...data);
   const max = Math.max(...data);
   const svgRef = useRef<SVGSVGElement>(null);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [dragging, setDragging] = useState(false);
+
   const chartPoints = data.map((value, index) => ({
     value,
-    x: 8 + (index / (data.length - 1)) * 320,
-    y: 114 - ((value - min) / Math.max(1, max - min)) * 65
+    x: 12 + (index / (data.length - 1)) * 320,
+    y: 100 - ((value - min) / Math.max(1, max - min)) * 78
   }));
   const linePath = chartPoints.map((point, index) => `${index ? "L" : "M"} ${point.x} ${point.y}`).join(" ");
-  const areaPath = `${linePath} L 328 139 L 8 139 Z`;
+  const areaPath = `${linePath} L 332 118 L 12 118 Z`;
   const selectedIndex = activeIndex ?? chartPoints.length - 1;
   const selectedPoint = chartPoints[selectedIndex];
-  const changePercent = Math.round((history.current - history.average) / history.average * 100);
+
+  const changePercent = Math.round((history.current - history.original) / history.original * 100);
   const changeLabel = `${changePercent > 0 ? "+" : ""}${changePercent}%`;
+  const changeIsDown = changePercent < 0;
+  const monthLabels = PERIOD_MONTH_LABELS[period];
+  const tooltipDate = PERIOD_TOOLTIP_DATE[period];
+
+  const tooltipX = Math.max(52, Math.min(292, selectedPoint.x));
+  const tooltipValue = selectedPoint.value;
+
+  const periods: Period[] = ["7 วัน", "30 วัน", "2 เดือน", "3 เดือน"];
 
   const choosePoint = (event: PointerEvent<SVGSVGElement>) => {
     const svg = svgRef.current;
@@ -1300,51 +1351,103 @@ function PriceChart({ period, history }: { period: Period; history: PriceHistory
   };
 
   return (
-    <div className="chart-card">
-      <div className="chart-head">
-        <strong>฿{(activeIndex === null ? history.current : selectedPoint.value).toLocaleString("en-US")}</strong>
-        <span>{changeLabel}</span>
-        <em>{activeIndex === null ? `ต่ำสุด ฿${history.min.toLocaleString("en-US")} ในรอบ 90 วัน` : `ราคา ณ จุดที่ ${selectedIndex + 1}`}</em>
+    <div className="price-card">
+      <div className="price-card__head">
+        <div className="price-card__now">
+          <p>ราคาตอนนี้</p>
+          <div className="price-card__price-row">
+            <strong>฿{tooltipValue.toLocaleString("en-US")}</strong>
+            <span className={`price-card__delta${changeIsDown ? "" : " up"}`}>{changeLabel}</span>
+          </div>
+        </div>
+        <span className="price-card__cheapest-badge">ถูกสุดในรอบ 90 วัน</span>
       </div>
-      <svg
-        ref={svgRef}
-        viewBox="0 0 344 150"
-        role="img"
-        aria-label={`กราฟราคา ${period} แตะหรือลากเพื่อดูราคา`}
-        onPointerDown={(event) => {
-          setDragging(true);
-          event.currentTarget.setPointerCapture(event.pointerId);
-          choosePoint(event);
-        }}
-        onPointerMove={(event) => {
-          if (dragging || event.pointerType === "mouse") choosePoint(event);
-        }}
-        onPointerUp={(event) => {
-          setDragging(false);
-          if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
-        }}
-        onPointerLeave={() => !dragging && setActiveIndex(null)}
+      <div className="price-card__chart">
+        <svg
+          key={period}
+          ref={svgRef}
+          viewBox="0 0 344 130"
+          role="img"
+          aria-label={`กราฟราคา ${period} แตะหรือลากเพื่อดูราคา`}
+          onPointerDown={(event) => {
+            setDragging(true);
+            event.currentTarget.setPointerCapture(event.pointerId);
+            choosePoint(event);
+          }}
+          onPointerMove={(event) => {
+            if (dragging || event.pointerType === "mouse") choosePoint(event);
+          }}
+          onPointerUp={(event) => {
+            setDragging(false);
+            if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+          }}
+          onPointerLeave={() => !dragging && setActiveIndex(null)}
+        >
+          <defs>
+            <linearGradient id="price-fill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#ffb09c" stopOpacity=".56" />
+              <stop offset="100%" stopColor="#fff" stopOpacity=".08" />
+            </linearGradient>
+            <clipPath id="chart-reveal">
+              <rect className="chart-reveal" width="344" height="130" />
+            </clipPath>
+          </defs>
+          <g clipPath="url(#chart-reveal)">
+            <path className="chart-area" d={areaPath} fill="url(#price-fill)" />
+          </g>
+          <path className="chart-line" pathLength="1" d={linePath} />
+          <line className="cursor-line" x1={selectedPoint.x} y1={selectedPoint.y + 6} x2={selectedPoint.x} y2="118" />
+          <circle className="chart-dot" cx={selectedPoint.x} cy={selectedPoint.y} r="6" />
+        </svg>
+        <div
+          className="price-card__tooltip"
+          style={{ left: `${(tooltipX / 344) * 100}%` }}
+          aria-hidden="true"
+        >
+          {tooltipDate}&nbsp;&nbsp;฿{tooltipValue.toLocaleString("en-US")}
+        </div>
+        <div className="price-card__months">
+          {monthLabels.map((label) => (
+            <span key={label}>{label}</span>
+          ))}
+        </div>
+      </div>
+      <div className="price-card__stats">
+        <div>
+          <p>ราคาเฉลี่ย</p>
+          <strong>฿{Math.round(history.average).toLocaleString("en-US")}</strong>
+        </div>
+        <span className="price-card__stat-divider" aria-hidden="true" />
+        <div>
+          <p>ราคาเดิม</p>
+          <strong>฿{history.original.toLocaleString("en-US")}</strong>
+        </div>
+        <span className="price-card__stat-divider" aria-hidden="true" />
+        <div>
+          <p>ถูกสุดที่เคยมี</p>
+          <strong className="good">฿{history.min.toLocaleString("en-US")}</strong>
+        </div>
+      </div>
+      <div
+        className="price-card__tabs"
+        role="tablist"
+        aria-label="ช่วงเวลา"
+        style={{ "--period-index": periods.indexOf(period) } as CSSProperties}
       >
-        <defs>
-          <linearGradient id="price-fill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#ffb09c" stopOpacity=".56" />
-            <stop offset="100%" stopColor="#fff" stopOpacity=".08" />
-          </linearGradient>
-          <clipPath id="chart-reveal">
-            <rect className="chart-reveal" width="344" height="150" />
-          </clipPath>
-        </defs>
-        <g clipPath="url(#chart-reveal)">
-          <path className="chart-area" d={areaPath} fill="url(#price-fill)" />
-        </g>
-        <path className="chart-line" pathLength="1" d={linePath} />
-        <text className="average-label" x="174" y="61" textAnchor="middle">ราคาเฉลี่ย</text>
-        <rect className="average-pill" x="149" y="66" width="50" height="20" rx="10" />
-        <text className="average-price" x="174" y="80" textAnchor="middle">฿{history.average.toLocaleString("en-US", { maximumFractionDigits: 2 })}</text>
-        {activeIndex !== null && <line className="cursor-line" x1={selectedPoint.x} y1="45" x2={selectedPoint.x} y2="139" />}
-        <circle className="chart-dot" cx={selectedPoint.x} cy={selectedPoint.y} r="8" />
-      </svg>
-      <div className="month-labels"><span>มิ.ย.</span><span>ก.ค.</span><span>ส.ค.</span><span>วันนี้</span></div>
+        <span className="price-card__tabs-indicator" aria-hidden="true" />
+        {periods.map((item) => (
+          <button
+            key={item}
+            className={period === item ? "active" : ""}
+            onClick={() => onPeriodChange(item)}
+            type="button"
+            role="tab"
+            aria-selected={period === item}
+          >
+            {item}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -1363,8 +1466,7 @@ function HistoryScreen({
   const favorites = useFavorites();
   const favorite = favorites.isFavorite(product);
   const history = getPriceHistory(product);
-  const periods = ["7 วัน", "30 วัน", "2 เดือน", "3 เดือน"] as Period[];
-  const periodIndex = periods.indexOf(period);
+  const [favBumpKey, setFavBumpKey] = useState(0);
   const differenceFromAverage = Math.round(Math.abs(history.current - history.average));
   const isBelowAverage = history.current <= history.average;
 
@@ -1399,55 +1501,56 @@ function HistoryScreen({
             <del>฿{history.original.toLocaleString("en-US")}</del>
           </div>
         </section>
-        <div
-          className="period-tabs"
-          role="tablist"
-          aria-label="ช่วงเวลา"
-          style={{ "--period-index": periodIndex } as CSSProperties}
-        >
-          <span className="period-tabs-indicator" aria-hidden="true" />
-          {periods.map((item) => (
-            <button
-              key={item}
-              className={period === item ? "active" : ""}
-              onClick={() => setPeriod(item)}
-              type="button"
-              role="tab"
-              aria-selected={period === item}
-            >
-              {item}
-            </button>
-          ))}
-        </div>
-        <PriceChart key={period} period={period} history={history} />
+        <PriceCard history={history} period={period} onPeriodChange={setPeriod} />
         <div className="ai-card">
-          <img className="history-ai-icon" src={`${ASSET}/SVG/AI.png`} alt="" aria-hidden="true" />
+          <img
+            className="ai-card__sparkle"
+            src={`${ASSET}/SVG/AI.png`}
+            width={36}
+            height={36}
+            alt=""
+            aria-hidden="true"
+          />
           <div>
             <strong>{history.current === history.min ? "ราคาดีที่สุดในรอบ 90 วัน!✨" : `พบราคาต่ำสุด ฿${history.min.toLocaleString("en-US")} ในรอบ 90 วัน`}</strong>
             <span />
             <p>
               {isBelowAverage
-                ? `ซื้อตอนนี้ประหยัดกว่าราคาเฉลี่ย ฿${differenceFromAverage.toLocaleString("en-US")} แนะนำให้ตัดสินใจซื้อได้เลยเพื่อความคุ้มค่าสูงสุด`
-                : `ราคาปัจจุบันสูงกว่าราคาเฉลี่ย ฿${differenceFromAverage.toLocaleString("en-US")} หากรอโปรโมชันอาจคุ้มกว่าครับ`}
+                ? `ซื้อตอนนี้ประหยัดกว่าราคาเฉลี่ยถึง ${differenceFromAverage.toLocaleString("en-US")} บาท แนะนำให้ตัดสินใจซื้อได้เลยเพื่อความคุ้มค่าสูงสุด`
+                : `ราคาปัจจุบันสูงกว่าราคาเฉลี่ย ${differenceFromAverage.toLocaleString("en-US")} บาท หากรอโปรโมชันอาจคุ้มกว่าครับ`}
             </p>
           </div>
         </div>
-        <div className="history-buttons">
-          <button
-            className={favorite ? "favorite active" : "favorite"}
-            onClick={() => {
-              favorites.toggleFavorite(product);
-              flash(favorite ? "นำออกจากรายการโปรดแล้ว" : "บันทึกในรายการโปรดแล้ว");
-            }}
-            type="button"
-          >
-            <img className="history-favorite-icon" src={favorite ? `${ASSET}/SVG/Like/Property 1=Like.svg` : `${ASSET}/SVG/Like/Property 1=Normal.svg`} alt="" aria-hidden="true" /> รายการโปรด
-          </button>
-          <button onClick={buyProduct} type="button">
-            <img className="history-action-icon" src={`${ASSET}/SVG/Buy BT.svg`} alt="" aria-hidden="true" /> ซื้อเลย
-          </button>
-        </div>
       </main>
+      <div className="history-action-bar">
+        <button
+          className={
+            (favorite ? "history-fav-btn active" : "history-fav-btn") +
+            (favBumpKey > 0 ? " is-bumping" : "")
+          }
+          onClick={() => {
+            favorites.toggleFavorite(product);
+            setFavBumpKey((k) => k + 1);
+            flash(favorite ? "นำออกจากรายการโปรดแล้ว" : "บันทึกในรายการโปรดแล้ว");
+          }}
+          type="button"
+        >
+          <img
+            key={`fav-icon-${favBumpKey}`}
+            className="history-fav-btn__icon"
+            src={favorite ? `${ASSET}/SVG/Like/Property 1=Like.svg` : `${ASSET}/SVG/Like/Property 1=Normal.svg`}
+            alt=""
+            aria-hidden="true"
+          />
+          <span key={`fav-label-${favorite}`} className="history-fav-btn__label">
+            {favorite ? "กำลังติดตาม" : "สนใจ"}
+          </span>
+        </button>
+        <button className="history-buy-btn" onClick={buyProduct} type="button">
+          <img className="history-buy-btn__icon" src={`${ASSET}/SVG/Buy BT.svg`} alt="" aria-hidden="true" />
+          <span>ซื้อเลย</span>
+        </button>
+      </div>
       {toast && <div className="toast" role="status">{toast}</div>}
       <BottomNav go={go} />
     </section>
@@ -1487,6 +1590,155 @@ const savingsEntries = [
     originalPrice: 2024
   }
 ];
+
+type BestSellerCategory = "ยอดฮิต" | "รองเท้า" | "ของใช้ในบ้าน";
+
+const BEST_SELLERS: {
+  rank: number;
+  name: string;
+  image: string;
+  bcScore: number;
+  platform: "Lazada" | "Shopee" | "TikTok";
+  rating: number;
+  sold: string;
+  price: number;
+  original: number;
+}[] = [
+  { rank: 1, name: "Authentic New Balance NB 740 Black", image: "/assets/products/product-pic/4-nb-lazada.webp", bcScore: 5.0, platform: "Lazada", rating: 4.9, sold: "16", price: 1949, original: 7000 },
+  { rank: 2, name: "CROCS Classic Clog รองเท้าลำลองผู้ใหญ่", image: "/assets/products/product-pic/7-crocs-shopee.webp", bcScore: 4.9, platform: "Shopee", rating: 4.9, sold: "9k+", price: 2040, original: 2190 },
+  { rank: 3, name: "Flynn - Ballet Flats Room Service Collection คัทชูจุดนุ่มมาก", image: "/assets/products/product-pic/11-flynn-shopee.webp", bcScore: 4.9, platform: "Shopee", rating: 4.7, sold: "4k+", price: 1352, original: 1490 },
+  { rank: 4, name: "รองเท้า CHUCK 70 CANVAS OX BLACK", image: "/assets/products/product-pic/2-converse-shopee.webp", bcScore: 4.8, platform: "TikTok", rating: 4.4, sold: "3.12k+", price: 3040, original: 3090 },
+  { rank: 5, name: "Nike Men's Air Force 1 '07 Shoes - White", image: "/assets/products/product-pic/1-nike-shopee.webp", bcScore: 4.7, platform: "Shopee", rating: 4.7, sold: "56", price: 3594, original: 4300 },
+  { rank: 6, name: "Nike Men's Air Force 1 '07 Shoes - White", image: "/assets/products/product-pic/1-nike-lazada.webp", bcScore: 4.7, platform: "Lazada", rating: 4.9, sold: "22", price: 3328, original: 4300 },
+  { rank: 7, name: "HOKA CLIFTON ONE9 รองเท้าวิ่งลดแรงกระแทก", image: "/assets/products/product-pic/5-hoka-shopee.webp", bcScore: 4.6, platform: "Shopee", rating: 4.9, sold: "38", price: 3294, original: 5990 },
+  { rank: 8, name: "Vans Old Skool Classic Black", image: "/assets/products/product-pic/3-vans-tiktok.webp", bcScore: 4.6, platform: "TikTok", rating: 4.3, sold: "2k+", price: 2190, original: 2690 },
+  { rank: 9, name: "Adidas Ultraboost Light Running Shoes", image: "/assets/products/product-pic/6-adidas-lazada.webp", bcScore: 4.5, platform: "Lazada", rating: 5.0, sold: "2", price: 3750, original: 7000 },
+  { rank: 10, name: "Birkenstock Arizona Sandal", image: "/assets/products/product-pic/8-birken-tiktok.webp", bcScore: 4.5, platform: "TikTok", rating: 4.8, sold: "185", price: 3311, original: 3990 }
+];
+
+function RankRibbon({ rank }: { rank: number }) {
+  const src = `/assets/rank/${rank}.png`;
+  return (
+    <span className={`best-sellers-rank${rank >= 4 ? " rank-plain" : ""}`} aria-label={`อันดับ ${rank}`}>
+      <img src={src} alt="" aria-hidden="true" />
+    </span>
+  );
+}
+
+function BestSellersScreen({ go }: { go: (screen: Screen) => void }) {
+  const [filter, setFilter] = useState<BestSellerCategory>("ยอดฮิต");
+  const [showBanner, setShowBanner] = useState(true);
+  const filters: BestSellerCategory[] = ["ยอดฮิต", "รองเท้า", "ของใช้ในบ้าน"];
+  const visibleItems = filter === "ของใช้ในบ้าน" ? [] : BEST_SELLERS;
+
+  return (
+    <section className="screen best-sellers-screen">
+      <StatusBar />
+      <div className="best-sellers-bg" aria-hidden="true" />
+      <header className="best-sellers-header">
+        <button type="button" className="best-sellers-back" onClick={() => go("home")} aria-label="ย้อนกลับ">
+          <img src={`${ASSET}/SVG/arrow_back.svg`} alt="" aria-hidden="true" />
+        </button>
+        <h1>อันดับ Best Choice Score สูงสุด</h1>
+        <img
+          className="best-sellers-trophy"
+          src={`${ASSET}/best-sellers/trophy.png`}
+          alt=""
+          aria-hidden="true"
+        />
+      </header>
+      <main className="best-sellers-content">
+        <div className="best-sellers-filters" role="tablist">
+          {filters.map((f) => (
+            <button
+              key={f}
+              type="button"
+              className={filter === f ? "active" : ""}
+              onClick={() => setFilter(f)}
+              role="tab"
+              aria-selected={filter === f}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
+        {showBanner && (
+          <div className="best-sellers-info">
+            <span className="best-sellers-info-icon" aria-hidden="true">
+              <svg viewBox="0 0 14 14" width="14" height="14">
+                <circle cx="7" cy="7" r="6.4" fill="none" stroke="#eb3b0c" strokeWidth="1.2" />
+                <circle cx="7" cy="4" r="0.9" fill="#eb3b0c" />
+                <rect x="6.3" y="6" width="1.4" height="4.5" rx="0.7" fill="#eb3b0c" />
+              </svg>
+            </span>
+            <p>
+              คะแนน Best Choice คิดจาก <strong>ราคา 50%&nbsp;&nbsp;รีวิว 30%&nbsp;&nbsp;ยอดขาย 20%</strong>
+            </p>
+            <button
+              type="button"
+              className="best-sellers-info-close"
+              onClick={() => setShowBanner(false)}
+              aria-label="ปิดคำอธิบาย"
+            >
+              <svg viewBox="0 0 14 14" width="12" height="12">
+                <path d="M3 3 L11 11 M11 3 L3 11" stroke="#312d2a" strokeWidth="1.4" strokeLinecap="round" />
+              </svg>
+            </button>
+          </div>
+        )}
+        {visibleItems.length === 0 ? (
+          <div className="best-sellers-empty" role="status">
+            <p>ยังไม่มีรายการ</p>
+          </div>
+        ) : (
+        <div className="best-sellers-list">
+          {visibleItems.map((item) => (
+            <article
+              key={item.rank}
+              className="best-sellers-card"
+              role="button"
+              tabIndex={0}
+              onClick={() => document.dispatchEvent(new Event("best-choice:open-compare"))}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); document.dispatchEvent(new Event("best-choice:open-compare")); } }}
+            >
+              <RankRibbon rank={item.rank} />
+              <img className="best-sellers-image" src={item.image} alt={item.name} />
+              <div className="best-sellers-body">
+                <div className="best-sellers-tags">
+                  <span className="bc-score-chip">
+                    <svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true">
+                      <path d="M6 0.6 C6.4 3.6 8.4 5.6 11.4 6 C8.4 6.4 6.4 8.4 6 11.4 C5.6 8.4 3.6 6.4 0.6 6 C3.6 5.6 5.6 3.6 6 0.6 Z" fill="#ffffff" />
+                    </svg>
+                    Best Choice&nbsp;{item.bcScore.toFixed(1)}
+                  </span>
+                  <span className="bc-mini-divider" aria-hidden="true" />
+                  <span className={`bc-platform bc-platform--${item.platform.toLowerCase()}`}>
+                    {item.platform}
+                  </span>
+                </div>
+                <h3>{item.name}</h3>
+                <div className="best-sellers-meta">
+                  <span className="bc-rating">
+                    <img src="/assets/product-card/star.svg" alt="" width={12} height={12} />
+                    {item.rating}
+                  </span>
+                  <span className="bc-sep">|</span>
+                  <span>ขายไปแล้ว {item.sold} ชิ้น</span>
+                </div>
+              </div>
+              <div className="best-sellers-price">
+                <strong>฿{item.price.toLocaleString("en-US")}</strong>
+                <del>฿{item.original.toLocaleString("en-US")}</del>
+              </div>
+            </article>
+          ))}
+        </div>
+        )}
+      </main>
+      <BottomNav active="hot" go={go} />
+    </section>
+  );
+}
 
 function TotalSaveScreen({ go }: { go: (screen: Screen) => void }) {
   const [period, setPeriod] = useState<SavingsPeriod>("3 เดือน");
@@ -1887,13 +2139,19 @@ export default function BestChoiceApp() {
       setScreen("history");
     };
     const openSearch = () => setScreen("search");
+    const openCompare = () => {
+      if (selected.length < 2) setSelected([1, 2, 3]);
+      setScreen("compare");
+    };
     document.addEventListener("best-choice:open-history", openHistory);
     document.addEventListener("best-choice:start-search", openSearch);
+    document.addEventListener("best-choice:open-compare", openCompare);
     return () => {
       document.removeEventListener("best-choice:open-history", openHistory);
       document.removeEventListener("best-choice:start-search", openSearch);
+      document.removeEventListener("best-choice:open-compare", openCompare);
     };
-  }, [screen]);
+  }, [screen, selected]);
 
   const go = (next: Screen) => {
     if (next === "results" || next === "compare") {
@@ -1955,6 +2213,7 @@ export default function BestChoiceApp() {
               }}
             />
           )}
+          {screen === "best-sellers" && <BestSellersScreen go={go} />}
           {screen === "total-save" && <TotalSaveScreen go={go} />}
           {screen === "profile" && <ProfileScreen go={go} />}
           {screen === "interest-empty" && <InterestEmptyScreen go={go} />}
