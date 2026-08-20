@@ -1587,42 +1587,18 @@ const BEST_SELLERS: {
   { rank: 3, name: "Flynn - Ballet Flats Room Service Collection คัทชูจุดนุ่มมาก", image: "/assets/products/product-pic/11-flynn-shopee.webp", bcScore: 4.9, platform: "Shopee", rating: 4.7, sold: "4k+", price: 1352, original: 1490 },
   { rank: 4, name: "รองเท้า CHUCK 70 CANVAS OX BLACK", image: "/assets/products/product-pic/2-converse-shopee.webp", bcScore: 4.8, platform: "TikTok", rating: 4.4, sold: "3.12k+", price: 3040, original: 3090 },
   { rank: 5, name: "Nike Men's Air Force 1 '07 Shoes - White", image: "/assets/products/product-pic/1-nike-shopee.webp", bcScore: 4.7, platform: "Shopee", rating: 4.7, sold: "56", price: 3594, original: 4300 },
-  { rank: 6, name: "Nike Men's Air Force 1 '07 Shoes - White", image: "/assets/products/product-pic/1-nike-lazada.webp", bcScore: 4.7, platform: "Lazada", rating: 4.9, sold: "22", price: 3328, original: 4300 }
+  { rank: 6, name: "Nike Men's Air Force 1 '07 Shoes - White", image: "/assets/products/product-pic/1-nike-lazada.webp", bcScore: 4.7, platform: "Lazada", rating: 4.9, sold: "22", price: 3328, original: 4300 },
+  { rank: 7, name: "HOKA CLIFTON ONE9 รองเท้าวิ่งลดแรงกระแทก", image: "/assets/products/product-pic/5-hoka-shopee.webp", bcScore: 4.6, platform: "Shopee", rating: 4.9, sold: "38", price: 3294, original: 5990 },
+  { rank: 8, name: "Vans Old Skool Classic Black", image: "/assets/products/product-pic/3-vans-tiktok.webp", bcScore: 4.6, platform: "TikTok", rating: 4.3, sold: "2k+", price: 2190, original: 2690 },
+  { rank: 9, name: "Adidas Ultraboost Light Running Shoes", image: "/assets/products/product-pic/6-adidas-lazada.webp", bcScore: 4.5, platform: "Lazada", rating: 5.0, sold: "2", price: 3750, original: 7000 },
+  { rank: 10, name: "Birkenstock Arizona Sandal", image: "/assets/products/product-pic/8-birken-tiktok.webp", bcScore: 4.5, platform: "TikTok", rating: 4.8, sold: "185", price: 3311, original: 3990 }
 ];
 
 function RankRibbon({ rank }: { rank: number }) {
-  if (rank <= 3) {
-    const fill = rank === 1 ? "url(#rankGold)" : rank === 2 ? "url(#rankSilver)" : "url(#rankBronze)";
-    return (
-      <span className={`best-sellers-rank rank-top rank-${rank}`}>
-        <svg viewBox="0 0 22 31" width="22" height="31" aria-hidden="true">
-          <defs>
-            <linearGradient id="rankGold" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#f5c246" />
-              <stop offset="100%" stopColor="#c68410" />
-            </linearGradient>
-            <linearGradient id="rankSilver" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#d7d3ce" />
-              <stop offset="100%" stopColor="#8f8b86" />
-            </linearGradient>
-            <linearGradient id="rankBronze" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#dda274" />
-              <stop offset="100%" stopColor="#a05a1e" />
-            </linearGradient>
-          </defs>
-          <path d="M0 0 H22 V27 L11 22 L0 27 Z" fill={fill} />
-        </svg>
-        <span className="rank-label">TOP</span>
-        <span className="rank-num">{rank}</span>
-      </span>
-    );
-  }
+  const src = rank === 4 ? "/assets/rank/4.svg" : `/assets/rank/${rank}.png`;
   return (
-    <span className="best-sellers-rank rank-plain">
-      <svg viewBox="0 0 22 31" width="22" height="31" aria-hidden="true">
-        <path d="M0 0 H22 V27 L11 22 L0 27 Z" fill="#efe7e3" />
-      </svg>
-      <span className="rank-num rank-num--plain">{rank}</span>
+    <span className={`best-sellers-rank${rank >= 4 ? " rank-plain" : ""}`} aria-label={`อันดับ ${rank}`}>
+      <img src={src} alt="" aria-hidden="true" />
     </span>
   );
 }
