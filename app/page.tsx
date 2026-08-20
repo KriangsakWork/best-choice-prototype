@@ -157,6 +157,7 @@ type ProductResult = {
   id: number;
   image?: string;
   price: number;
+  bcScore: number;
   data?: ProductCardData;
 };
 
@@ -375,12 +376,12 @@ const homeRecommendedProducts: ProductCardData[] = [
 ];
 
 const products: ProductResult[] = [
-  { id: 1, price: nikeAirForceOne.discountPrice, data: nikeAirForceOne },
-  { id: 2, image: `${ASSET}/result-2.png`, price: 3594 },
-  { id: 3, image: `${ASSET}/result-3.png`, price: 3390 },
-  { id: 4, image: `${ASSET}/result-4.png`, price: 3750 },
-  { id: 5, image: `${ASSET}/result-5.png`, price: 2890 },
-  { id: 6, image: `${ASSET}/result-6.png`, price: 4100 }
+  { id: 1, price: nikeAirForceOne.discountPrice, bcScore: 4.7, data: nikeAirForceOne },
+  { id: 2, image: `${ASSET}/result-2.png`, price: 3594, bcScore: 4.6 },
+  { id: 3, image: `${ASSET}/result-3.png`, price: 3390, bcScore: 4.9 },
+  { id: 4, image: `${ASSET}/result-4.png`, price: 3750, bcScore: 4.5 },
+  { id: 5, image: `${ASSET}/result-5.png`, price: 2890, bcScore: 5.0 },
+  { id: 6, image: `${ASSET}/result-6.png`, price: 4100, bcScore: 4.3 }
 ];
 
 type CompareOffer = {
@@ -941,7 +942,9 @@ function ResultsScreen({
   const [sortLow, setSortLow] = useState(false);
   const favorites = useFavorites();
   const visibleProducts = useMemo(
-    () => sortLow ? [...products].sort((a, b) => a.price - b.price) : products,
+    () => sortLow
+      ? [...products].sort((a, b) => a.price - b.price)
+      : [...products].sort((a, b) => b.bcScore - a.bcScore),
     [sortLow]
   );
 
