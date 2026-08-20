@@ -1595,7 +1595,7 @@ const BEST_SELLERS: {
 ];
 
 function RankRibbon({ rank }: { rank: number }) {
-  const src = rank === 4 ? "/assets/rank/4.svg" : `/assets/rank/${rank}.png`;
+  const src = `/assets/rank/${rank}.png`;
   return (
     <span className={`best-sellers-rank${rank >= 4 ? " rank-plain" : ""}`} aria-label={`อันดับ ${rank}`}>
       <img src={src} alt="" aria-hidden="true" />
