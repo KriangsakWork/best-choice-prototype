@@ -891,7 +891,19 @@ function SearchScreen({ go, query, setQuery }: { go: (screen: Screen) => void; q
         <SearchField value={query} onChange={setQuery} onSubmit={submit} active autoFocus showLight />
       </div>
       <main className="search-content">
-        <h2>สินค้าแนะนำ</h2>
+        <h2>ค้นหาล่าสุด</h2>
+        <div className="recent-list">
+          {[
+            ["รองเท้าวิ่ง", `${ASSET}/search-recent-1.png`],
+            ["เลโก้", `${ASSET}/search-recent-2.png`],
+            ["หมวก", `${ASSET}/search-recent-3.png`]
+          ].map(([label, image]) => (
+            <button key={label} onClick={() => { setQuery(label); go("results"); }} type="button">
+              <span>{label}</span><img src={image} alt="" />
+            </button>
+          ))}
+        </div>
+        <h2 className="recent-heading">สินค้าแนะนำ</h2>
         <div className="suggestions">
           {(filtered.length ? filtered : suggestions).map((item) => (
             <button
@@ -903,18 +915,6 @@ function SearchScreen({ go, query, setQuery }: { go: (screen: Screen) => void; q
               <small className={item.trend.startsWith("-") ? "down" : ""}>
                 <span aria-hidden="true">{item.trend.startsWith("-") ? "⌁" : "⌁"}</span> นิยม {item.trend}
               </small>
-            </button>
-          ))}
-        </div>
-        <h2 className="recent-heading">ค้นหาล่าสุด</h2>
-        <div className="recent-list">
-          {[
-            ["รองเท้าวิ่ง", `${ASSET}/search-recent-1.png`],
-            ["เลโก้", `${ASSET}/search-recent-2.png`],
-            ["หมวก", `${ASSET}/search-recent-3.png`]
-          ].map(([label, image]) => (
-            <button key={label} onClick={() => { setQuery(label); go("results"); }} type="button">
-              <span>{label}</span><img src={image} alt="" />
             </button>
           ))}
         </div>
