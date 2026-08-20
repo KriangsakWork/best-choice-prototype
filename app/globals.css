@@ -701,12 +701,25 @@ img[src$="/compare-fire.svg"] {
   background: #eee;
   font-size: 12px;
   line-height: 18px;
+  transition: transform .18s cubic-bezier(.2, 1.5, .3, 1),
+    border-color .18s ease, color .18s ease, background .18s ease;
+}
+
+.chips button:active {
+  transform: scale(.94);
 }
 
 .chips button.selected {
   border-color: var(--primary);
   color: var(--primary);
   background: #fff;
+  animation: chip-pop .32s cubic-bezier(.2, 1.5, .3, 1);
+}
+
+@keyframes chip-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.08); }
+  100% { transform: scale(1); }
 }
 
 .chips button:nth-child(2).selected {
@@ -833,11 +846,16 @@ img[src$="/compare-fire.svg"] {
 .real-product-card__heart img {
   width: 17.44px;
   height: 16px;
+  transform-origin: 50% 55%;
   transition: transform .14s ease;
 }
 
 .real-product-card__heart:active img {
   transform: scale(.86);
+}
+
+.real-product-card__heart.is-bumping img {
+  animation: heart-pop .55s cubic-bezier(.2, 1.5, .3, 1);
 }
 
 .real-product-card__info {
@@ -2188,7 +2206,22 @@ img[src$="/compare-fire.svg"] {
   background: #312d2a;
   font-size: 13px;
   transform: translateX(-50%);
-  animation: toast-in .2s ease-out;
+  box-shadow: 0 6px 20px -4px rgba(15, 13, 12, .45);
+  animation: toast-in .32s cubic-bezier(.2, 1.5, .3, 1),
+    toast-out .28s ease-in 1.55s forwards;
+  overflow: hidden;
+}
+
+.toast::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  background: rgba(255, 255, 255, .45);
+  transform-origin: right center;
+  animation: toast-progress 1.7s linear forwards;
 }
 
 @keyframes reveal-chart {
@@ -2220,7 +2253,18 @@ img[src$="/compare-fire.svg"] {
 }
 
 @keyframes toast-in {
-  from { opacity: 0; transform: translate(-50%, 8px); }
+  from { opacity: 0; transform: translate(-50%, 16px) scale(.92); }
+  60%  { opacity: 1; }
+  to   { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+@keyframes toast-out {
+  to { opacity: 0; transform: translate(-50%, -6px) scale(.96); }
+}
+
+@keyframes toast-progress {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
 }
 
 .demo-note {
@@ -3209,6 +3253,12 @@ img[src$="/compare-fire.svg"] {
   font-size: 14px;
   line-height: 1.5;
   white-space: nowrap;
+  transition: transform .18s cubic-bezier(.2, 1.5, .3, 1),
+    border-color .18s ease, color .18s ease, background .18s ease;
+}
+
+.best-sellers-filters button:active {
+  transform: scale(.95);
 }
 
 .best-sellers-filters button:nth-child(1) { width: 63px; padding: 0; }
@@ -3218,6 +3268,7 @@ img[src$="/compare-fire.svg"] {
   border-color: transparent;
   background: var(--primary);
   color: #fff;
+  animation: chip-pop .32s cubic-bezier(.2, 1.5, .3, 1);
 }
 
 .best-sellers-info {

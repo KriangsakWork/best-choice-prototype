@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+
 export type ProductCardData = {
   id: number;
   productName: string;
@@ -40,6 +44,31 @@ const platformBadges: Record<ProductCardData["platform"], { src: string; width: 
     label: "TikTok Shop"
   }
 };
+
+function HeartButton({ favorite, onToggle }: { favorite: boolean; onToggle: () => void }) {
+  const [bumpKey, setBumpKey] = useState(0);
+  return (
+    <button
+      className={`real-product-card__heart${bumpKey > 0 ? " is-bumping" : ""}`}
+      type="button"
+      aria-label={favorite ? "นำออกจากรายการสนใจ" : "เพิ่มในรายการสนใจ"}
+      aria-pressed={favorite}
+      onClick={(event) => {
+        event.stopPropagation();
+        setBumpKey((k) => k + 1);
+        onToggle();
+      }}
+    >
+      <img
+        key={`heart-${bumpKey}`}
+        src={favorite ? "/assets/SVG/Like/Property 1=Like.svg" : "/assets/SVG/Like/Property 1=Normal.svg"}
+        alt=""
+        width={17.44}
+        height={16}
+      />
+    </button>
+  );
+}
 
 export function ProductBadges({
   product,
@@ -128,23 +157,7 @@ export function ProductCard({
       <ProductBadges product={product} className="real-product-card__badges" />
 
       {onFavoriteToggle ? (
-        <button
-          className="real-product-card__heart"
-          type="button"
-          aria-label={favorite ? "นำออกจากรายการสนใจ" : "เพิ่มในรายการสนใจ"}
-          aria-pressed={favorite}
-          onClick={(event) => {
-            event.stopPropagation();
-            onFavoriteToggle();
-          }}
-        >
-          <img
-            src={favorite ? "/assets/SVG/Like/Property 1=Like.svg" : "/assets/SVG/Like/Property 1=Normal.svg"}
-            alt=""
-            width={17.44}
-            height={16}
-          />
-        </button>
+        <HeartButton favorite={favorite} onToggle={onFavoriteToggle} />
       ) : (
         <span className="real-product-card__heart" aria-label="อยู่ในรายการสนใจ">
           <img src="/assets/SVG/Like/Property 1=Like.svg" alt="" width={17.44} height={16} />

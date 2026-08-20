@@ -1,6 +1,29 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+
+function useCountUp(target: number, duration = 520) {
+  const [value, setValue] = useState(target);
+  useEffect(() => {
+    let raf = 0;
+    const start = performance.now();
+    const from = 0;
+    const step = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      setValue(Math.round(from + (target - from) * eased));
+      if (t < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [target, duration]);
+  return value;
+}
+
+function CountUpBaht({ value }: { value: number }) {
+  const shown = useCountUp(value);
+  return <>{`฿${shown.toLocaleString("en-US")}`}</>;
+}
 import { createPortal } from "react-dom";
 import { ProductCardData } from "./ProductCard";
 import { ResultCard, ResultCardData } from "./ResultCard";
@@ -951,12 +974,12 @@ export function CatalogFlowSortStatus() {
               <div className="cmp-stats" aria-label={`ราคาต่ำสุด ${baht(bestOffer.discountPrice)} ประหยัดได้ ${baht(bestSaving)} เทียบ ${offers.length} แพลตฟอร์ม`}>
                 <div>
                   <span>ราคาต่ำสุด</span>
-                  <b>{baht(bestOffer.discountPrice)}</b>
+                  <b><CountUpBaht value={bestOffer.discountPrice} /></b>
                 </div>
                 <i aria-hidden="true" />
                 <div>
                   <span>ประหยัดได้</span>
-                  <b className="cmp-stat-save">{baht(bestSaving)}</b>
+                  <b className="cmp-stat-save"><CountUpBaht value={bestSaving} /></b>
                 </div>
                 <i aria-hidden="true" />
                 <div>
