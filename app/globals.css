@@ -2094,18 +2094,22 @@ img[src$="/compare-fire.svg"] {
   width: 142px;
   height: 46px;
   padding: 4px 0;
-  border: 1px solid var(--primary);
+  border: 1px solid rgba(235, 59, 12, .55);
   border-radius: 999px;
-  background: var(--primary-soft);
-  color: #312d2a;
+  background: #fff;
+  color: var(--primary);
   font-size: 16px;
   font-weight: 500;
   line-height: 1.5;
+  transition: transform .16s ease, background .16s ease;
 }
 
 .history-fav-btn.active {
-  color: var(--primary);
-  background: #fff;
+  background: #fff5f1;
+}
+
+.history-fav-btn:active {
+  transform: scale(.97);
 }
 
 .history-buy-btn {

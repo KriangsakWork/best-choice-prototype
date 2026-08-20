@@ -1344,6 +1344,7 @@ function PriceCard({
       </div>
       <div className="price-card__chart">
         <svg
+          key={period}
           ref={svgRef}
           viewBox="0 0 344 130"
           role="img"
@@ -1479,7 +1480,7 @@ function HistoryScreen({
             <del>฿{history.original.toLocaleString("en-US")}</del>
           </div>
         </section>
-        <PriceCard key={period} history={history} period={period} onPeriodChange={setPeriod} />
+        <PriceCard history={history} period={period} onPeriodChange={setPeriod} />
         <div className="ai-card">
           <img
             className="ai-card__sparkle"
