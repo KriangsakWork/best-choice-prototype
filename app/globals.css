@@ -256,30 +256,8 @@ img[src$="/compare-fire.svg"] {
   transform: scale(.88);
 }
 
-.bottom-nav button {
-  position: relative;
-}
-
 .bottom-nav button.active {
   color: var(--primary);
-}
-
-.bottom-nav button.active::before {
-  content: "";
-  position: absolute;
-  top: 2px;
-  left: 50%;
-  width: 22px;
-  height: 3px;
-  border-radius: 999px;
-  background: var(--primary);
-  transform: translateX(-50%) scaleX(0);
-  animation: nav-pill-in .34s cubic-bezier(.22, 1, .36, 1) forwards;
-}
-
-@keyframes nav-pill-in {
-  from { transform: translateX(-50%) scaleX(0); opacity: 0; }
-  to   { transform: translateX(-50%) scaleX(1); opacity: 1; }
 }
 
 .bottom-nav button.active img {
