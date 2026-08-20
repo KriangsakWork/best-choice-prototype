@@ -1607,6 +1607,7 @@ function BestSellersScreen({ go }: { go: (screen: Screen) => void }) {
   const [filter, setFilter] = useState<BestSellerCategory>("ยอดฮิต");
   const [showBanner, setShowBanner] = useState(true);
   const filters: BestSellerCategory[] = ["ยอดฮิต", "รองเท้า", "ของใช้ในบ้าน"];
+  const visibleItems = filter === "ของใช้ในบ้าน" ? [] : BEST_SELLERS;
 
   return (
     <section className="screen best-sellers-screen">
@@ -1664,9 +1665,21 @@ function BestSellersScreen({ go }: { go: (screen: Screen) => void }) {
             </button>
           </div>
         )}
+        {visibleItems.length === 0 ? (
+          <div className="best-sellers-empty" role="status">
+            <p>ยังไม่มีรายการ</p>
+          </div>
+        ) : (
         <div className="best-sellers-list">
-          {BEST_SELLERS.map((item) => (
-            <article key={item.rank} className="best-sellers-card">
+          {visibleItems.map((item) => (
+            <article
+              key={item.rank}
+              className="best-sellers-card"
+              role="button"
+              tabIndex={0}
+              onClick={() => document.dispatchEvent(new Event("best-choice:open-compare"))}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); document.dispatchEvent(new Event("best-choice:open-compare")); } }}
+            >
               <RankRibbon rank={item.rank} />
               <img className="best-sellers-image" src={item.image} alt={item.name} />
               <div className="best-sellers-body">
@@ -1699,6 +1712,7 @@ function BestSellersScreen({ go }: { go: (screen: Screen) => void }) {
             </article>
           ))}
         </div>
+        )}
       </main>
       <BottomNav active="hot" go={go} />
     </section>
@@ -2104,13 +2118,19 @@ export default function BestChoiceApp() {
       setScreen("history");
     };
     const openSearch = () => setScreen("search");
+    const openCompare = () => {
+      if (selected.length < 2) setSelected([1, 2, 3]);
+      setScreen("compare");
+    };
     document.addEventListener("best-choice:open-history", openHistory);
     document.addEventListener("best-choice:start-search", openSearch);
+    document.addEventListener("best-choice:open-compare", openCompare);
     return () => {
       document.removeEventListener("best-choice:open-history", openHistory);
       document.removeEventListener("best-choice:start-search", openSearch);
+      document.removeEventListener("best-choice:open-compare", openCompare);
     };
-  }, [screen]);
+  }, [screen, selected]);
 
   const go = (next: Screen) => {
     if (next === "results" || next === "compare") {
