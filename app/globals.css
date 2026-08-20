@@ -3085,17 +3085,11 @@ img[src$="/compare-fire.svg"] {
 /* Best Sellers screen ============================================== */
 
 .best-sellers-screen {
-  background: #fefcfb;
+  background: linear-gradient(180deg, #f1512f 0%, #ffffff 100%);
 }
 
 .best-sellers-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 210px;
-  background: linear-gradient(180deg, #f1512f 0%, #f9835d 55%, #fefcfb 100%);
-  pointer-events: none;
+  display: none;
 }
 
 .best-sellers-header {
@@ -3136,12 +3130,14 @@ img[src$="/compare-fire.svg"] {
 
 .best-sellers-trophy {
   position: absolute;
-  top: 40px;
-  right: -20px;
-  width: 130px;
-  height: 130px;
+  top: 30px;
+  right: 0;
+  width: 150px;
+  height: 150px;
   z-index: 0;
+  opacity: .36;
   pointer-events: none;
+  object-fit: contain;
 }
 
 .best-sellers-content {

@@ -1618,13 +1618,12 @@ function BestSellersScreen({ go }: { go: (screen: Screen) => void }) {
           <img src={`${ASSET}/SVG/arrow_back.svg`} alt="" aria-hidden="true" />
         </button>
         <h1>อันดับ Best Choice Score สูงสุด</h1>
-        <svg className="best-sellers-trophy" viewBox="0 0 130 130" aria-hidden="true">
-          <path
-            d="M40 22 h50 v6 h14 c5 0 8 3 8 8 v10 c0 12-9 22-22 22 h-4 c-3 8-10 14-19 15 v14 h14 c3 0 5 2 5 5 v6 H44 v-6 c0-3 2-5 5-5 h14 V83 c-9-1-16-7-19-15 h-4 c-13 0-22-10-22-22 V36 c0-5 3-8 8-8 h14 v-6 zm-14 14 v10 c0 7 5 12 12 12 h2 V36 h-14zm74 0 v22 h2 c7 0 12-5 12-12 V36 h-14z"
-            fill="#ffffff"
-            opacity="0.22"
-          />
-        </svg>
+        <img
+          className="best-sellers-trophy"
+          src={`${ASSET}/best-sellers/trophy.png`}
+          alt=""
+          aria-hidden="true"
+        />
       </header>
       <main className="best-sellers-content">
         <div className="best-sellers-filters" role="tablist">
