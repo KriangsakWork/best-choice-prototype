@@ -2134,6 +2134,29 @@ img[src$="/compare-fire.svg"] {
   width: 20px;
   height: 18px;
   object-fit: contain;
+  transform-origin: 50% 55%;
+}
+
+.history-fav-btn.is-bumping .history-fav-btn__icon {
+  animation: heart-pop .55s cubic-bezier(.2, 1.5, .3, 1);
+}
+
+.history-fav-btn__label {
+  display: inline-block;
+  animation: fav-label-in .28s ease .18s both;
+}
+
+@keyframes heart-pop {
+  0%   { transform: scale(1) rotate(0); }
+  20%  { transform: scale(.85) rotate(-6deg); }
+  45%  { transform: scale(1.35) rotate(8deg); }
+  70%  { transform: scale(.92) rotate(-4deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+@keyframes fav-label-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .history-buy-btn__icon {

@@ -1455,6 +1455,7 @@ function HistoryScreen({
   const favorites = useFavorites();
   const favorite = favorites.isFavorite(product);
   const history = getPriceHistory(product);
+  const [favBumpKey, setFavBumpKey] = useState(0);
   const differenceFromAverage = Math.round(Math.abs(history.current - history.average));
   const isBelowAverage = history.current <= history.average;
 
@@ -1512,20 +1513,27 @@ function HistoryScreen({
       </main>
       <div className="history-action-bar">
         <button
-          className={favorite ? "history-fav-btn active" : "history-fav-btn"}
+          className={
+            (favorite ? "history-fav-btn active" : "history-fav-btn") +
+            (favBumpKey > 0 ? " is-bumping" : "")
+          }
           onClick={() => {
             favorites.toggleFavorite(product);
+            setFavBumpKey((k) => k + 1);
             flash(favorite ? "นำออกจากรายการโปรดแล้ว" : "บันทึกในรายการโปรดแล้ว");
           }}
           type="button"
         >
           <img
+            key={`fav-icon-${favBumpKey}`}
             className="history-fav-btn__icon"
             src={favorite ? `${ASSET}/SVG/Like/Property 1=Like.svg` : `${ASSET}/SVG/Like/Property 1=Normal.svg`}
             alt=""
             aria-hidden="true"
           />
-          <span>{favorite ? "กำลังติดตาม" : "สนใจ"}</span>
+          <span key={`fav-label-${favorite}`} className="history-fav-btn__label">
+            {favorite ? "กำลังติดตาม" : "สนใจ"}
+          </span>
         </button>
         <button className="history-buy-btn" onClick={buyProduct} type="button">
           <img className="history-buy-btn__icon" src={`${ASSET}/SVG/Buy BT.svg`} alt="" aria-hidden="true" />
