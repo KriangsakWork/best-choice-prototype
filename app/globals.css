@@ -1096,6 +1096,16 @@ img[src$="/compare-fire.svg"] {
 .compare-track img {
   width: 16px;
   height: 16px;
+  transform-origin: 50% 55%;
+}
+
+.compare-track.is-bumping img {
+  animation: heart-pop .55s cubic-bezier(.2, 1.5, .3, 1);
+}
+
+.compare-track__label {
+  display: inline-block;
+  animation: fav-label-in .28s ease .18s both;
 }
 
 .compare-track.active {

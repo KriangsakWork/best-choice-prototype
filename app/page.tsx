@@ -1103,6 +1103,7 @@ function CompareScreen({
 }) {
   const [toast, setToast] = useState("");
   const [discountDetailsOpen, setDiscountDetailsOpen] = useState(false);
+  const [favBumpKey, setFavBumpKey] = useState(0);
   const favorites = useFavorites();
   const effectiveIds = selected.length >= 2 ? selected.slice(0, 3) : [1, 2, 3];
   const offers = effectiveIds.map((id) => compareOfferById[id]).filter(Boolean).sort((a, b) => a.price - b.price);
@@ -1132,17 +1133,27 @@ function CompareScreen({
             <strong>{bestOffer.productName}</strong>
           </div>
           <button
-            className={favorite ? "compare-track active" : "compare-track"}
+            className={
+              (favorite ? "compare-track active" : "compare-track") +
+              (favBumpKey > 0 ? " is-bumping" : "")
+            }
             type="button"
             aria-label={favorite ? "เลิกติดตามราคา" : "ติดตามราคา"}
             aria-pressed={favorite}
-            onClick={() => bestProduct && favorites.toggleFavorite(bestProduct)}
+            onClick={() => {
+              if (!bestProduct) return;
+              favorites.toggleFavorite(bestProduct);
+              setFavBumpKey((k) => k + 1);
+            }}
           >
             <img
+              key={`compare-fav-icon-${favBumpKey}`}
               src={favorite ? `${ASSET}/SVG/Like/Property 1=Like.svg` : `${ASSET}/SVG/Like/Property 1=Normal.svg`}
               alt=""
             />
-            {favorite ? "กำลังติดตาม" : "ติดตามราคา"}
+            <span key={`compare-fav-label-${favorite}`} className="compare-track__label">
+              {favorite ? "กำลังติดตาม" : "ติดตามราคา"}
+            </span>
           </button>
           <div className="compare-summary-stats" aria-label={`เปรียบเทียบ ${offers.length} แพลตฟอร์ม ราคาต่ำสุด ${bestOffer.price.toLocaleString("en-US")} บาท`}>
             <span>
