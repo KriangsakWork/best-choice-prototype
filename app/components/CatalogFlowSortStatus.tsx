@@ -1048,7 +1048,7 @@ export function CatalogFlowSortStatus() {
               </div>
 
 
-              <article className="cmp-card cmp-card--best">
+              <article className="cmp-card cmp-card--best" style={{ ["--offer-i" as string]: 0 }}>
                 <div className="cmp-card-head">
                   <span className="cmp-bc-best">
                     <CompareThumbIcon />
@@ -1107,8 +1107,12 @@ export function CatalogFlowSortStatus() {
                 <CatalogCompareBuy offer={bestOffer} onUnavailable={() => flash("ยังไม่มีลิงก์ร้านค้านี้ใน Prototype")} />
               </article>
 
-              {otherOffers.map((offer) => (
-                <article className="cmp-card cmp-card--offer" key={offer.id}>
+              {otherOffers.map((offer, offerIndex) => (
+                <article
+                  className="cmp-card cmp-card--offer"
+                  key={offer.id}
+                  style={{ ["--offer-i" as string]: offerIndex + 1 }}
+                >
                   <div className="cmp-offer-info">
                     <div className="cmp-card-head">
                       <span className="cmp-bc">

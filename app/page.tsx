@@ -1616,10 +1616,14 @@ const BEST_SELLERS: {
   { rank: 10, name: "Birkenstock Arizona Sandal", image: "/assets/products/product-pic/8-birken-tiktok.webp", bcScore: 4.5, platform: "TikTok", rating: 4.8, sold: "185", price: 3311, original: 3990 }
 ];
 
-function RankRibbon({ rank }: { rank: number }) {
+function RankRibbon({ rank, index }: { rank: number; index: number }) {
   const src = `/assets/rank/${rank}.png`;
   return (
-    <span className={`best-sellers-rank${rank >= 4 ? " rank-plain" : ""}`} aria-label={`อันดับ ${rank}`}>
+    <span
+      className={`best-sellers-rank${rank >= 4 ? " rank-plain" : ""}`}
+      style={{ "--rank-i": index } as CSSProperties}
+      aria-label={`อันดับ ${rank}`}
+    >
       <img src={src} alt="" aria-hidden="true" />
     </span>
   );
@@ -1692,16 +1696,17 @@ function BestSellersScreen({ go }: { go: (screen: Screen) => void }) {
           </div>
         ) : (
         <div className="best-sellers-list">
-          {visibleItems.map((item) => (
+          {visibleItems.map((item, index) => (
             <article
               key={item.rank}
               className="best-sellers-card"
+              style={{ "--card-i": index } as CSSProperties}
               role="button"
               tabIndex={0}
               onClick={() => document.dispatchEvent(new Event("best-choice:open-compare"))}
               onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); document.dispatchEvent(new Event("best-choice:open-compare")); } }}
             >
-              <RankRibbon rank={item.rank} />
+              <RankRibbon rank={item.rank} index={index} />
               <img className="best-sellers-image" src={item.image} alt={item.name} />
               <div className="best-sellers-body">
                 <div className="best-sellers-tags">

@@ -25,6 +25,7 @@
 }
 
 .catalog-bottom-nav button {
+  position: relative;
   min-width: 0;
   height: 65px;
   display: flex;
@@ -36,6 +37,19 @@
   font-size: 11px;
   font-weight: 600;
   line-height: 16px;
+}
+
+.catalog-bottom-nav button.active::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  width: 22px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--primary);
+  transform: translateX(-50%) scaleX(0);
+  animation: nav-pill-in .34s cubic-bezier(.22, 1, .36, 1) forwards;
 }
 
 .catalog-bottom-nav button img {

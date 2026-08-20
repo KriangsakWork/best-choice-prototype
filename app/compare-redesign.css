@@ -442,6 +442,13 @@
   border-radius: 12px;
   background: #fff;
   box-shadow: 0 1px 2px rgba(0, 0, 0, .08);
+  animation: cmp-card-in .42s cubic-bezier(.22, 1, .36, 1) both;
+  animation-delay: calc(var(--offer-i, 0) * 80ms + 60ms);
+}
+
+@keyframes cmp-card-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* Best offer card */
