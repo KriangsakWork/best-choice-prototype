@@ -1481,26 +1481,14 @@ function HistoryScreen({
         </section>
         <PriceCard key={period} history={history} period={period} onPeriodChange={setPeriod} />
         <div className="ai-card">
-          <span className="ai-card__sparkle" aria-hidden="true">
-            <svg viewBox="0 0 40 40" width="36" height="36">
-              <defs>
-                <linearGradient id="ai-sparkle" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#4285f4" />
-                  <stop offset="35%" stopColor="#9b72cb" />
-                  <stop offset="70%" stopColor="#d96570" />
-                  <stop offset="100%" stopColor="#f9ab00" />
-                </linearGradient>
-              </defs>
-              <path
-                fill="url(#ai-sparkle)"
-                d="M22 4 C22.7 12.6 26.4 16.3 35 17 C26.4 17.7 22.7 21.4 22 30 C21.3 21.4 17.6 17.7 9 17 C17.6 16.3 21.3 12.6 22 4 Z"
-              />
-              <path
-                fill="url(#ai-sparkle)"
-                d="M11 26 C11.4 30.2 12.8 31.6 17 32 C12.8 32.4 11.4 33.8 11 38 C10.6 33.8 9.2 32.4 5 32 C9.2 31.6 10.6 30.2 11 26 Z"
-              />
-            </svg>
-          </span>
+          <img
+            className="ai-card__sparkle"
+            src={`${ASSET}/SVG/AI.png`}
+            width={36}
+            height={36}
+            alt=""
+            aria-hidden="true"
+          />
           <div>
             <strong>{history.current === history.min ? "ราคาดีที่สุดในรอบ 90 วัน!✨" : `พบราคาต่ำสุด ฿${history.min.toLocaleString("en-US")} ในรอบ 90 วัน`}</strong>
             <span />

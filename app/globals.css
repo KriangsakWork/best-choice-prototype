@@ -1983,7 +1983,7 @@ img[src$="/compare-fire.svg"] {
 .ai-card {
   display: flex;
   gap: 16px;
-  padding: 13px 18px 13px 20px;
+  padding: 13px 22px;
   border-radius: 16px;
   background: #fefcfb;
   box-shadow: 0 4px 3px rgba(0, 0, 0, .1), 0 2px 2px rgba(0, 0, 0, .05);
@@ -1993,14 +1993,8 @@ img[src$="/compare-fire.svg"] {
   flex: 0 0 36px;
   width: 36px;
   height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.ai-card__sparkle svg {
-  width: 30px;
-  height: 30px;
+  display: block;
+  object-fit: contain;
 }
 
 .ai-card > div {
@@ -2014,7 +2008,7 @@ img[src$="/compare-fire.svg"] {
 .ai-card strong {
   display: block;
   color: #312d2a;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 500;
   line-height: 1.5;
   white-space: nowrap;
@@ -2025,6 +2019,7 @@ img[src$="/compare-fire.svg"] {
   width: 100%;
   height: 1px;
   background: #d9cfc9;
+  margin: 2px 0 2px;
 }
 
 .ai-card p {
@@ -2053,25 +2048,21 @@ img[src$="/compare-fire.svg"] {
   box-shadow: 0 -2px 6px rgba(0, 0, 0, .08);
 }
 
-.history-fav-btn,
-.history-buy-btn {
+.history-fav-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
+  width: 142px;
   height: 46px;
-  padding: 0 18px;
+  padding: 4px 0;
+  border: 1px solid var(--primary);
   border-radius: 999px;
+  background: var(--primary-soft);
+  color: #312d2a;
   font-size: 15px;
   font-weight: 500;
   line-height: 1.5;
-}
-
-.history-fav-btn {
-  min-width: 142px;
-  border: 1px solid var(--primary);
-  color: var(--text);
-  background: var(--primary-soft);
 }
 
 .history-fav-btn.active {
@@ -2080,11 +2071,19 @@ img[src$="/compare-fire.svg"] {
 }
 
 .history-buy-btn {
-  flex: 1;
-  min-width: 180px;
-  max-width: 220px;
-  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 203px;
+  height: 46px;
+  padding: 4px 0;
+  border-radius: 999px;
   background: var(--primary);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.5;
 }
 
 .history-fav-btn__icon {
