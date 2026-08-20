@@ -20,6 +20,7 @@ type Screen =
   | "results"
   | "compare"
   | "history"
+  | "best-sellers"
   | "total-save"
   | "profile"
   | "interest"
@@ -133,6 +134,10 @@ const navIconAssets: Record<string, { default: string; active: string }> = {
   home: {
     default: `${ASSET}/SVG/Nav Bar/HIC01.svg`,
     active: `${ASSET}/SVG/Nav Bar/HIC01A.svg`
+  },
+  hot: {
+    default: `${ASSET}/SVG/Nav Bar/HIC05.svg`,
+    active: `${ASSET}/SVG/Nav Bar/HIC05B.svg`
   },
   interest: {
     default: `${ASSET}/SVG/Nav Bar/HIC02.svg`,
@@ -588,6 +593,7 @@ function StatusBar() {
 function BottomNav({ active, go }: { active?: string; go: (screen: Screen) => void }) {
   const items = [
     { key: "home", label: "หน้าหลัก", screen: "home" as Screen },
+    { key: "hot", label: "ยอดฮิต", screen: "best-sellers" as Screen },
     { key: "interest", label: "สนใจ", screen: "interest" as Screen },
     { key: "savings", label: "ประหยัด", screen: "total-save" as Screen },
     { key: "profile", label: "โปรไฟล์", screen: "profile" as Screen }
@@ -1563,6 +1569,166 @@ const savingsEntries = [
   }
 ];
 
+type BestSellerCategory = "ยอดฮิต" | "รองเท้า" | "ของใช้ในบ้าน";
+
+const BEST_SELLERS: {
+  rank: number;
+  name: string;
+  image: string;
+  bcScore: number;
+  platform: "Lazada" | "Shopee" | "TikTok";
+  rating: number;
+  sold: string;
+  price: number;
+  original: number;
+}[] = [
+  { rank: 1, name: "Authentic New Balance NB 740 Black", image: "/assets/products/product-pic/4-nb-lazada.webp", bcScore: 5.0, platform: "Lazada", rating: 4.9, sold: "16", price: 1949, original: 7000 },
+  { rank: 2, name: "CROCS Classic Clog รองเท้าลำลองผู้ใหญ่", image: "/assets/products/product-pic/7-crocs-shopee.webp", bcScore: 4.9, platform: "Shopee", rating: 4.9, sold: "9k+", price: 2040, original: 2190 },
+  { rank: 3, name: "Flynn - Ballet Flats Room Service Collection คัทชูจุดนุ่มมาก", image: "/assets/products/product-pic/11-flynn-shopee.webp", bcScore: 4.9, platform: "Shopee", rating: 4.7, sold: "4k+", price: 1352, original: 1490 },
+  { rank: 4, name: "รองเท้า CHUCK 70 CANVAS OX BLACK", image: "/assets/products/product-pic/2-converse-shopee.webp", bcScore: 4.8, platform: "TikTok", rating: 4.4, sold: "3.12k+", price: 3040, original: 3090 },
+  { rank: 5, name: "Nike Men's Air Force 1 '07 Shoes - White", image: "/assets/products/product-pic/1-nike-shopee.webp", bcScore: 4.7, platform: "Shopee", rating: 4.7, sold: "56", price: 3594, original: 4300 },
+  { rank: 6, name: "Nike Men's Air Force 1 '07 Shoes - White", image: "/assets/products/product-pic/1-nike-lazada.webp", bcScore: 4.7, platform: "Lazada", rating: 4.9, sold: "22", price: 3328, original: 4300 }
+];
+
+function RankRibbon({ rank }: { rank: number }) {
+  if (rank <= 3) {
+    const fill = rank === 1 ? "url(#rankGold)" : rank === 2 ? "url(#rankSilver)" : "url(#rankBronze)";
+    return (
+      <span className={`best-sellers-rank rank-top rank-${rank}`}>
+        <svg viewBox="0 0 22 31" width="22" height="31" aria-hidden="true">
+          <defs>
+            <linearGradient id="rankGold" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#f5c246" />
+              <stop offset="100%" stopColor="#c68410" />
+            </linearGradient>
+            <linearGradient id="rankSilver" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#d7d3ce" />
+              <stop offset="100%" stopColor="#8f8b86" />
+            </linearGradient>
+            <linearGradient id="rankBronze" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#dda274" />
+              <stop offset="100%" stopColor="#a05a1e" />
+            </linearGradient>
+          </defs>
+          <path d="M0 0 H22 V27 L11 22 L0 27 Z" fill={fill} />
+        </svg>
+        <span className="rank-label">TOP</span>
+        <span className="rank-num">{rank}</span>
+      </span>
+    );
+  }
+  return (
+    <span className="best-sellers-rank rank-plain">
+      <svg viewBox="0 0 22 31" width="22" height="31" aria-hidden="true">
+        <path d="M0 0 H22 V27 L11 22 L0 27 Z" fill="#efe7e3" />
+      </svg>
+      <span className="rank-num rank-num--plain">{rank}</span>
+    </span>
+  );
+}
+
+function BestSellersScreen({ go }: { go: (screen: Screen) => void }) {
+  const [filter, setFilter] = useState<BestSellerCategory>("ยอดฮิต");
+  const [showBanner, setShowBanner] = useState(true);
+  const filters: BestSellerCategory[] = ["ยอดฮิต", "รองเท้า", "ของใช้ในบ้าน"];
+
+  return (
+    <section className="screen best-sellers-screen">
+      <StatusBar />
+      <div className="best-sellers-bg" aria-hidden="true" />
+      <header className="best-sellers-header">
+        <button type="button" className="best-sellers-back" onClick={() => go("home")} aria-label="ย้อนกลับ">
+          <img src={`${ASSET}/SVG/arrow_back.svg`} alt="" aria-hidden="true" />
+        </button>
+        <h1>อันดับ Best Choice Score สูงสุด</h1>
+        <svg className="best-sellers-trophy" viewBox="0 0 130 130" aria-hidden="true">
+          <path
+            d="M40 22 h50 v6 h14 c5 0 8 3 8 8 v10 c0 12-9 22-22 22 h-4 c-3 8-10 14-19 15 v14 h14 c3 0 5 2 5 5 v6 H44 v-6 c0-3 2-5 5-5 h14 V83 c-9-1-16-7-19-15 h-4 c-13 0-22-10-22-22 V36 c0-5 3-8 8-8 h14 v-6 zm-14 14 v10 c0 7 5 12 12 12 h2 V36 h-14zm74 0 v22 h2 c7 0 12-5 12-12 V36 h-14z"
+            fill="#ffffff"
+            opacity="0.22"
+          />
+        </svg>
+      </header>
+      <main className="best-sellers-content">
+        <div className="best-sellers-filters" role="tablist">
+          {filters.map((f) => (
+            <button
+              key={f}
+              type="button"
+              className={filter === f ? "active" : ""}
+              onClick={() => setFilter(f)}
+              role="tab"
+              aria-selected={filter === f}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
+        {showBanner && (
+          <div className="best-sellers-info">
+            <span className="best-sellers-info-icon" aria-hidden="true">
+              <svg viewBox="0 0 14 14" width="14" height="14">
+                <circle cx="7" cy="7" r="6.4" fill="none" stroke="#eb3b0c" strokeWidth="1.2" />
+                <circle cx="7" cy="4" r="0.9" fill="#eb3b0c" />
+                <rect x="6.3" y="6" width="1.4" height="4.5" rx="0.7" fill="#eb3b0c" />
+              </svg>
+            </span>
+            <p>
+              คะแนน Best Choice คิดจาก <strong>ราคา 50%&nbsp;&nbsp;รีวิว 30%&nbsp;&nbsp;ยอดขาย 20%</strong>
+            </p>
+            <button
+              type="button"
+              className="best-sellers-info-close"
+              onClick={() => setShowBanner(false)}
+              aria-label="ปิดคำอธิบาย"
+            >
+              <svg viewBox="0 0 14 14" width="12" height="12">
+                <path d="M3 3 L11 11 M11 3 L3 11" stroke="#312d2a" strokeWidth="1.4" strokeLinecap="round" />
+              </svg>
+            </button>
+          </div>
+        )}
+        <div className="best-sellers-list">
+          {BEST_SELLERS.map((item) => (
+            <article key={item.rank} className="best-sellers-card">
+              <RankRibbon rank={item.rank} />
+              <img className="best-sellers-image" src={item.image} alt={item.name} />
+              <div className="best-sellers-body">
+                <div className="best-sellers-tags">
+                  <span className="bc-score-chip">
+                    <svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true">
+                      <path d="M6 0.6 C6.4 3.6 8.4 5.6 11.4 6 C8.4 6.4 6.4 8.4 6 11.4 C5.6 8.4 3.6 6.4 0.6 6 C3.6 5.6 5.6 3.6 6 0.6 Z" fill="#ffffff" />
+                    </svg>
+                    Best Choice&nbsp;{item.bcScore.toFixed(1)}
+                  </span>
+                  <span className="bc-mini-divider" aria-hidden="true" />
+                  <span className={`bc-platform bc-platform--${item.platform.toLowerCase()}`}>
+                    {item.platform}
+                  </span>
+                </div>
+                <h3>{item.name}</h3>
+                <div className="best-sellers-meta">
+                  <span className="bc-rating">
+                    <img src="/assets/product-card/star.svg" alt="" width={12} height={12} />
+                    {item.rating}
+                  </span>
+                  <span className="bc-sep">|</span>
+                  <span>ขายไปแล้ว {item.sold} ชิ้น</span>
+                </div>
+              </div>
+              <div className="best-sellers-price">
+                <strong>฿{item.price.toLocaleString("en-US")}</strong>
+                <del>฿{item.original.toLocaleString("en-US")}</del>
+              </div>
+            </article>
+          ))}
+        </div>
+      </main>
+      <BottomNav active="hot" go={go} />
+    </section>
+  );
+}
+
 function TotalSaveScreen({ go }: { go: (screen: Screen) => void }) {
   const [period, setPeriod] = useState<SavingsPeriod>("3 เดือน");
   const chart = savingsChartData[period];
@@ -2030,6 +2196,7 @@ export default function BestChoiceApp() {
               }}
             />
           )}
+          {screen === "best-sellers" && <BestSellersScreen go={go} />}
           {screen === "total-save" && <TotalSaveScreen go={go} />}
           {screen === "profile" && <ProfileScreen go={go} />}
           {screen === "interest-empty" && <InterestEmptyScreen go={go} />}
