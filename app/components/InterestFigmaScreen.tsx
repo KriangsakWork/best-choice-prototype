@@ -231,7 +231,7 @@ const FILTERS: Array<{ value: PlatformFilter; label: string }> = [
 
 const NAV_ITEMS = [
   { label: "หน้าหลัก", icon: "/assets/SVG/Nav Bar/HIC01.svg" },
-  { label: "ยอดฮิต", icon: "/assets/SVG/Nav Bar/HIC05.svg" },
+  { label: "ยอดฮิต", icon: "/assets/SVG/Nav Bar/HIC06.svg" },
   { label: "สนใจ", icon: "/assets/SVG/Nav Bar/HIC02B.svg", active: true },
   { label: "ประหยัด", icon: "/assets/SVG/Nav Bar/HIC03.svg" },
   { label: "โปรไฟล์", icon: "/assets/SVG/Nav Bar/HIC04.svg" }

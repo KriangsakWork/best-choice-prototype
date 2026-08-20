@@ -136,8 +136,8 @@ const navIconAssets: Record<string, { default: string; active: string }> = {
     active: `${ASSET}/SVG/Nav Bar/HIC01A.svg`
   },
   hot: {
-    default: `${ASSET}/SVG/Nav Bar/HIC05.svg`,
-    active: `${ASSET}/SVG/Nav Bar/HIC05B.svg`
+    default: `${ASSET}/SVG/Nav Bar/HIC06.svg`,
+    active: `${ASSET}/SVG/Nav Bar/HIC06A.svg`
   },
   interest: {
     default: `${ASSET}/SVG/Nav Bar/HIC02.svg`,
