@@ -490,6 +490,7 @@ export function CatalogFlowSortStatus() {
   const [mallOnly, setMallOnly] = useState(true);
   const [freeShipOnly, setFreeShipOnly] = useState(true);
   const [sortMode, setSortMode] = useState<SortMode>("price-asc");
+  const [favBumpKey, setFavBumpKey] = useState(0);
   const [sortOpen, setSortOpen] = useState(false);
   const [compareToast, setCompareToast] = useState("");
   const [compareDiscountDetailsOpen, setCompareDiscountDetailsOpen] = useState(false);
@@ -925,14 +926,26 @@ export function CatalogFlowSortStatus() {
               <div className="cmp-headline-top">
                 <h1>{selectedGroup.name}</h1>
                 <button
-                  className={favorite ? "cmp-track active" : "cmp-track"}
+                  className={
+                    (favorite ? "cmp-track active" : "cmp-track") +
+                    (favBumpKey > 0 ? " is-bumping" : "")
+                  }
                   type="button"
                   aria-pressed={favorite}
                   aria-label={favorite ? "กำลังติดตามราคา" : "ติดตามราคา"}
-                  onClick={() => favorites.toggleFavorite(trackedOffer)}
+                  onClick={() => {
+                    favorites.toggleFavorite(trackedOffer);
+                    setFavBumpKey((k) => k + 1);
+                  }}
                 >
-                  <img src={favorite ? "/assets/SVG/Like/Property 1=Like.svg" : "/assets/SVG/Like/Property 1=Normal.svg"} alt="" />
-                  {favorite ? "กำลังติดตาม" : "สนใจ"}
+                  <img
+                    key={`cmp-fav-icon-${favBumpKey}`}
+                    src={favorite ? "/assets/SVG/Like/Property 1=Like.svg" : "/assets/SVG/Like/Property 1=Normal.svg"}
+                    alt=""
+                  />
+                  <span key={`cmp-fav-label-${favorite}`} className="cmp-track__label">
+                    {favorite ? "กำลังติดตาม" : "สนใจ"}
+                  </span>
                 </button>
               </div>
               <div className="cmp-stats" aria-label={`ราคาต่ำสุด ${baht(bestOffer.discountPrice)} ประหยัดได้ ${baht(bestSaving)} เทียบ ${offers.length} แพลตฟอร์ม`}>
