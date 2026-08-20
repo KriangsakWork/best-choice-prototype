@@ -1267,25 +1267,56 @@ function CompareScreen({
   );
 }
 
-// Keep the selected-price label tied to active chart interactions.
-function PriceChart({ period, history }: { period: Period; history: PriceHistoryRecord }) {
+const PERIOD_MONTH_LABELS: Record<Period, string[]> = {
+  "7 วัน": ["25 ก.ค.", "27 ก.ค.", "29 ก.ค.", "31 ก.ค."],
+  "30 วัน": ["ต้น ก.ค.", "กลาง ก.ค.", "ปลาย ก.ค.", "วันนี้"],
+  "2 เดือน": ["มิ.ย.", "กลาง มิ.ย.", "ก.ค.", "วันนี้"],
+  "3 เดือน": ["เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค."]
+};
+
+const PERIOD_TOOLTIP_DATE: Record<Period, string> = {
+  "7 วัน": "31 ก.ค.",
+  "30 วัน": "31 ก.ค.",
+  "2 เดือน": "31 ก.ค.",
+  "3 เดือน": "31 ก.ค."
+};
+
+function PriceCard({
+  history,
+  period,
+  onPeriodChange
+}: {
+  history: PriceHistoryRecord;
+  period: Period;
+  onPeriodChange: (period: Period) => void;
+}) {
   const data = createPriceSeries(history, period);
   const min = Math.min(...data);
   const max = Math.max(...data);
   const svgRef = useRef<SVGSVGElement>(null);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [dragging, setDragging] = useState(false);
+
   const chartPoints = data.map((value, index) => ({
     value,
-    x: 8 + (index / (data.length - 1)) * 320,
-    y: 114 - ((value - min) / Math.max(1, max - min)) * 65
+    x: 12 + (index / (data.length - 1)) * 320,
+    y: 100 - ((value - min) / Math.max(1, max - min)) * 78
   }));
   const linePath = chartPoints.map((point, index) => `${index ? "L" : "M"} ${point.x} ${point.y}`).join(" ");
-  const areaPath = `${linePath} L 328 139 L 8 139 Z`;
+  const areaPath = `${linePath} L 332 118 L 12 118 Z`;
   const selectedIndex = activeIndex ?? chartPoints.length - 1;
   const selectedPoint = chartPoints[selectedIndex];
-  const changePercent = Math.round((history.current - history.average) / history.average * 100);
+
+  const changePercent = Math.round((history.current - history.original) / history.original * 100);
   const changeLabel = `${changePercent > 0 ? "+" : ""}${changePercent}%`;
+  const changeIsDown = changePercent < 0;
+  const monthLabels = PERIOD_MONTH_LABELS[period];
+  const tooltipDate = PERIOD_TOOLTIP_DATE[period];
+
+  const tooltipX = Math.max(52, Math.min(292, selectedPoint.x));
+  const tooltipValue = selectedPoint.value;
+
+  const periods: Period[] = ["7 วัน", "30 วัน", "2 เดือน", "3 เดือน"];
 
   const choosePoint = (event: PointerEvent<SVGSVGElement>) => {
     const svg = svgRef.current;
@@ -1300,51 +1331,102 @@ function PriceChart({ period, history }: { period: Period; history: PriceHistory
   };
 
   return (
-    <div className="chart-card">
-      <div className="chart-head">
-        <strong>฿{(activeIndex === null ? history.current : selectedPoint.value).toLocaleString("en-US")}</strong>
-        <span>{changeLabel}</span>
-        <em>{activeIndex === null ? `ต่ำสุด ฿${history.min.toLocaleString("en-US")} ในรอบ 90 วัน` : `ราคา ณ จุดที่ ${selectedIndex + 1}`}</em>
+    <div className="price-card">
+      <div className="price-card__head">
+        <div className="price-card__now">
+          <p>ราคาตอนนี้</p>
+          <div className="price-card__price-row">
+            <strong>฿{tooltipValue.toLocaleString("en-US")}</strong>
+            <span className={`price-card__delta${changeIsDown ? "" : " up"}`}>{changeLabel}</span>
+          </div>
+        </div>
+        <span className="price-card__cheapest-badge">ถูกสุดในรอบ 90 วัน</span>
       </div>
-      <svg
-        ref={svgRef}
-        viewBox="0 0 344 150"
-        role="img"
-        aria-label={`กราฟราคา ${period} แตะหรือลากเพื่อดูราคา`}
-        onPointerDown={(event) => {
-          setDragging(true);
-          event.currentTarget.setPointerCapture(event.pointerId);
-          choosePoint(event);
-        }}
-        onPointerMove={(event) => {
-          if (dragging || event.pointerType === "mouse") choosePoint(event);
-        }}
-        onPointerUp={(event) => {
-          setDragging(false);
-          if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
-        }}
-        onPointerLeave={() => !dragging && setActiveIndex(null)}
+      <div className="price-card__chart">
+        <svg
+          ref={svgRef}
+          viewBox="0 0 344 130"
+          role="img"
+          aria-label={`กราฟราคา ${period} แตะหรือลากเพื่อดูราคา`}
+          onPointerDown={(event) => {
+            setDragging(true);
+            event.currentTarget.setPointerCapture(event.pointerId);
+            choosePoint(event);
+          }}
+          onPointerMove={(event) => {
+            if (dragging || event.pointerType === "mouse") choosePoint(event);
+          }}
+          onPointerUp={(event) => {
+            setDragging(false);
+            if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+          }}
+          onPointerLeave={() => !dragging && setActiveIndex(null)}
+        >
+          <defs>
+            <linearGradient id="price-fill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#ffb09c" stopOpacity=".56" />
+              <stop offset="100%" stopColor="#fff" stopOpacity=".08" />
+            </linearGradient>
+            <clipPath id="chart-reveal">
+              <rect className="chart-reveal" width="344" height="130" />
+            </clipPath>
+          </defs>
+          <g clipPath="url(#chart-reveal)">
+            <path className="chart-area" d={areaPath} fill="url(#price-fill)" />
+          </g>
+          <path className="chart-line" pathLength="1" d={linePath} />
+          <line className="cursor-line" x1={selectedPoint.x} y1={selectedPoint.y + 6} x2={selectedPoint.x} y2="118" />
+          <circle className="chart-dot" cx={selectedPoint.x} cy={selectedPoint.y} r="6" />
+        </svg>
+        <div
+          className="price-card__tooltip"
+          style={{ left: `${(tooltipX / 344) * 100}%` }}
+          aria-hidden="true"
+        >
+          {tooltipDate}&nbsp;&nbsp;฿{tooltipValue.toLocaleString("en-US")}
+        </div>
+        <div className="price-card__months">
+          {monthLabels.map((label) => (
+            <span key={label}>{label}</span>
+          ))}
+        </div>
+      </div>
+      <div className="price-card__stats">
+        <div>
+          <p>ราคาเฉลี่ย</p>
+          <strong>฿{Math.round(history.average).toLocaleString("en-US")}</strong>
+        </div>
+        <span className="price-card__stat-divider" aria-hidden="true" />
+        <div>
+          <p>ราคาเดิม</p>
+          <strong>฿{history.original.toLocaleString("en-US")}</strong>
+        </div>
+        <span className="price-card__stat-divider" aria-hidden="true" />
+        <div>
+          <p>ถูกสุดที่เคยมี</p>
+          <strong className="good">฿{history.min.toLocaleString("en-US")}</strong>
+        </div>
+      </div>
+      <div
+        className="price-card__tabs"
+        role="tablist"
+        aria-label="ช่วงเวลา"
+        style={{ "--period-index": periods.indexOf(period) } as CSSProperties}
       >
-        <defs>
-          <linearGradient id="price-fill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#ffb09c" stopOpacity=".56" />
-            <stop offset="100%" stopColor="#fff" stopOpacity=".08" />
-          </linearGradient>
-          <clipPath id="chart-reveal">
-            <rect className="chart-reveal" width="344" height="150" />
-          </clipPath>
-        </defs>
-        <g clipPath="url(#chart-reveal)">
-          <path className="chart-area" d={areaPath} fill="url(#price-fill)" />
-        </g>
-        <path className="chart-line" pathLength="1" d={linePath} />
-        <text className="average-label" x="174" y="61" textAnchor="middle">ราคาเฉลี่ย</text>
-        <rect className="average-pill" x="149" y="66" width="50" height="20" rx="10" />
-        <text className="average-price" x="174" y="80" textAnchor="middle">฿{history.average.toLocaleString("en-US", { maximumFractionDigits: 2 })}</text>
-        {activeIndex !== null && <line className="cursor-line" x1={selectedPoint.x} y1="45" x2={selectedPoint.x} y2="139" />}
-        <circle className="chart-dot" cx={selectedPoint.x} cy={selectedPoint.y} r="8" />
-      </svg>
-      <div className="month-labels"><span>มิ.ย.</span><span>ก.ค.</span><span>ส.ค.</span><span>วันนี้</span></div>
+        <span className="price-card__tabs-indicator" aria-hidden="true" />
+        {periods.map((item) => (
+          <button
+            key={item}
+            className={period === item ? "active" : ""}
+            onClick={() => onPeriodChange(item)}
+            type="button"
+            role="tab"
+            aria-selected={period === item}
+          >
+            {item}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -1363,8 +1445,6 @@ function HistoryScreen({
   const favorites = useFavorites();
   const favorite = favorites.isFavorite(product);
   const history = getPriceHistory(product);
-  const periods = ["7 วัน", "30 วัน", "2 เดือน", "3 เดือน"] as Period[];
-  const periodIndex = periods.indexOf(period);
   const differenceFromAverage = Math.round(Math.abs(history.current - history.average));
   const isBelowAverage = history.current <= history.average;
 
@@ -1399,55 +1479,61 @@ function HistoryScreen({
             <del>฿{history.original.toLocaleString("en-US")}</del>
           </div>
         </section>
-        <div
-          className="period-tabs"
-          role="tablist"
-          aria-label="ช่วงเวลา"
-          style={{ "--period-index": periodIndex } as CSSProperties}
-        >
-          <span className="period-tabs-indicator" aria-hidden="true" />
-          {periods.map((item) => (
-            <button
-              key={item}
-              className={period === item ? "active" : ""}
-              onClick={() => setPeriod(item)}
-              type="button"
-              role="tab"
-              aria-selected={period === item}
-            >
-              {item}
-            </button>
-          ))}
-        </div>
-        <PriceChart key={period} period={period} history={history} />
+        <PriceCard key={period} history={history} period={period} onPeriodChange={setPeriod} />
         <div className="ai-card">
-          <img className="history-ai-icon" src={`${ASSET}/SVG/AI.png`} alt="" aria-hidden="true" />
+          <span className="ai-card__sparkle" aria-hidden="true">
+            <svg viewBox="0 0 40 40" width="36" height="36">
+              <defs>
+                <linearGradient id="ai-sparkle" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#4285f4" />
+                  <stop offset="35%" stopColor="#9b72cb" />
+                  <stop offset="70%" stopColor="#d96570" />
+                  <stop offset="100%" stopColor="#f9ab00" />
+                </linearGradient>
+              </defs>
+              <path
+                fill="url(#ai-sparkle)"
+                d="M22 4 C22.7 12.6 26.4 16.3 35 17 C26.4 17.7 22.7 21.4 22 30 C21.3 21.4 17.6 17.7 9 17 C17.6 16.3 21.3 12.6 22 4 Z"
+              />
+              <path
+                fill="url(#ai-sparkle)"
+                d="M11 26 C11.4 30.2 12.8 31.6 17 32 C12.8 32.4 11.4 33.8 11 38 C10.6 33.8 9.2 32.4 5 32 C9.2 31.6 10.6 30.2 11 26 Z"
+              />
+            </svg>
+          </span>
           <div>
             <strong>{history.current === history.min ? "ราคาดีที่สุดในรอบ 90 วัน!✨" : `พบราคาต่ำสุด ฿${history.min.toLocaleString("en-US")} ในรอบ 90 วัน`}</strong>
             <span />
             <p>
               {isBelowAverage
-                ? `ซื้อตอนนี้ประหยัดกว่าราคาเฉลี่ย ฿${differenceFromAverage.toLocaleString("en-US")} แนะนำให้ตัดสินใจซื้อได้เลยเพื่อความคุ้มค่าสูงสุด`
-                : `ราคาปัจจุบันสูงกว่าราคาเฉลี่ย ฿${differenceFromAverage.toLocaleString("en-US")} หากรอโปรโมชันอาจคุ้มกว่าครับ`}
+                ? `ซื้อตอนนี้ประหยัดกว่าราคาเฉลี่ยถึง ${differenceFromAverage.toLocaleString("en-US")} บาท แนะนำให้ตัดสินใจซื้อได้เลยเพื่อความคุ้มค่าสูงสุด`
+                : `ราคาปัจจุบันสูงกว่าราคาเฉลี่ย ${differenceFromAverage.toLocaleString("en-US")} บาท หากรอโปรโมชันอาจคุ้มกว่าครับ`}
             </p>
           </div>
         </div>
-        <div className="history-buttons">
-          <button
-            className={favorite ? "favorite active" : "favorite"}
-            onClick={() => {
-              favorites.toggleFavorite(product);
-              flash(favorite ? "นำออกจากรายการโปรดแล้ว" : "บันทึกในรายการโปรดแล้ว");
-            }}
-            type="button"
-          >
-            <img className="history-favorite-icon" src={favorite ? `${ASSET}/SVG/Like/Property 1=Like.svg` : `${ASSET}/SVG/Like/Property 1=Normal.svg`} alt="" aria-hidden="true" /> รายการโปรด
-          </button>
-          <button onClick={buyProduct} type="button">
-            <img className="history-action-icon" src={`${ASSET}/SVG/Buy BT.svg`} alt="" aria-hidden="true" /> ซื้อเลย
-          </button>
-        </div>
       </main>
+      <div className="history-action-bar">
+        <button
+          className={favorite ? "history-fav-btn active" : "history-fav-btn"}
+          onClick={() => {
+            favorites.toggleFavorite(product);
+            flash(favorite ? "นำออกจากรายการโปรดแล้ว" : "บันทึกในรายการโปรดแล้ว");
+          }}
+          type="button"
+        >
+          <img
+            className="history-fav-btn__icon"
+            src={favorite ? `${ASSET}/SVG/Like/Property 1=Like.svg` : `${ASSET}/SVG/Like/Property 1=Normal.svg`}
+            alt=""
+            aria-hidden="true"
+          />
+          <span>สนใจ</span>
+        </button>
+        <button className="history-buy-btn" onClick={buyProduct} type="button">
+          <img className="history-buy-btn__icon" src={`${ASSET}/SVG/Buy BT.svg`} alt="" aria-hidden="true" />
+          <span>ซื้อเลย</span>
+        </button>
+      </div>
       {toast && <div className="toast" role="status">{toast}</div>}
       <BottomNav go={go} />
     </section>
