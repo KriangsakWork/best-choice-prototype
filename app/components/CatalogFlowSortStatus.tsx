@@ -702,7 +702,10 @@ export function CatalogFlowSortStatus() {
       if (!productName) return;
 
       const normalizedName = normalize(productName);
-      const group = groups.find((item) => normalize(item.name) === normalizedName);
+      const group =
+        groups.find((item) => normalize(item.name) === normalizedName) ??
+        groups.find((item) => normalize(item.name).includes(normalizedName) || normalizedName.includes(normalize(item.name))) ??
+        groups[0];
       if (!group) return;
 
       setSelectedGroupId(group.id);
