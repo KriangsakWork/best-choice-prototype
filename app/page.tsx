@@ -1525,7 +1525,7 @@ function HistoryScreen({
             alt=""
             aria-hidden="true"
           />
-          <span>สนใจ</span>
+          <span>{favorite ? "สนใจแล้ว" : "สนใจ"}</span>
         </button>
         <button className="history-buy-btn" onClick={buyProduct} type="button">
           <img className="history-buy-btn__icon" src={`${ASSET}/SVG/Buy BT.svg`} alt="" aria-hidden="true" />
