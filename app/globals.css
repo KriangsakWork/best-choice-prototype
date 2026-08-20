@@ -701,12 +701,25 @@ img[src$="/compare-fire.svg"] {
   background: #eee;
   font-size: 12px;
   line-height: 18px;
+  transition: transform .18s cubic-bezier(.2, 1.5, .3, 1),
+    border-color .18s ease, color .18s ease, background .18s ease;
+}
+
+.chips button:active {
+  transform: scale(.94);
 }
 
 .chips button.selected {
   border-color: var(--primary);
   color: var(--primary);
   background: #fff;
+  animation: chip-pop .32s cubic-bezier(.2, 1.5, .3, 1);
+}
+
+@keyframes chip-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.08); }
+  100% { transform: scale(1); }
 }
 
 .chips button:nth-child(2).selected {
@@ -833,11 +846,16 @@ img[src$="/compare-fire.svg"] {
 .real-product-card__heart img {
   width: 17.44px;
   height: 16px;
+  transform-origin: 50% 55%;
   transition: transform .14s ease;
 }
 
 .real-product-card__heart:active img {
   transform: scale(.86);
+}
+
+.real-product-card__heart.is-bumping img {
+  animation: heart-pop .55s cubic-bezier(.2, 1.5, .3, 1);
 }
 
 .real-product-card__info {
@@ -2043,6 +2061,13 @@ img[src$="/compare-fire.svg"] {
   height: 36px;
   display: block;
   object-fit: contain;
+  transform-origin: center;
+  animation: ai-sparkle-pulse 2s ease-in-out infinite;
+}
+
+@keyframes ai-sparkle-pulse {
+  0%, 100% { opacity: .72; transform: scale(1); filter: drop-shadow(0 0 0 rgba(155, 114, 203, 0)); }
+  50%      { opacity: 1;   transform: scale(1.08); filter: drop-shadow(0 0 6px rgba(155, 114, 203, .45)); }
 }
 
 .ai-card > div {
@@ -2188,7 +2213,22 @@ img[src$="/compare-fire.svg"] {
   background: #312d2a;
   font-size: 13px;
   transform: translateX(-50%);
-  animation: toast-in .2s ease-out;
+  box-shadow: 0 6px 20px -4px rgba(15, 13, 12, .45);
+  animation: toast-in .32s cubic-bezier(.2, 1.5, .3, 1),
+    toast-out .28s ease-in 1.55s forwards;
+  overflow: hidden;
+}
+
+.toast::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  background: rgba(255, 255, 255, .45);
+  transform-origin: right center;
+  animation: toast-progress 1.7s linear forwards;
 }
 
 @keyframes reveal-chart {
@@ -2220,7 +2260,18 @@ img[src$="/compare-fire.svg"] {
 }
 
 @keyframes toast-in {
-  from { opacity: 0; transform: translate(-50%, 8px); }
+  from { opacity: 0; transform: translate(-50%, 16px) scale(.92); }
+  60%  { opacity: 1; }
+  to   { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+@keyframes toast-out {
+  to { opacity: 0; transform: translate(-50%, -6px) scale(.96); }
+}
+
+@keyframes toast-progress {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
 }
 
 .demo-note {
@@ -3209,6 +3260,12 @@ img[src$="/compare-fire.svg"] {
   font-size: 14px;
   line-height: 1.5;
   white-space: nowrap;
+  transition: transform .18s cubic-bezier(.2, 1.5, .3, 1),
+    border-color .18s ease, color .18s ease, background .18s ease;
+}
+
+.best-sellers-filters button:active {
+  transform: scale(.95);
 }
 
 .best-sellers-filters button:nth-child(1) { width: 63px; padding: 0; }
@@ -3218,6 +3275,7 @@ img[src$="/compare-fire.svg"] {
   border-color: transparent;
   background: var(--primary);
   color: #fff;
+  animation: chip-pop .32s cubic-bezier(.2, 1.5, .3, 1);
 }
 
 .best-sellers-info {
@@ -3279,6 +3337,13 @@ img[src$="/compare-fire.svg"] {
   box-shadow: 0 2px 10px -2px rgba(107, 51, 33, .08);
   cursor: pointer;
   transition: transform .16s ease, box-shadow .16s ease;
+  animation: bs-card-in .42s cubic-bezier(.22, 1, .36, 1) both;
+  animation-delay: calc(var(--card-i, 0) * 55ms);
+}
+
+@keyframes bs-card-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .best-sellers-card:active {
@@ -3321,6 +3386,13 @@ img[src$="/compare-fire.svg"] {
   z-index: 2;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .12));
   pointer-events: none;
+  animation: rank-drop .5s cubic-bezier(.22, 1.3, .36, 1) both;
+  animation-delay: calc(var(--rank-i, 0) * 60ms + 120ms);
+}
+
+@keyframes rank-drop {
+  from { opacity: 0; transform: translateY(-14px) scale(.85); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .best-sellers-rank img {
