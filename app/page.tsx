@@ -1703,8 +1703,8 @@ function BestSellersScreen({ go }: { go: (screen: Screen) => void }) {
               style={{ "--card-i": index } as CSSProperties}
               role="button"
               tabIndex={0}
-              onClick={() => document.dispatchEvent(new Event("best-choice:open-compare"))}
-              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); document.dispatchEvent(new Event("best-choice:open-compare")); } }}
+              onClick={() => document.dispatchEvent(new CustomEvent("best-choice:open-compare", { detail: { productName: item.name } }))}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); document.dispatchEvent(new CustomEvent("best-choice:open-compare", { detail: { productName: item.name } })); } }}
             >
               <RankRibbon rank={item.rank} index={index} />
               <img className="best-sellers-image" src={item.image} alt={item.name} />
@@ -2144,19 +2144,13 @@ export default function BestChoiceApp() {
       setScreen("history");
     };
     const openSearch = () => setScreen("search");
-    const openCompare = () => {
-      if (selected.length < 2) setSelected([1, 2, 3]);
-      setScreen("compare");
-    };
     document.addEventListener("best-choice:open-history", openHistory);
     document.addEventListener("best-choice:start-search", openSearch);
-    document.addEventListener("best-choice:open-compare", openCompare);
     return () => {
       document.removeEventListener("best-choice:open-history", openHistory);
       document.removeEventListener("best-choice:start-search", openSearch);
-      document.removeEventListener("best-choice:open-compare", openCompare);
     };
-  }, [screen, selected]);
+  }, [screen]);
 
   const go = (next: Screen) => {
     if (next === "results" || next === "compare") {
