@@ -595,7 +595,7 @@ function BottomNav({ active, go }: { active?: string; go: (screen: Screen) => vo
   const items = [
     { key: "home", label: "หน้าหลัก", screen: "home" as Screen },
     { key: "hot", label: "ยอดฮิต", screen: "best-sellers" as Screen },
-    { key: "interest", label: "สนใจ", screen: "interest" as Screen },
+    { key: "interest", label: "กำลังสนใจ", screen: "interest" as Screen },
     { key: "savings", label: "ประหยัด", screen: "total-save" as Screen },
     { key: "profile", label: "โปรไฟล์", screen: "profile" as Screen }
   ];
@@ -1543,7 +1543,7 @@ function HistoryScreen({
             aria-hidden="true"
           />
           <span key={`fav-label-${favorite}`} className="history-fav-btn__label">
-            {favorite ? "กำลังติดตาม" : "สนใจ"}
+            {favorite ? "กำลังติดตาม" : "กำลังสนใจ"}
           </span>
         </button>
         <button className="history-buy-btn" onClick={buyProduct} type="button">

@@ -232,7 +232,7 @@ const FILTERS: Array<{ value: PlatformFilter; label: string }> = [
 const NAV_ITEMS = [
   { label: "หน้าหลัก", icon: "/assets/SVG/Nav Bar/HIC01.svg" },
   { label: "ยอดฮิต", icon: "/assets/SVG/Nav Bar/HIC06.svg" },
-  { label: "สนใจ", icon: "/assets/SVG/Nav Bar/HIC02B.svg", active: true },
+  { label: "กำลังสนใจ", icon: "/assets/SVG/Nav Bar/HIC02B.svg", active: true },
   { label: "ประหยัด", icon: "/assets/SVG/Nav Bar/HIC03.svg" },
   { label: "โปรไฟล์", icon: "/assets/SVG/Nav Bar/HIC04.svg" }
 ];
@@ -266,7 +266,9 @@ export function InterestFigmaScreen() {
       if (!button || !nav) return;
 
       const buttons = Array.from(nav.querySelectorAll<HTMLButtonElement>(":scope > button"));
-      const interestIndex = buttons.findIndex((b) => b.textContent?.trim() === "สนใจ");
+      const interestIndex = buttons.findIndex(
+        (b) => b.textContent?.trim() === "กำลังสนใจ" || b.textContent?.trim() === "สนใจ"
+      );
       if (interestIndex < 0 || buttons.indexOf(button) !== interestIndex) return;
 
       event.preventDefault();
@@ -296,7 +298,7 @@ export function InterestFigmaScreen() {
       if (!nav) return;
       const buttons = Array.from(nav.querySelectorAll<HTMLButtonElement>(":scope > button"));
       const target = buttons.find((b) => b.textContent?.trim() === label);
-      if (target && target.textContent?.trim() !== "สนใจ") target.click();
+      if (target && target.textContent?.trim() !== "กำลังสนใจ" && target.textContent?.trim() !== "สนใจ") target.click();
     });
   };
 
