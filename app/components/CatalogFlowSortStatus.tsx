@@ -1002,7 +1002,7 @@ export function CatalogFlowSortStatus() {
                 >
                   <img
                     key={`cmp-fav-icon-${favBumpKey}`}
-                    src={favorite ? "/assets/SVG/Like/Property 1=Like.svg" : "/assets/SVG/Like/Property 1=Normal.svg"}
+                    src={favorite ? "/assets/SVG/Like/Property-1=Like.svg" : "/assets/SVG/Like/Property-1=Normal.svg"}
                     alt=""
                   />
                   <span key={`cmp-fav-label-${favorite}`} className="cmp-track__label">

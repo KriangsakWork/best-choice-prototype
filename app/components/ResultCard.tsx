@@ -110,7 +110,7 @@ export function ResultCard({
           }}
         >
           <img
-            src={favorite ? "/assets/SVG/Like/Property 1=Like.svg" : "/assets/SVG/Like/Property 1=Normal.svg"}
+            src={favorite ? "/assets/SVG/Like/Property-1=Like.svg" : "/assets/SVG/Like/Property-1=Normal.svg"}
             alt=""
             width={17.44}
             height={16}

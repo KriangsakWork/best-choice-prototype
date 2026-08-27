@@ -181,44 +181,21 @@ const nikeAirForceOne: ProductCardData = {
 
 const homeRecentProducts: ProductCardData[] = [
   {
-    ...nikeAirForceOne
-  },
-  {
-    id: 28,
-    productName: "womenager - Jane Original",
-    platform: "Shopee",
-    price: 1790,
-    discountPrice: 1790,
-    percent: 0,
-    rating: 4.6,
-    sold: 47,
-    freeShip: true,
+    id: 40,
+    productName: "COACH Coin Wallet In Signature",
+    platform: "Lazada",
+    price: 4900,
+    discountPrice: 2990,
+    percent: 39,
+    rating: 4.5,
+    sold: 88,
+    freeShip: false,
     mall: true,
-    imageUrl: `${ASSET}/products/product-pic/10-womanager-shopee.webp`,
+    imageUrl: `${ASSET}/products/product-pic/13-coach-wallet.jpg`,
     productUrl: "",
-    averagePrice: 2023.67,
-    trendLabel: "ลดจากค่าเฉลี่ย",
-    trendPercent: 12
-  }
-];
-
-const homeRecommendedProducts: ProductCardData[] = [
-  {
-    id: 4,
-    productName: "Converse Chuck Taylor",
-    platform: "Shopee",
-    price: 3090,
-    discountPrice: 3090,
-    percent: 0,
-    rating: 4.6,
-    sold: "2k+",
-    freeShip: true,
-    mall: true,
-    imageUrl: `${ASSET}/products/product-pic/2-converse-shopee.webp`,
-    productUrl: "",
-    averagePrice: 3026.67,
+    averagePrice: 2890,
     trendLabel: "เพิ่มจากค่าเฉลี่ย",
-    trendPercent: 2
+    trendPercent: 3
   },
   {
     id: 9,
@@ -236,6 +213,60 @@ const homeRecommendedProducts: ProductCardData[] = [
     averagePrice: 2448.33,
     trendLabel: "ลดจากค่าเฉลี่ย",
     trendPercent: 11
+  }
+];
+
+const homeRecommendedProducts: ProductCardData[] = [
+  {
+    id: 41,
+    productName: "หมวก Nike สีดำ Original",
+    platform: "TikTok",
+    price: 1090,
+    discountPrice: 790,
+    percent: 28,
+    rating: 2.9,
+    sold: 15600,
+    freeShip: true,
+    mall: false,
+    imageUrl: `${ASSET}/products/product-pic/15-nike-cap.png`,
+    productUrl: "",
+    averagePrice: 877,
+    trendLabel: "ลดจากค่าเฉลี่ย",
+    trendPercent: 10
+  },
+  {
+    id: 42,
+    productName: "เสื้อคลุม Adidas",
+    platform: "Shopee",
+    price: 3200,
+    discountPrice: 2290,
+    percent: 28,
+    rating: 4.7,
+    sold: 460,
+    freeShip: true,
+    mall: true,
+    imageUrl: `${ASSET}/products/product-pic/14-adidas-jacket.png`,
+    productUrl: "",
+    averagePrice: 2257,
+    trendLabel: "เพิ่มจากค่าเฉลี่ย",
+    trendPercent: 1
+  },
+  {
+    id: 4,
+    productName: "Converse Chuck Taylor",
+    platform: "Shopee",
+    price: 3090,
+    discountPrice: 3090,
+    percent: 0,
+    rating: 4.6,
+    sold: "2k+",
+    freeShip: true,
+    mall: true,
+    imageUrl: `${ASSET}/products/product-pic/2-converse-shopee.webp`,
+    productUrl: "",
+    averagePrice: 3026.67,
+    trendLabel: "เพิ่มจากค่าเฉลี่ย",
+    trendPercent: 2
   },
   {
     id: 11,
@@ -1148,7 +1179,7 @@ function CompareScreen({
           >
             <img
               key={`compare-fav-icon-${favBumpKey}`}
-              src={favorite ? `${ASSET}/SVG/Like/Property 1=Like.svg` : `${ASSET}/SVG/Like/Property 1=Normal.svg`}
+              src={favorite ? `${ASSET}/SVG/Like/Property-1=Like.svg` : `${ASSET}/SVG/Like/Property-1=Normal.svg`}
               alt=""
             />
             <span key={`compare-fav-label-${favorite}`} className="compare-track__label">
@@ -1538,7 +1569,7 @@ function HistoryScreen({
           <img
             key={`fav-icon-${favBumpKey}`}
             className="history-fav-btn__icon"
-            src={favorite ? `${ASSET}/SVG/Like/Property 1=Like.svg` : `${ASSET}/SVG/Like/Property 1=Normal.svg`}
+            src={favorite ? `${ASSET}/SVG/Like/Property-1=Like.svg` : `${ASSET}/SVG/Like/Property-1=Normal.svg`}
             alt=""
             aria-hidden="true"
           />
@@ -1584,7 +1615,7 @@ const savingsEntries = [
   },
   {
     name: "womenager - Jane Original",
-    image: homeRecentProducts[1].imageUrl,
+    image: `${ASSET}/products/product-pic/10-womanager-shopee.webp`,
     saved: 234,
     price: 1790,
     originalPrice: 2024
@@ -1995,7 +2026,7 @@ function InterestEmptyScreen({ go }: { go: (screen: Screen) => void }) {
         <div className="interest-empty-illustration__background">
           <img
             className="interest-empty-illustration__heart"
-            src={`${ASSET}/SVG/Like/Property 1=Like.svg`}
+            src={`${ASSET}/SVG/Like/Property-1=Like.svg`}
             alt=""
           />
         </div>
