@@ -2,11 +2,11 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { ProductCard, ProductCardData } from "./ProductCard";
+import { ProductCard, ProductCardData, ProductCategory } from "./ProductCard";
 import { DEMO_PRODUCTS } from "../data/demo-products";
 import { productFavoriteKey, useFavorites } from "../data/favorite-store";
 
-type PlatformFilter = "ทั้งหมด" | ProductCardData["platform"];
+type CategoryFilter = "ทั้งหมด" | ProductCategory;
 
 type RemovedItem = {
   product: ProductCardData;
@@ -222,11 +222,10 @@ const INITIAL_SAVED_PRODUCTS: ProductCardData[] = [
   }
 ];
 
-const FILTERS: Array<{ value: PlatformFilter; label: string }> = [
+const FILTERS: Array<{ value: CategoryFilter; label: string }> = [
   { value: "ทั้งหมด", label: "ทั้งหมด" },
-  { value: "Shopee", label: "Shopee" },
-  { value: "Lazada", label: "Lazada" },
-  { value: "TikTok", label: "TikTok" }
+  { value: "รองเท้า", label: "รองเท้า" },
+  { value: "Accessory", label: "Accessory" }
 ];
 
 const NAV_ITEMS = [
@@ -240,17 +239,26 @@ const NAV_ITEMS = [
 export function InterestFigmaScreen() {
   const [portalTarget, setPortalTarget] = useState<Element | null>(null);
   const [open, setOpen] = useState(false);
-  const [filter, setFilter] = useState<PlatformFilter>("ทั้งหมด");
+  const [filter, setFilter] = useState<CategoryFilter>("ทั้งหมด");
   const [removedItem, setRemovedItem] = useState<RemovedItem | null>(null);
   const toastTimer = useRef<number | null>(null);
   const favorites = useFavorites();
-  const savedProducts = useMemo(
-    () => DEMO_PRODUCTS.filter((product) => favorites.keys.has(productFavoriteKey(product))),
-    [favorites.keys]
-  );
+  const savedProducts = useMemo(() => {
+    const cheapestByProduct = new Map<string, ProductCardData>();
+
+    for (const product of DEMO_PRODUCTS) {
+      const key = productFavoriteKey(product);
+      if (!favorites.keys.has(key)) continue;
+
+      const current = cheapestByProduct.get(key);
+      if (!current || product.discountPrice < current.discountPrice) cheapestByProduct.set(key, product);
+    }
+
+    return [...cheapestByProduct.values()];
+  }, [favorites.keys]);
 
   const visibleProducts = useMemo(
-    () => filter === "ทั้งหมด" ? savedProducts : savedProducts.filter((product) => product.platform === filter),
+    () => filter === "ทั้งหมด" ? savedProducts : savedProducts.filter((product) => product.category === filter),
     [filter, savedProducts]
   );
 

@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 
+export type ProductCategory = "รองเท้า" | "Accessory";
+
 export type ProductCardData = {
   id: number;
   productName: string;
+  category?: ProductCategory;
   platform: "Shopee" | "Lazada" | "TikTok";
   price: number;
   discountPrice: number;
