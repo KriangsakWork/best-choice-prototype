@@ -44,7 +44,17 @@ const catalogTerms = [
   "labotte",
   "mary jane",
   "แมรี่เจน",
-  "คัทชู"
+  "คัทชู",
+  "coach",
+  "coin wallet",
+  "กระเป๋าสตางค์",
+  "กระเป๋าตังค์",
+  "เสื้อคลุม",
+  "แจ็คเก็ต",
+  "jacket",
+  "หมวก",
+  "หมวกแก๊ป",
+  "cap"
 ];
 
 function normalize(value: string) {
