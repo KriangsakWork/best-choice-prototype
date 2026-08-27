@@ -668,6 +668,11 @@
 .cmp-discount-bar svg {
   width: 16px;
   height: 16px;
+  transition: transform .22s ease;
+}
+
+.cmp-discount-bar[aria-expanded="true"] svg {
+  transform: rotate(180deg);
 }
 
 .cmp-discount-panel {
