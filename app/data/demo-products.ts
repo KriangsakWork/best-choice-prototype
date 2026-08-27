@@ -118,6 +118,30 @@ const seeds: DemoSeed[] = [
     ratings: [4.8, 4.7, 4.9],
     sold: [84, 121, 274],
     offerCount: 2
+  },
+  {
+    name: "COACH Coin Wallet In Signature",
+    image: `${ASSET}/13-coach-wallet.jpg`,
+    average: 2890,
+    prices: [2990, 2890, 2790],
+    ratings: [4.5, 4.2, 4.8],
+    sold: [88, "3.4k+", "1.2k+"]
+  },
+  {
+    name: "เสื้อคลุม Adidas",
+    image: `${ASSET}/14-adidas-jacket.png`,
+    average: 2257,
+    prices: [2490, 1990, 2290],
+    ratings: [4.3, 3.9, 4.7],
+    sold: [35, "2k+", 460]
+  },
+  {
+    name: "หมวก Nike สีดำ Original",
+    image: `${ASSET}/15-nike-cap.png`,
+    average: 877,
+    prices: [950, 790, 890],
+    ratings: [4.4, 2.9, 4.9],
+    sold: [210, "15.6k+", "9k+"]
   }
 ];
 
