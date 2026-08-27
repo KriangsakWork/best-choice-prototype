@@ -156,7 +156,7 @@
 }
 
 .cmp-stats > div b.cmp-stat-save {
-  color: var(--primary);
+  color: #fff;
 }
 
 .cmp-stats > i {
@@ -668,6 +668,11 @@
 .cmp-discount-bar svg {
   width: 16px;
   height: 16px;
+  transition: transform .22s ease;
+}
+
+.cmp-discount-bar[aria-expanded="true"] svg {
+  transform: rotate(180deg);
 }
 
 .cmp-discount-panel {
@@ -810,7 +815,7 @@
   place-items: center;
   border: 1px solid #f8c4b4;
   border-radius: 12px;
-  background: #feede7;
+  background: #fff;
 }
 
 .cmp-graph img {
