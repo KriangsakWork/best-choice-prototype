@@ -835,7 +835,7 @@ function HomeScreen({
       <button className="savings-hero" onClick={() => go("total-save")} type="button" aria-label="ดูยอดประหยัดรวม 10,250 บาท">
         <img
           className="savings-hero__background"
-          src={`${ASSET}/SVG/Total Savings BG.jpg`}
+          src={`${ASSET}/SVG/Total Savings BG.png`}
           alt=""
           aria-hidden="true"
         />
