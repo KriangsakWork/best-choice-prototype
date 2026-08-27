@@ -364,9 +364,18 @@ function findGroups(query: string) {
   const category = categoryMap[normalized];
   if (category) return groups.filter((group) => group.category === category);
 
-  const terms = [normalized, ...normalized.split(" ").filter((term) => term.length > 1)];
+  const aliasesOf = (group: ProductGroup) => [group.name, ...group.aliases].map(normalize);
+
+  // A full-phrase hit wins outright, so tapping a product searches only that
+  // product instead of every item sharing one of its words.
+  const phraseMatches = groups.filter((group) =>
+    aliasesOf(group).some((alias) => alias === normalized || alias.includes(normalized))
+  );
+  if (phraseMatches.length) return phraseMatches;
+
+  const terms = normalized.split(" ").filter((term) => term.length > 1);
   return groups.filter((group) => {
-    const aliases = [group.name, ...group.aliases].map(normalize);
+    const aliases = aliasesOf(group);
     return terms.some((term) => aliases.some((alias) => alias.includes(term) || term.includes(alias)));
   });
 }
