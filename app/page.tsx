@@ -1622,7 +1622,7 @@ const savingsEntries = [
   }
 ];
 
-type BestSellerCategory = "ยอดฮิต" | "รองเท้า" | "ของใช้ในบ้าน";
+type BestSellerCategory = "ยอดฮิต" | "รองเท้า" | "Accessory";
 
 const BEST_SELLERS: {
   rank: number;
@@ -1647,6 +1647,12 @@ const BEST_SELLERS: {
   { rank: 10, name: "Birkenstock Arizona Sandal", image: "/assets/products/product-pic/8-birken-tiktok.webp", bcScore: 4.5, platform: "TikTok", rating: 4.8, sold: "185", price: 3311, original: 3990 }
 ];
 
+const ACCESSORY_BEST_SELLERS: typeof BEST_SELLERS = [
+  { rank: 1, name: "หมวก Nike สีดำ Original", image: "/assets/products/product-pic/15-nike-cap.png", bcScore: 4.9, platform: "Shopee", rating: 4.9, sold: "9k+", price: 890, original: 1090 },
+  { rank: 2, name: "COACH Coin Wallet In Signature", image: "/assets/products/product-pic/13-coach-wallet.jpg", bcScore: 4.8, platform: "Shopee", rating: 4.8, sold: "1.2k+", price: 2790, original: 4900 },
+  { rank: 3, name: "เสื้อคลุม Adidas", image: "/assets/products/product-pic/14-adidas-jacket.png", bcScore: 4.7, platform: "Shopee", rating: 4.7, sold: "460", price: 2290, original: 3200 }
+];
+
 function RankRibbon({ rank, index }: { rank: number; index: number }) {
   const src = `/assets/rank/${rank}.png`;
   return (
@@ -1663,8 +1669,8 @@ function RankRibbon({ rank, index }: { rank: number; index: number }) {
 function BestSellersScreen({ go }: { go: (screen: Screen) => void }) {
   const [filter, setFilter] = useState<BestSellerCategory>("ยอดฮิต");
   const [showBanner, setShowBanner] = useState(true);
-  const filters: BestSellerCategory[] = ["ยอดฮิต", "รองเท้า", "ของใช้ในบ้าน"];
-  const visibleItems = filter === "ของใช้ในบ้าน" ? [] : BEST_SELLERS;
+  const filters: BestSellerCategory[] = ["ยอดฮิต", "รองเท้า", "Accessory"];
+  const visibleItems = filter === "Accessory" ? ACCESSORY_BEST_SELLERS : BEST_SELLERS;
 
   return (
     <section className="screen best-sellers-screen">
