@@ -31,7 +31,7 @@ import { recentSearches, searchSuggestions } from "../data/catalog";
 import { useFavorites } from "../data/favorite-store";
 import { createPriceSeries, getPriceHistory } from "../data/price-history";
 
-type Category = "Sneakers" | "RunShoes" | "Sandals" | "WomanShoes";
+type Category = "Sneakers" | "RunShoes" | "Sandals" | "WomanShoes" | "Accessories";
 type FlowScreen = "results" | "compare" | "no-results" | null;
 type SortMode = "relevance" | "best-selling" | "price-desc" | "price-asc" | "bc-score";
 type CompareOrigin = "results" | "interest";
@@ -306,6 +306,42 @@ const seeds: GroupSeed[] = [
       { platform: "TikTok", price: 1690, discount: 1354, rating: 3.3, sold: 23600, freeShip: true, mall: false, image: "12-labotte-tiktok.webp" },
     ]
   },
+  {
+    id: "coach-coin-wallet-signature",
+    category: "Accessories",
+    name: "COACH Coin Wallet In Signature",
+    aliases: ["coach", "coin wallet", "signature", "โค้ช", "กระเป๋าสตางค์", "กระเป๋าตังค์"],
+    average: 2890,
+    offers: [
+      { platform: "Shopee", price: 4900, discount: 2790, rating: 4.8, sold: 1200, freeShip: true, mall: true, image: "13-coach-wallet.jpg" },
+      { platform: "Lazada", price: 4900, discount: 2990, rating: 4.5, sold: 88, freeShip: false, mall: true, image: "13-coach-wallet.jpg" },
+      { platform: "TikTok", price: 4900, discount: 2890, rating: 4.2, sold: 3400, freeShip: true, mall: false, image: "13-coach-wallet.jpg" },
+    ]
+  },
+  {
+    id: "adidas-hooded-jacket",
+    category: "Accessories",
+    name: "เสื้อคลุม Adidas",
+    aliases: ["adidas", "เสื้อคลุม", "แจ็คเก็ต", "jacket", "windbreaker", "อาดิดาส"],
+    average: 2257,
+    offers: [
+      { platform: "Shopee", price: 3200, discount: 2290, rating: 4.7, sold: 460, freeShip: true, mall: true, image: "14-adidas-jacket.png" },
+      { platform: "Lazada", price: 3200, discount: 2490, rating: 4.3, sold: 35, freeShip: false, mall: true, image: "14-adidas-jacket.png" },
+      { platform: "TikTok", price: 2990, discount: 1990, rating: 3.9, sold: 2000, freeShip: true, mall: true, image: "14-adidas-jacket.png" },
+    ]
+  },
+  {
+    id: "nike-cap-black-original",
+    category: "Accessories",
+    name: "หมวก Nike สีดำ Original",
+    aliases: ["nike", "หมวก", "หมวก nike", "หมวกแก๊ป", "cap", "ไนกี้"],
+    average: 877,
+    offers: [
+      { platform: "Shopee", price: 1090, discount: 890, rating: 4.9, sold: 9000, freeShip: true, mall: true, image: "15-nike-cap.png" },
+      { platform: "Lazada", price: 1090, discount: 950, rating: 4.4, sold: 210, freeShip: false, mall: true, image: "15-nike-cap.png" },
+      { platform: "TikTok", price: 1090, discount: 790, rating: 2.9, sold: 15600, freeShip: true, mall: false, image: "15-nike-cap.png" },
+    ]
+  },
 ];
 
 const groups: ProductGroup[] = seeds.map((seed, index) => createGroup(seed, index * 3 + 1));
@@ -328,9 +364,18 @@ function findGroups(query: string) {
   const category = categoryMap[normalized];
   if (category) return groups.filter((group) => group.category === category);
 
-  const terms = [normalized, ...normalized.split(" ").filter((term) => term.length > 1)];
+  const aliasesOf = (group: ProductGroup) => [group.name, ...group.aliases].map(normalize);
+
+  // A full-phrase hit wins outright, so tapping a product searches only that
+  // product instead of every item sharing one of its words.
+  const phraseMatches = groups.filter((group) =>
+    aliasesOf(group).some((alias) => alias === normalized || alias.includes(normalized))
+  );
+  if (phraseMatches.length) return phraseMatches;
+
+  const terms = normalized.split(" ").filter((term) => term.length > 1);
   return groups.filter((group) => {
-    const aliases = [group.name, ...group.aliases].map(normalize);
+    const aliases = aliasesOf(group);
     return terms.some((term) => aliases.some((alias) => alias.includes(term) || term.includes(alias)));
   });
 }
@@ -966,7 +1011,7 @@ export function CatalogFlowSortStatus() {
                 >
                   <img
                     key={`cmp-fav-icon-${favBumpKey}`}
-                    src={favorite ? "/assets/SVG/Like/Property 1=Like.svg" : "/assets/SVG/Like/Property 1=Normal.svg"}
+                    src={favorite ? "/assets/SVG/Like/Property-1=Like.svg" : "/assets/SVG/Like/Property-1=Normal.svg"}
                     alt=""
                   />
                   <span key={`cmp-fav-label-${favorite}`} className="cmp-track__label">

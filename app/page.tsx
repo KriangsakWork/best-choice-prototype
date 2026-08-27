@@ -181,44 +181,21 @@ const nikeAirForceOne: ProductCardData = {
 
 const homeRecentProducts: ProductCardData[] = [
   {
-    ...nikeAirForceOne
-  },
-  {
-    id: 28,
-    productName: "womenager - Jane Original",
-    platform: "Shopee",
-    price: 1790,
-    discountPrice: 1790,
-    percent: 0,
-    rating: 4.6,
-    sold: 47,
-    freeShip: true,
+    id: 40,
+    productName: "COACH Coin Wallet In Signature",
+    platform: "Lazada",
+    price: 4900,
+    discountPrice: 2990,
+    percent: 39,
+    rating: 4.5,
+    sold: 88,
+    freeShip: false,
     mall: true,
-    imageUrl: `${ASSET}/products/product-pic/10-womanager-shopee.webp`,
+    imageUrl: `${ASSET}/products/product-pic/13-coach-wallet.jpg`,
     productUrl: "",
-    averagePrice: 2023.67,
-    trendLabel: "ลดจากค่าเฉลี่ย",
-    trendPercent: 12
-  }
-];
-
-const homeRecommendedProducts: ProductCardData[] = [
-  {
-    id: 4,
-    productName: "Converse Chuck Taylor",
-    platform: "Shopee",
-    price: 3090,
-    discountPrice: 3090,
-    percent: 0,
-    rating: 4.6,
-    sold: "2k+",
-    freeShip: true,
-    mall: true,
-    imageUrl: `${ASSET}/products/product-pic/2-converse-shopee.webp`,
-    productUrl: "",
-    averagePrice: 3026.67,
+    averagePrice: 2890,
     trendLabel: "เพิ่มจากค่าเฉลี่ย",
-    trendPercent: 2
+    trendPercent: 3
   },
   {
     id: 9,
@@ -236,6 +213,60 @@ const homeRecommendedProducts: ProductCardData[] = [
     averagePrice: 2448.33,
     trendLabel: "ลดจากค่าเฉลี่ย",
     trendPercent: 11
+  }
+];
+
+const homeRecommendedProducts: ProductCardData[] = [
+  {
+    id: 41,
+    productName: "หมวก Nike สีดำ Original",
+    platform: "TikTok",
+    price: 1090,
+    discountPrice: 790,
+    percent: 28,
+    rating: 2.9,
+    sold: 15600,
+    freeShip: true,
+    mall: false,
+    imageUrl: `${ASSET}/products/product-pic/15-nike-cap.png`,
+    productUrl: "",
+    averagePrice: 877,
+    trendLabel: "ลดจากค่าเฉลี่ย",
+    trendPercent: 10
+  },
+  {
+    id: 42,
+    productName: "เสื้อคลุม Adidas",
+    platform: "Shopee",
+    price: 3200,
+    discountPrice: 2290,
+    percent: 28,
+    rating: 4.7,
+    sold: 460,
+    freeShip: true,
+    mall: true,
+    imageUrl: `${ASSET}/products/product-pic/14-adidas-jacket.png`,
+    productUrl: "",
+    averagePrice: 2257,
+    trendLabel: "เพิ่มจากค่าเฉลี่ย",
+    trendPercent: 1
+  },
+  {
+    id: 4,
+    productName: "Converse Chuck Taylor",
+    platform: "Shopee",
+    price: 3090,
+    discountPrice: 3090,
+    percent: 0,
+    rating: 4.6,
+    sold: "2k+",
+    freeShip: true,
+    mall: true,
+    imageUrl: `${ASSET}/products/product-pic/2-converse-shopee.webp`,
+    productUrl: "",
+    averagePrice: 3026.67,
+    trendLabel: "เพิ่มจากค่าเฉลี่ย",
+    trendPercent: 2
   },
   {
     id: 11,
@@ -835,7 +866,7 @@ function HomeScreen({
       <button className="savings-hero" onClick={() => go("total-save")} type="button" aria-label="ดูยอดประหยัดรวม 10,250 บาท">
         <img
           className="savings-hero__background"
-          src={`${ASSET}/SVG/Total Savings BG.jpg`}
+          src={`${ASSET}/SVG/Total Savings Container.png`}
           alt=""
           aria-hidden="true"
         />
@@ -1148,7 +1179,7 @@ function CompareScreen({
           >
             <img
               key={`compare-fav-icon-${favBumpKey}`}
-              src={favorite ? `${ASSET}/SVG/Like/Property 1=Like.svg` : `${ASSET}/SVG/Like/Property 1=Normal.svg`}
+              src={favorite ? `${ASSET}/SVG/Like/Property-1=Like.svg` : `${ASSET}/SVG/Like/Property-1=Normal.svg`}
               alt=""
             />
             <span key={`compare-fav-label-${favorite}`} className="compare-track__label">
@@ -1538,7 +1569,7 @@ function HistoryScreen({
           <img
             key={`fav-icon-${favBumpKey}`}
             className="history-fav-btn__icon"
-            src={favorite ? `${ASSET}/SVG/Like/Property 1=Like.svg` : `${ASSET}/SVG/Like/Property 1=Normal.svg`}
+            src={favorite ? `${ASSET}/SVG/Like/Property-1=Like.svg` : `${ASSET}/SVG/Like/Property-1=Normal.svg`}
             alt=""
             aria-hidden="true"
           />
@@ -1584,14 +1615,14 @@ const savingsEntries = [
   },
   {
     name: "womenager - Jane Original",
-    image: homeRecentProducts[1].imageUrl,
+    image: `${ASSET}/products/product-pic/10-womanager-shopee.webp`,
     saved: 234,
     price: 1790,
     originalPrice: 2024
   }
 ];
 
-type BestSellerCategory = "ยอดฮิต" | "รองเท้า" | "ของใช้ในบ้าน";
+type BestSellerCategory = "ยอดฮิต" | "รองเท้า" | "Accessory";
 
 const BEST_SELLERS: {
   rank: number;
@@ -1616,6 +1647,12 @@ const BEST_SELLERS: {
   { rank: 10, name: "Birkenstock Arizona Sandal", image: "/assets/products/product-pic/8-birken-tiktok.webp", bcScore: 4.5, platform: "TikTok", rating: 4.8, sold: "185", price: 3311, original: 3990 }
 ];
 
+const ACCESSORY_BEST_SELLERS: typeof BEST_SELLERS = [
+  { rank: 1, name: "หมวก Nike สีดำ Original", image: "/assets/products/product-pic/15-nike-cap.png", bcScore: 4.9, platform: "Shopee", rating: 4.9, sold: "9k+", price: 890, original: 1090 },
+  { rank: 2, name: "COACH Coin Wallet In Signature", image: "/assets/products/product-pic/13-coach-wallet.jpg", bcScore: 4.8, platform: "Shopee", rating: 4.8, sold: "1.2k+", price: 2790, original: 4900 },
+  { rank: 3, name: "เสื้อคลุม Adidas", image: "/assets/products/product-pic/14-adidas-jacket.png", bcScore: 4.7, platform: "Shopee", rating: 4.7, sold: "460", price: 2290, original: 3200 }
+];
+
 function RankRibbon({ rank, index }: { rank: number; index: number }) {
   const src = `/assets/rank/${rank}.png`;
   return (
@@ -1632,8 +1669,8 @@ function RankRibbon({ rank, index }: { rank: number; index: number }) {
 function BestSellersScreen({ go }: { go: (screen: Screen) => void }) {
   const [filter, setFilter] = useState<BestSellerCategory>("ยอดฮิต");
   const [showBanner, setShowBanner] = useState(true);
-  const filters: BestSellerCategory[] = ["ยอดฮิต", "รองเท้า", "ของใช้ในบ้าน"];
-  const visibleItems = filter === "ของใช้ในบ้าน" ? [] : BEST_SELLERS;
+  const filters: BestSellerCategory[] = ["ยอดฮิต", "รองเท้า", "Accessory"];
+  const visibleItems = filter === "Accessory" ? ACCESSORY_BEST_SELLERS : BEST_SELLERS;
 
   return (
     <section className="screen best-sellers-screen">
@@ -1995,7 +2032,7 @@ function InterestEmptyScreen({ go }: { go: (screen: Screen) => void }) {
         <div className="interest-empty-illustration__background">
           <img
             className="interest-empty-illustration__heart"
-            src={`${ASSET}/SVG/Like/Property 1=Like.svg`}
+            src={`${ASSET}/SVG/Like/Property-1=Like.svg`}
             alt=""
           />
         </div>

@@ -4,19 +4,17 @@ import { useSyncExternalStore } from "react";
 import type { ProductCardData } from "../components/ProductCard";
 import { DEMO_PRODUCTS } from "./demo-products";
 
-export function productFavoriteKey(product: Pick<ProductCardData, "productName" | "platform">) {
-  const normalizedName = product.productName
+export function productFavoriteKey(product: Pick<ProductCardData, "productName">) {
+  return product.productName
     .trim()
     .toLocaleLowerCase("th-TH")
     .replace(/\s+/g, " ");
-
-  return `${normalizedName}::${product.platform}`;
 }
 
+// One key per product now, so seed the demo from every other distinct
+// product rather than every other offer.
 const INITIAL_FAVORITE_KEYS = new Set(
-  DEMO_PRODUCTS
-    .filter((_, index) => index % 2 === 0)
-    .map(productFavoriteKey)
+  [...new Set(DEMO_PRODUCTS.map(productFavoriteKey))].filter((_, index) => index % 2 === 0)
 );
 
 let favoriteKeys = new Set(INITIAL_FAVORITE_KEYS);
@@ -39,7 +37,7 @@ function getServerSnapshot() {
   return INITIAL_FAVORITE_KEYS;
 }
 
-export function setFavorite(product: Pick<ProductCardData, "productName" | "platform">, favorite: boolean) {
+export function setFavorite(product: Pick<ProductCardData, "productName">, favorite: boolean) {
   const key = productFavoriteKey(product);
   const next = new Set(favoriteKeys);
 
@@ -51,7 +49,7 @@ export function setFavorite(product: Pick<ProductCardData, "productName" | "plat
   emitChange();
 }
 
-export function toggleFavorite(product: Pick<ProductCardData, "productName" | "platform">) {
+export function toggleFavorite(product: Pick<ProductCardData, "productName">) {
   setFavorite(product, !favoriteKeys.has(productFavoriteKey(product)));
 }
 
@@ -66,7 +64,7 @@ export function useFavorites() {
   return {
     keys,
     count: keys.size,
-    isFavorite: (product: Pick<ProductCardData, "productName" | "platform">) =>
+    isFavorite: (product: Pick<ProductCardData, "productName">) =>
       keys.has(productFavoriteKey(product)),
     setFavorite,
     toggleFavorite,

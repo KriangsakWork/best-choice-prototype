@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 
+export type ProductCategory = "รองเท้า" | "Accessory";
+
 export type ProductCardData = {
   id: number;
   productName: string;
+  category?: ProductCategory;
   platform: "Shopee" | "Lazada" | "TikTok";
   price: number;
   discountPrice: number;
@@ -39,7 +42,7 @@ const platformBadges: Record<ProductCardData["platform"], { src: string; width: 
     label: "Shopee"
   },
   TikTok: {
-    src: "/assets/App/Platform=TikTok Shop.jpg",
+    src: "/assets/App/Platform=TikTok-Shop.jpg",
     width: 54,
     label: "TikTok Shop"
   }
@@ -61,7 +64,7 @@ function HeartButton({ favorite, onToggle }: { favorite: boolean; onToggle: () =
     >
       <img
         key={`heart-${bumpKey}`}
-        src={favorite ? "/assets/SVG/Like/Property 1=Like.svg" : "/assets/SVG/Like/Property 1=Normal.svg"}
+        src={favorite ? "/assets/SVG/Like/Property-1=Like.svg" : "/assets/SVG/Like/Property-1=Normal.svg"}
         alt=""
         width={17.44}
         height={16}
@@ -160,7 +163,7 @@ export function ProductCard({
         <HeartButton favorite={favorite} onToggle={onFavoriteToggle} />
       ) : (
         <span className="real-product-card__heart" aria-label="อยู่ในรายการสนใจ">
-          <img src="/assets/SVG/Like/Property 1=Like.svg" alt="" width={17.44} height={16} />
+          <img src="/assets/SVG/Like/Property-1=Like.svg" alt="" width={17.44} height={16} />
         </span>
       )}
 
