@@ -1638,6 +1638,10 @@ type BestSellerCategory = "ยอดฮิต" | "รองเท้า" | "Acce
 
 const BEST_SELLERS: {
   rank: number;
+  // Ties the card to a catalog group so the compare screen opens the product
+  // the user actually tapped — display names here are longer than catalog names
+  // and cannot be matched by text.
+  groupId: string;
   name: string;
   image: string;
   bcScore: number;
@@ -1647,22 +1651,22 @@ const BEST_SELLERS: {
   price: number;
   original: number;
 }[] = [
-  { rank: 1, name: "Authentic New Balance NB 740 Black", image: "/assets/products/product-pic/4-nb-lazada.webp", bcScore: 5.0, platform: "Lazada", rating: 4.9, sold: "16", price: 1949, original: 7000 },
-  { rank: 2, name: "CROCS Classic Clog รองเท้าลำลองผู้ใหญ่", image: "/assets/products/product-pic/7-crocs-shopee.webp", bcScore: 4.9, platform: "Shopee", rating: 4.9, sold: "9k+", price: 2040, original: 2190 },
-  { rank: 3, name: "Flynn - Ballet Flats Room Service Collection คัทชูจุดนุ่มมาก", image: "/assets/products/product-pic/11-flynn-shopee.webp", bcScore: 4.9, platform: "Shopee", rating: 4.7, sold: "4k+", price: 1352, original: 1490 },
-  { rank: 4, name: "รองเท้า CHUCK 70 CANVAS OX BLACK", image: "/assets/products/product-pic/2-converse-shopee.webp", bcScore: 4.8, platform: "TikTok", rating: 4.4, sold: "3.12k+", price: 3040, original: 3090 },
-  { rank: 5, name: "Nike Men's Air Force 1 '07 Shoes - White", image: "/assets/products/product-pic/1-nike-shopee.webp", bcScore: 4.7, platform: "Shopee", rating: 4.7, sold: "56", price: 3594, original: 4300 },
-  { rank: 6, name: "Nike Men's Air Force 1 '07 Shoes - White", image: "/assets/products/product-pic/1-nike-lazada.webp", bcScore: 4.7, platform: "Lazada", rating: 4.9, sold: "22", price: 3328, original: 4300 },
-  { rank: 7, name: "HOKA CLIFTON ONE9 รองเท้าวิ่งลดแรงกระแทก", image: "/assets/products/product-pic/5-hoka-shopee.webp", bcScore: 4.6, platform: "Shopee", rating: 4.9, sold: "38", price: 3294, original: 5990 },
-  { rank: 8, name: "Vans Old Skool Classic Black", image: "/assets/products/product-pic/3-vans-tiktok.webp", bcScore: 4.6, platform: "TikTok", rating: 4.3, sold: "2k+", price: 2190, original: 2690 },
-  { rank: 9, name: "Adidas Ultraboost Light Running Shoes", image: "/assets/products/product-pic/6-adidas-lazada.webp", bcScore: 4.5, platform: "Lazada", rating: 5.0, sold: "2", price: 3750, original: 7000 },
-  { rank: 10, name: "Birkenstock Arizona Sandal", image: "/assets/products/product-pic/8-birken-tiktok.webp", bcScore: 4.5, platform: "TikTok", rating: 4.8, sold: "185", price: 3311, original: 3990 }
+  { rank: 1, groupId: "new-balance-740", name: "Authentic New Balance NB 740 Black", image: "/assets/products/product-pic/4-nb-lazada.webp", bcScore: 5.0, platform: "Lazada", rating: 4.9, sold: "16", price: 1949, original: 7000 },
+  { rank: 2, groupId: "crocs-classic-clog", name: "CROCS Classic Clog รองเท้าลำลองผู้ใหญ่", image: "/assets/products/product-pic/7-crocs-shopee.webp", bcScore: 4.9, platform: "Shopee", rating: 4.9, sold: "9k+", price: 2040, original: 2190 },
+  { rank: 3, groupId: "flynn-ballet-flats", name: "Flynn - Ballet Flats Room Service Collection คัทชูจุดนุ่มมาก", image: "/assets/products/product-pic/11-flynn-shopee.webp", bcScore: 4.9, platform: "Shopee", rating: 4.7, sold: "4k+", price: 1352, original: 1490 },
+  { rank: 4, groupId: "converse-chuck-taylor", name: "รองเท้า CHUCK 70 CANVAS OX BLACK", image: "/assets/products/product-pic/2-converse-shopee.webp", bcScore: 4.8, platform: "TikTok", rating: 4.4, sold: "3.12k+", price: 3040, original: 3090 },
+  { rank: 5, groupId: "nike-air-force-1-07", name: "Nike Men's Air Force 1 '07 Shoes - White", image: "/assets/products/product-pic/1-nike-shopee.webp", bcScore: 4.7, platform: "Shopee", rating: 4.7, sold: "56", price: 3594, original: 4300 },
+  { rank: 6, groupId: "nike-air-force-1-07", name: "Nike Men's Air Force 1 '07 Shoes - White", image: "/assets/products/product-pic/1-nike-lazada.webp", bcScore: 4.7, platform: "Lazada", rating: 4.9, sold: "22", price: 3328, original: 4300 },
+  { rank: 7, groupId: "hoka-clifton-one9", name: "HOKA CLIFTON ONE9 รองเท้าวิ่งลดแรงกระแทก", image: "/assets/products/product-pic/5-hoka-shopee.webp", bcScore: 4.6, platform: "Shopee", rating: 4.9, sold: "38", price: 3294, original: 5990 },
+  { rank: 8, groupId: "vans-old-skool", name: "Vans Old Skool Classic Black", image: "/assets/products/product-pic/3-vans-tiktok.webp", bcScore: 4.6, platform: "TikTok", rating: 4.3, sold: "2k+", price: 2190, original: 2690 },
+  { rank: 9, groupId: "adidas-ultraboost-light", name: "Adidas Ultraboost Light Running Shoes", image: "/assets/products/product-pic/6-adidas-lazada.webp", bcScore: 4.5, platform: "Lazada", rating: 5.0, sold: "2", price: 3750, original: 7000 },
+  { rank: 10, groupId: "birkenstock-arizona", name: "Birkenstock Arizona Sandal", image: "/assets/products/product-pic/8-birken-tiktok.webp", bcScore: 4.5, platform: "TikTok", rating: 4.8, sold: "185", price: 3311, original: 3990 }
 ];
 
 const ACCESSORY_BEST_SELLERS: typeof BEST_SELLERS = [
-  { rank: 1, name: "หมวก Nike สีดำ Original", image: "/assets/products/product-pic/15-nike-cap.png", bcScore: 4.9, platform: "Shopee", rating: 4.9, sold: "9k+", price: 890, original: 1090 },
-  { rank: 2, name: "COACH Coin Wallet In Signature", image: "/assets/products/product-pic/13-coach-wallet.jpg", bcScore: 4.8, platform: "Shopee", rating: 4.8, sold: "1.2k+", price: 2790, original: 4900 },
-  { rank: 3, name: "เสื้อคลุม Adidas", image: "/assets/products/product-pic/14-adidas-jacket.png", bcScore: 4.7, platform: "Shopee", rating: 4.7, sold: "460", price: 2290, original: 3200 }
+  { rank: 1, groupId: "nike-cap-black-original", name: "หมวก Nike สีดำ Original", image: "/assets/products/product-pic/15-nike-cap.png", bcScore: 4.9, platform: "Shopee", rating: 4.9, sold: "9k+", price: 890, original: 1090 },
+  { rank: 2, groupId: "coach-coin-wallet-signature", name: "COACH Coin Wallet In Signature", image: "/assets/products/product-pic/13-coach-wallet.jpg", bcScore: 4.8, platform: "Shopee", rating: 4.8, sold: "1.2k+", price: 2790, original: 4900 },
+  { rank: 3, groupId: "adidas-hooded-jacket", name: "เสื้อคลุม Adidas", image: "/assets/products/product-pic/14-adidas-jacket.png", bcScore: 4.7, platform: "Shopee", rating: 4.7, sold: "460", price: 2290, original: 3200 }
 ];
 
 function RankRibbon({ rank, index }: { rank: number; index: number }) {
@@ -1683,6 +1687,14 @@ function BestSellersScreen({ go }: { go: (screen: Screen) => void }) {
   const [showBanner, setShowBanner] = useState(true);
   const filters: BestSellerCategory[] = ["ยอดฮิต", "รองเท้า", "Accessory"];
   const visibleItems = filter === "Accessory" ? ACCESSORY_BEST_SELLERS : BEST_SELLERS;
+
+  // "base" keeps the ranking behind the compare screen, so closing it returns
+  // here instead of the saved-items screen.
+  const openBestSellerCompare = (item: (typeof BEST_SELLERS)[number]) => {
+    document.dispatchEvent(new CustomEvent("best-choice:open-compare", {
+      detail: { groupId: item.groupId, productName: item.name, origin: "base" }
+    }));
+  };
 
   return (
     <section className="screen best-sellers-screen">
@@ -1752,8 +1764,8 @@ function BestSellersScreen({ go }: { go: (screen: Screen) => void }) {
               style={{ "--card-i": index } as CSSProperties}
               role="button"
               tabIndex={0}
-              onClick={() => document.dispatchEvent(new CustomEvent("best-choice:open-compare", { detail: { productName: item.name } }))}
-              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); document.dispatchEvent(new CustomEvent("best-choice:open-compare", { detail: { productName: item.name } })); } }}
+              onClick={() => openBestSellerCompare(item)}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openBestSellerCompare(item); } }}
             >
               <RankRibbon rank={item.rank} index={index} />
               <img className="best-sellers-image" src={item.image} alt={item.name} />
@@ -2207,6 +2219,20 @@ export default function BestChoiceApp() {
     };
   }, [screen]);
 
+  const resetDemo = () => {
+    setScreen("home");
+    setQuery("");
+    setSelected([]);
+    setCompareBackScreen("results");
+    setHistoryProduct(nikeAirForceOne);
+    setHistoryOrigin("base");
+    setHistoryReturnScreen("search");
+    resetFavorites();
+    // The results, compare and saved-items screens are overlays owned by other
+    // components; without this they stay on screen and the button looks dead.
+    document.dispatchEvent(new Event("best-choice:reset-demo"));
+  };
+
   const go = (next: Screen) => {
     if (next === "results" || next === "compare") {
       setScreen("search");
@@ -2285,7 +2311,7 @@ export default function BestChoiceApp() {
         <span>PRICE COMPARISON APP</span>
         <h2>Best Choice</h2>
         <p>จำลองการใช้งานจริงแบบ End-to-End ครอบคลุมทุก Flow ตั้งแต่ค้นหา เปรียบเทียบราคา วิเคราะห์แนวโน้ม ไปจนถึงจัดการ Wishlist ผ่าน Interactive Prototype</p>
-        <button onClick={() => { setScreen("home"); setQuery(""); setSelected([]); setCompareBackScreen("results"); setHistoryProduct(nikeAirForceOne); setHistoryOrigin("base"); setHistoryReturnScreen("search"); resetFavorites(); }} type="button">เริ่ม Demo ใหม่</button>
+        <button onClick={resetDemo} type="button">เริ่ม Demo ใหม่</button>
       </aside>
     </main>
   );

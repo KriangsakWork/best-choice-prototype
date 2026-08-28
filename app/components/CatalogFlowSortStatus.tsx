@@ -34,7 +34,7 @@ import { createPriceSeries, getPriceHistory } from "../data/price-history";
 type Category = "Sneakers" | "RunShoes" | "Sandals" | "WomanShoes" | "Accessories";
 type FlowScreen = "results" | "compare" | "no-results" | null;
 type SortMode = "relevance" | "best-selling" | "price-desc" | "price-asc" | "bc-score";
-type CompareOrigin = "results" | "interest";
+type CompareOrigin = "results" | "interest" | "base";
 
 type ProductGroup = {
   id: string;
@@ -746,29 +746,62 @@ export function CatalogFlowSortStatus() {
   }, []);
 
   useEffect(() => {
-    const openCompareFromInterest = (event: Event) => {
-      const detail = (event as CustomEvent<{ product?: ProductCardData; productName?: string }>).detail;
+    const openCompareRequest = (event: Event) => {
+      const detail = (event as CustomEvent<{
+        product?: ProductCardData;
+        productName?: string;
+        groupId?: string;
+        origin?: CompareOrigin;
+      }>).detail;
       const product = detail?.product;
       const productName = product?.productName ?? detail?.productName;
-      if (!productName) return;
 
-      const normalizedName = normalize(productName);
-      const group =
-        groups.find((item) => normalize(item.name) === normalizedName) ??
-        groups.find((item) => normalize(item.name).includes(normalizedName) || normalizedName.includes(normalize(item.name))) ??
-        groups[0];
+      // A caller that knows the catalog id wins: display names on other screens
+      // are longer than catalog names and do not survive text matching.
+      const byId = detail?.groupId ? groups.find((item) => item.id === detail.groupId) : undefined;
+      const normalizedName = productName ? normalize(productName) : "";
+      const byName = normalizedName
+        ? groups.find((item) => normalize(item.name) === normalizedName) ??
+          groups.find((item) => normalize(item.name).includes(normalizedName) || normalizedName.includes(normalize(item.name)))
+        : undefined;
+
+      // Without a confident match, opening some other product's compare screen
+      // is worse than staying put.
+      const group = byId ?? byName;
       if (!group) return;
 
       setSelectedGroupId(group.id);
       setSelectedOffer(product ?? group.representative);
-      setCompareOrigin("interest");
+      setCompareOrigin(detail?.origin ?? "interest");
       setSortOpen(false);
       setCompareDiscountDetailsOpen(false);
       setFlowScreen("compare");
     };
 
-    document.addEventListener("best-choice:open-compare", openCompareFromInterest);
-    return () => document.removeEventListener("best-choice:open-compare", openCompareFromInterest);
+    document.addEventListener("best-choice:open-compare", openCompareRequest);
+    return () => document.removeEventListener("best-choice:open-compare", openCompareRequest);
+  }, []);
+
+  useEffect(() => {
+    const resetDemo = () => {
+      setFlowScreen(null);
+      setCompareOrigin("results");
+      setQuery("");
+      setSelectedGroupId(null);
+      setSelectedOffer(null);
+      setMallOnly(true);
+      setFreeShipOnly(true);
+      setSortMode("price-asc");
+      setSortOpen(false);
+      setCompareSort("bc");
+      setCompareSortOpen(false);
+      setCompareDiscountDetailsOpen(false);
+      setBcInfoOpen(false);
+      setCompareToast("");
+    };
+
+    document.addEventListener("best-choice:reset-demo", resetDemo);
+    return () => document.removeEventListener("best-choice:reset-demo", resetDemo);
   }, []);
 
   useEffect(() => {
@@ -841,6 +874,14 @@ export function CatalogFlowSortStatus() {
       });
       return;
     }
+
+    // Opened from a base screen (the best-seller ranking): that screen is still
+    // mounted underneath, so closing the overlay is the way back to it.
+    if (compareOrigin === "base") {
+      setFlowScreen(null);
+      return;
+    }
+
     setFlowScreen("results");
   };
 

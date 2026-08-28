@@ -293,18 +293,36 @@ export function InterestFigmaScreen() {
     return () => document.removeEventListener("best-choice:open-interest", reopenInterest);
   }, []);
 
+  useEffect(() => {
+    const resetDemo = () => {
+      setOpen(false);
+      setFilter("ทั้งหมด");
+      setRemovedItem(null);
+      if (toastTimer.current !== null) {
+        window.clearTimeout(toastTimer.current);
+        toastTimer.current = null;
+      }
+    };
+
+    document.addEventListener("best-choice:reset-demo", resetDemo);
+    return () => document.removeEventListener("best-choice:reset-demo", resetDemo);
+  }, []);
+
   useEffect(() => () => {
     if (toastTimer.current !== null) window.clearTimeout(toastTimer.current);
   }, []);
 
   const navigateTo = (label: string) => {
+    // This screen is the "สนใจ" tab, so tapping it again should keep the user
+    // here rather than closing the screen and dropping them on the home screen.
+    if (label === "สนใจ") return;
+
     setOpen(false);
     window.requestAnimationFrame(() => {
       const nav = document.querySelector<HTMLElement>(".catalog-bottom-nav, .bottom-nav");
       if (!nav) return;
       const buttons = Array.from(nav.querySelectorAll<HTMLButtonElement>(":scope > button"));
-      const target = buttons.find((b) => b.textContent?.trim() === label);
-      if (target && target.textContent?.trim() !== "สนใจ") target.click();
+      buttons.find((b) => b.textContent?.trim() === label)?.click();
     });
   };
 
