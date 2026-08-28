@@ -620,7 +620,13 @@ export function CatalogFlowSortStatus() {
     setSortOpen(false);
     setFlowScreen(null);
     window.requestAnimationFrame(() => {
-      const navButtons = document.querySelectorAll<HTMLButtonElement>(".search-screen .bottom-nav button");
+      // The screen behind the catalog flow is whichever one the user came from:
+      // the search screen when they searched, but the home screen when they
+      // tapped a home card. Drive the base screen's own nav instead of assuming
+      // the search screen is mounted, or the tap does nothing at all.
+      const navButtons = document.querySelectorAll<HTMLButtonElement>(
+        ".phone-shell > .screen .bottom-nav button"
+      );
       navButtons[index]?.click();
     });
   };

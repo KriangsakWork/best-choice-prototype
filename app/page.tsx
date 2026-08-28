@@ -4,7 +4,7 @@ import { CSSProperties, FormEvent, PointerEvent, useEffect, useMemo, useRef, use
 import { PlatformBadge } from "./components/PlatformBadge";
 import { ProductBadges, ProductCard, ProductCardData, ProductMeta } from "./components/ProductCard";
 import { findTermSuggestions, recentSearches, searchSuggestions } from "./data/catalog";
-import { resetFavorites, useFavorites } from "./data/favorite-store";
+import { countSavedProducts, resetFavorites, useFavorites } from "./data/favorite-store";
 import {
   PriceHistoryRecord,
   createPriceSeries,
@@ -1942,6 +1942,8 @@ function ProfileMenuItem({
 
 function ProfileScreen({ go }: { go: (screen: Screen) => void }) {
   const [toast, setToast] = useState("");
+  const favorites = useFavorites();
+  const savedCount = countSavedProducts(favorites.keys);
 
   const flash = (message: string) => {
     setToast(message);
@@ -1973,9 +1975,13 @@ function ProfileScreen({ go }: { go: (screen: Screen) => void }) {
             <span>ประหยัดทั้งหมด</span>
             <strong>฿10,250</strong>
           </button>
-          <button className="profile-stat profile-stat-interest" type="button" onClick={() => go("interest")}>
+          <button
+            className="profile-stat profile-stat-interest"
+            type="button"
+            onClick={() => document.dispatchEvent(new Event("best-choice:open-interest"))}
+          >
             <span>สินค้าที่สนใจ</span>
-            <strong>12 รายการ</strong>
+            <strong>{savedCount.toLocaleString("th-TH")} รายการ</strong>
           </button>
         </section>
 

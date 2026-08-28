@@ -17,6 +17,14 @@ const INITIAL_FAVORITE_KEYS = new Set(
   [...new Set(DEMO_PRODUCTS.map(productFavoriteKey))].filter((_, index) => index % 2 === 0)
 );
 
+const DISTINCT_PRODUCT_KEYS = [...new Set(DEMO_PRODUCTS.map(productFavoriteKey))];
+
+// The saved list shows one card per product, so count distinct products rather
+// than raw keys — that keeps every "N รายการ" label in step with the list.
+export function countSavedProducts(keys: ReadonlySet<string>) {
+  return DISTINCT_PRODUCT_KEYS.filter((key) => keys.has(key)).length;
+}
+
 let favoriteKeys = new Set(INITIAL_FAVORITE_KEYS);
 const listeners = new Set<() => void>();
 
