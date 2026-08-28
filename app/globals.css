@@ -3351,8 +3351,8 @@ img[src$="/compare-fire.svg"] {
 .best-sellers-info {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
+  gap: 5px;
+  padding: 8px 9px;
   margin-bottom: 10px;
   border: 1px solid #fbdcd3;
   border-radius: 9px;
@@ -3371,8 +3371,9 @@ img[src$="/compare-fire.svg"] {
   flex: 1;
   margin: 0;
   color: #312d2a;
-  font-size: 10px;
-  line-height: 1.5;
+  font-size: 11px;
+  line-height: 1.45;
+  white-space: nowrap;
 }
 
 .best-sellers-info p strong {
@@ -3496,36 +3497,36 @@ img[src$="/compare-fire.svg"] {
 .bc-score-chip {
   display: inline-flex;
   align-items: center;
-  gap: 2.385px;
-  padding: 2.385px 5.962px;
+  gap: 3px;
+  padding: 2px 7px;
   border-radius: 999px;
   background: #e8420e;
   color: #fff;
-  font-size: 7.154px;
+  font-size: 10px;
   font-weight: 700;
   line-height: 1.5;
   white-space: nowrap;
 }
 
 .bc-score-chip svg {
-  width: 9.538px;
-  height: 9.538px;
+  width: 11px;
+  height: 11px;
 }
 
 .bc-mini-divider {
   width: 1px;
-  height: 7.5px;
+  height: 10px;
   background: #d9cfc9;
 }
 
 .bc-platform {
   display: inline-flex;
   align-items: center;
-  gap: 2.144px;
-  padding: 0 4.288px;
-  border-radius: 4.288px;
+  gap: 3px;
+  padding: 1px 6px;
+  border-radius: 5px;
   color: #fff;
-  font-size: 8.58px;
+  font-size: 10px;
   font-weight: 400;
   line-height: 1.5;
 }
@@ -3549,9 +3550,9 @@ img[src$="/compare-fire.svg"] {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   color: #0f0d0c;
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 500;
-  line-height: 19px;
+  line-height: 21px;
 }
 
 .best-sellers-meta {
@@ -3559,23 +3560,23 @@ img[src$="/compare-fire.svg"] {
   align-items: center;
   gap: 4px;
   color: #978f89;
-  font-size: 9.5px;
+  font-size: 11px;
   line-height: 1.5;
 }
 
 .best-sellers-meta .bc-rating {
   display: inline-flex;
   align-items: center;
-  gap: 4.288px;
-  padding: 0 1px 0 0;
-  border-radius: 2.144px;
+  gap: 4px;
+  padding: 0 2px 0 0;
+  border-radius: 3px;
   background: #fdf8ed;
   font-weight: 700;
 }
 
 .best-sellers-meta .bc-rating img {
-  width: 12.864px;
-  height: 12.864px;
+  width: 15px;
+  height: 15px;
 }
 
 .best-sellers-price {
@@ -3588,7 +3589,7 @@ img[src$="/compare-fire.svg"] {
 
 .best-sellers-price strong {
   color: var(--primary);
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
   line-height: 1.5;
 }
