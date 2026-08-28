@@ -316,16 +316,45 @@ img[src$="/compare-fire.svg"] {
 
 .search-gradient-border {
   position: absolute;
-  z-index: 4;
+  z-index: 0;
   inset: -1px;
-  width: calc(100% + 2px);
-  height: calc(100% + 2px);
-  overflow: visible;
+  border-radius: 999px;
+  overflow: hidden;
   pointer-events: none;
 }
 
-.search-gradient-segment {
-  stroke-linecap: butt;
+.search-gradient-border::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border-radius: 999px;
+  background: #fff;
+}
+
+.search-gradient-border__ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 520px;
+  height: 520px;
+  margin: -260px 0 0 -260px;
+  animation: search-gradient-spin 5.6s linear infinite;
+}
+
+.search-gradient-border.is-static .search-gradient-border__ring {
+  animation: none;
+}
+
+@keyframes search-gradient-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-gradient-border__ring {
+    animation: none;
+  }
 }
 
 .search-field:focus-within {

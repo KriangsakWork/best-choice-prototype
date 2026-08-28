@@ -649,49 +649,23 @@ function BottomNav({ active, go }: { active?: string; go: (screen: Screen) => vo
 }
 
 function SearchGradientBorder() {
-  const segmentLength = 100 / SEARCH_GRADIENT_SEGMENTS + 0.08;
   const prefersReducedMotion = usePrefersReducedMotion();
+  const stops = Array.from({ length: SEARCH_GRADIENT_SEGMENTS }, (_, index) => {
+    const position = index / SEARCH_GRADIENT_SEGMENTS;
+    return `${searchGradientColor(position)} ${(position * 360).toFixed(2)}deg`;
+  });
+  stops.push(`${searchGradientColor(0)} 360deg`);
 
   return (
-    <svg
-      className="search-gradient-border"
-      viewBox="0 0 373 52"
-      preserveAspectRatio="none"
+    <span
+      className={`search-gradient-border${prefersReducedMotion ? " is-static" : ""}`}
       aria-hidden="true"
-      focusable="false"
     >
-      {Array.from({ length: SEARCH_GRADIENT_SEGMENTS }, (_, index) => {
-        const offset = -(index * 100) / SEARCH_GRADIENT_SEGMENTS;
-
-        return (
-          <rect
-            key={index}
-            className="search-gradient-segment"
-            x="1"
-            y="1"
-            width="371"
-            height="50"
-            rx="25"
-            pathLength="100"
-            fill="none"
-            stroke={searchGradientColor(index / SEARCH_GRADIENT_SEGMENTS)}
-            strokeWidth="2"
-            strokeDasharray={`${segmentLength} ${100 - segmentLength}`}
-            strokeDashoffset={offset}
-          >
-            {!prefersReducedMotion && (
-              <animate
-                attributeName="stroke-dashoffset"
-                values={`${offset};${offset - 100}`}
-                dur="5.6s"
-                calcMode="linear"
-                repeatCount="indefinite"
-              />
-            )}
-          </rect>
-        );
-      })}
-    </svg>
+      <span
+        className="search-gradient-border__ring"
+        style={{ backgroundImage: `conic-gradient(from 0deg, ${stops.join(", ")})` }}
+      />
+    </span>
   );
 }
 
