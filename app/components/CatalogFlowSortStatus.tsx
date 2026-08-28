@@ -700,7 +700,7 @@ export function CatalogFlowSortStatus() {
     const handleClick = (event: Event) => {
       const target = event.target as HTMLElement;
       const searchChoice = target.closest<HTMLButtonElement>(
-        ".search-screen .suggestions button, .search-screen .recent-list button"
+        ".search-screen .suggestions button, .search-screen .recent-list button, .search-screen .term-suggestions button"
       );
 
       if (searchChoice) {

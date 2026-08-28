@@ -3,6 +3,7 @@
 import { CSSProperties, FormEvent, PointerEvent, useEffect, useMemo, useRef, useState } from "react";
 import { PlatformBadge } from "./components/PlatformBadge";
 import { ProductBadges, ProductCard, ProductCardData, ProductMeta } from "./components/ProductCard";
+import { findTermSuggestions, recentSearches, searchSuggestions } from "./data/catalog";
 import { resetFavorites, useFavorites } from "./data/favorite-store";
 import {
   PriceHistoryRecord,
@@ -577,13 +578,6 @@ const compareOfferById: Record<number, CompareOffer> = {
   }
 };
 
-const suggestions = [
-  { label: "หมวกไหมพรม", trend: "+32%" },
-  { label: "หมวกคาวบอย", trend: "+18%" },
-  { label: "หมวกแก๊ป", trend: "-6%" },
-  { label: "หมวก", trend: "+11%" }
-];
-
 
 function Icon({ name, className = "" }: { name: string; className?: string }) {
   const asset = realIconAssets[name];
@@ -905,15 +899,38 @@ function HomeScreen({
   );
 }
 
+const recentSearchImages = [
+  `${ASSET}/products/product-pic/1-nike-shopee.webp`,
+  `${ASSET}/products/product-pic/6-adidas-lazada.webp`,
+  `${ASSET}/products/product-pic/7-crocs-shopee.webp`
+];
+
 function SearchScreen({ go, query, setQuery }: { go: (screen: Screen) => void; query: string; setQuery: (value: string) => void }) {
-  const filtered = useMemo(
-    () => suggestions.filter((item) => item.label.includes(query.trim()) || !query.trim()),
-    [query]
-  );
+  const typedQuery = query.trim();
+  const isTyping = typedQuery.length > 0;
+  const termMatches = useMemo(() => findTermSuggestions(query), [query]);
 
   const submit = () => {
     if (!query.trim()) setQuery("รองเท้าวิ่ง Nike");
     go("results");
+  };
+
+  const chooseTerm = (label: string) => {
+    setQuery(label);
+    go("results");
+  };
+
+  const renderHighlightedLabel = (label: string) => {
+    const matchIndex = label.toLocaleLowerCase("th-TH").indexOf(typedQuery.toLocaleLowerCase("th-TH"));
+    if (matchIndex < 0) return label;
+
+    return (
+      <>
+        {label.slice(0, matchIndex)}
+        <b>{label.slice(matchIndex, matchIndex + typedQuery.length)}</b>
+        {label.slice(matchIndex + typedQuery.length)}
+      </>
+    );
   };
 
   return (
@@ -923,33 +940,51 @@ function SearchScreen({ go, query, setQuery }: { go: (screen: Screen) => void; q
         <SearchField value={query} onChange={setQuery} onSubmit={submit} active autoFocus showLight />
       </div>
       <main className="search-content">
-        <h2>ค้นหาล่าสุด</h2>
-        <div className="recent-list">
-          {[
-            ["รองเท้าวิ่ง", `${ASSET}/search-recent-1.png`],
-            ["เลโก้", `${ASSET}/search-recent-2.png`],
-            ["หมวก", `${ASSET}/search-recent-3.png`]
-          ].map(([label, image]) => (
-            <button key={label} onClick={() => { setQuery(label); go("results"); }} type="button">
-              <span>{label}</span><img src={image} alt="" />
-            </button>
-          ))}
-        </div>
-        <h2 className="recent-heading">สินค้าแนะนำ</h2>
-        <div className="suggestions">
-          {(filtered.length ? filtered : suggestions).map((item) => (
-            <button
-              key={item.label}
-              onClick={() => { setQuery(item.label); go("results"); }}
-              type="button"
-            >
-              <span>{item.label}</span>
-              <small className={item.trend.startsWith("-") ? "down" : ""}>
-                <span aria-hidden="true">{item.trend.startsWith("-") ? "⌁" : "⌁"}</span> นิยม {item.trend}
-              </small>
-            </button>
-          ))}
-        </div>
+        {isTyping ? (
+          <div className="term-suggestions">
+            {termMatches.map((term) => (
+              <button key={term.label} onClick={() => chooseTerm(term.label)} type="button">
+                <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
+                  <circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" strokeWidth="1.6" />
+                  <line x1="13" y1="13" x2="18" y2="18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                </svg>
+                <span>{renderHighlightedLabel(term.label)}</span>
+              </button>
+            ))}
+            {termMatches.length === 0 ? (
+              <button className="term-suggestions__fallback" onClick={() => chooseTerm(typedQuery)} type="button">
+                <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
+                  <circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" strokeWidth="1.6" />
+                  <line x1="13" y1="13" x2="18" y2="18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                </svg>
+                <span>{typedQuery}</span>
+                <small>ค้นหาคำนี้</small>
+              </button>
+            ) : null}
+          </div>
+        ) : (
+          <>
+            <h2>ค้นหาล่าสุด</h2>
+            <div className="recent-list">
+              {recentSearches.map((label, index) => (
+                <button key={label} onClick={() => chooseTerm(label)} type="button">
+                  <span>{label}</span><img src={recentSearchImages[index]} alt="" />
+                </button>
+              ))}
+            </div>
+            <h2 className="recent-heading">สินค้าแนะนำ</h2>
+            <div className="suggestions">
+              {searchSuggestions.map((item) => (
+                <button key={item.label} onClick={() => chooseTerm(item.label)} type="button">
+                  <span>{item.label}</span>
+                  <small className={item.trend.startsWith("-") ? "down" : ""}>
+                    <span aria-hidden="true">⌁</span> นิยม {item.trend}
+                  </small>
+                </button>
+              ))}
+            </div>
+          </>
+        )}
       </main>
       <BottomNav go={go} />
     </section>
