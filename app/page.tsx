@@ -825,7 +825,10 @@ function HomeScreen({
           onSubmit={() => {
             if (query.trim()) go("search");
           }}
-          onFocus={() => setSearchFocused(true)}
+          onFocus={() => {
+            setSearchFocused(true);
+            go("search");
+          }}
           onBlur={() => setSearchFocused(false)}
           showLight={searchFocused}
         />
