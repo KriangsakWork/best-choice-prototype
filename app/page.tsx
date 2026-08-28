@@ -1693,13 +1693,13 @@ function BestSellersScreen({ go }: { go: (screen: Screen) => void }) {
           <img src={`${ASSET}/SVG/arrow_back.svg`} alt="" aria-hidden="true" />
         </button>
         <h1>อันดับ Best Choice Score สูงสุด</h1>
-        <img
-          className="best-sellers-trophy"
-          src={`${ASSET}/best-sellers/trophy.png`}
-          alt=""
-          aria-hidden="true"
-        />
       </header>
+      <img
+        className="best-sellers-trophy"
+        src={`${ASSET}/best-sellers/trophy.png`}
+        alt=""
+        aria-hidden="true"
+      />
       <main className="best-sellers-content">
         <div className="best-sellers-filters" role="tablist">
           {filters.map((f) => (

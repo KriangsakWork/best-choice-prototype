@@ -3286,10 +3286,10 @@ img[src$="/compare-fire.svg"] {
 
 .best-sellers-trophy {
   position: absolute;
-  top: 30px;
+  top: 64px;
   right: 0;
-  width: 150px;
-  height: 150px;
+  width: 160px;
+  height: 160px;
   z-index: 0;
   opacity: .36;
   pointer-events: none;
